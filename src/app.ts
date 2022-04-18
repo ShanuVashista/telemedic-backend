@@ -24,6 +24,8 @@ app.use('/admin/site', siteAdminRoutes)
 app.get('/', (req, res) => {
     res.send('Hello World!')
   })
-app.listen(process.env.port, () => {
-    return console.log(`Express is listening at http://localhost:${process.env.port}`)
+
+const PORT = process.env.PORT ?? 3000;
+app.listen(PORT, () => {
+    return console.log(`Express is listening at http://localhost:${PORT}`)
 })
