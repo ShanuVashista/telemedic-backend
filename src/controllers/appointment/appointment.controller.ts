@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response, NextFunction } from "express";
-import axios, { AxiosResponse } from "axios";
+// import axios, { AxiosResponse } from "axios";
 import Appointment from "../../db/models/appointment.model";
 
 interface Appointment {
@@ -19,16 +19,13 @@ const getAppointments = async (
   res: Response,
   next: NextFunction
 ) => {
-  //get All Appointments
-  const result: AxiosResponse = await axios.get(
-    `https://jsonplaceholder.typicode.com/posts`
-  );
-  // let result = Appointment
-  const appointments: [Appointment] = result.data;
+  const result = await Appointment.find({})
   return res.status(200).json({
-    message: appointments,
+    message:true ,
+    data: result
   });
 };
+
 
 // Function to Create an Appointment
 const addAppointment = async (
@@ -54,10 +51,23 @@ const addAppointment = async (
     });
     await newAppointment.save();
 
-    res.json({ userId, doctorId, appointmentId });
+    res.status(201).json({
+      success:true,
+      data: newAppointment
+    })
   } catch (Err) {
     console.log(Err);
+    res.status(404).json({
+      success:false,
+      message: "One Or More Required Field is empty"
+    })
   }
 };
+
+// TODO:
+// We Need to Fetch Doctor Details using DoctorId by virtual Method doctor collection
+// We need to Fetch User Details using UserID by virtual method from user collection
+// Need to change name _id to appointmentId
+
 
 export default { getAppointments, addAppointment };
