@@ -27,7 +27,7 @@ app.use('/admin/site', siteAdminRoute_1.default);
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
-app.listen(process.env.port, () => {
-    return console.log(`Express is listening at http://localhost:${process.env.port}`);
+app.listen(7894, () => {
+    return console.log(`Express is listening at http://localhost:${7894}`);
 });
 //# sourceMappingURL=app.js.map

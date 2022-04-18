@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const getConnection = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield mongoose_1.default.connect(process.env.database_uri);
+        yield mongoose_1.default.connect('mongodb://SohamDB:Pa$$w(2)Rd22@localhost:27017/thera_net?authSource=admin');
         console.log('Database Connected to the MongoDB');
     }
     catch (error) {
