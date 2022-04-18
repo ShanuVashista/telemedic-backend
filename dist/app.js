@@ -2,6 +2,7 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
@@ -27,7 +28,8 @@ app.use('/admin/site', siteAdminRoute_1.default);
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
-app.listen(7894, () => {
-    return console.log(`Express is listening at http://localhost:${7894}`);
+const PORT = (_a = process.env.PORT) !== null && _a !== void 0 ? _a : 3000;
+app.listen(PORT, () => {
+    return console.log(`Express is listening at http://localhost:${PORT}`);
 });
 //# sourceMappingURL=app.js.map
