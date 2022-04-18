@@ -17,9 +17,12 @@ app.use((req, res, next) => {
 import userRoutes from './routes/userRoute'
 import superAdminRoutes from './routes/superAdminRoute'
 import siteAdminRoutes from './routes/siteAdminRoute'
+import appointment from './routes/appointment'
+
 app.use('/user', userRoutes);
 app.use('/admin/super', superAdminRoutes)
 app.use('/admin/site', siteAdminRoutes)
+app.use('/appointments',appointment)
 
 app.get('/', (req, res) => {
     res.send('Hello World!')

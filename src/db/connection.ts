@@ -1,5 +1,7 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 const getConnection = async (req, res) => {
+
+    // This is mongoDB ATLAS URI So you can use this same for your test.
     const dbUri =
     "mongodb+srv://pratyush:sawan123@cluster0.36efv.mongodb.net/teleMd?retryWrites=true&w=majority";
 
