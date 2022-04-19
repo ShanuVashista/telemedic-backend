@@ -3,10 +3,10 @@ import mongoose from 'mongoose';
 const getConnection = async (req, res, next) => {
 
     // This is mongoDB ATLAS URI So you can use this same for your test.
-    const dbUri = process.env.database_uri;
+    const dbUri = "mongodb+srv://pratyush:sawan123@cluster0.36efv.mongodb.net/teleMd?retryWrites=true&w=majority" ;
 
     try {
-        await mongoose.connect(dbUri)
+        await mongoose.connect(dbUri ?? process.env.database_uri)
         console.log('Database Connected to the MongoDB')
         next();
     } catch (error) {

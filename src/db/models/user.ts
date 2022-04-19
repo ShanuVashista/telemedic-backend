@@ -2,6 +2,7 @@
 import mongoose from 'mongoose'
 import bcrypt from "bcrypt";
 import validator from 'validator'
+import { Roles } from '../../lib/roles';
 
 const userSchema = new mongoose.Schema(
     {
@@ -25,7 +26,7 @@ const userSchema = new mongoose.Schema(
             },
         },
 
-        role_id: { type: String, enum: ["patient", "doctor"], required: true },
+        role_id: { type: String, enum: Roles, required: true },
 
         firstname: { type: String, required: true, minlength: 2, maxlength: 50 },
 

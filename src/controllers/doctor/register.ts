@@ -4,16 +4,13 @@ import jwt from "jsonwebtoken";
 import validator from "email-validator";
 import StatusCodes from "http-status-codes";
 import User from '../../db/models/user';
+import { Roles } from "../../lib/roles";
 const Register_POST = async (req, res) => {
     try {
         //Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character
         const pass_rgex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
         const registerData = req.body;
         console.log(req, 'req----');
-        if (registerData.role_id) {
-            if(registerData.role_id != 'doctor')
-            throw new Error("Wrong role id");
-        }
         if (!req.file) {
             return res.status(StatusCodes.BAD_REQUEST).json({
                 message: "Please upload a profile photo"
@@ -45,7 +42,7 @@ const Register_POST = async (req, res) => {
         if (!registerData.fax) {
             throw new Error("Please enter a Fax");
         }
-        const user = new User({ ...req.body, profile_photo: req.file.filename });
+        const user = new User({ ...req.body, profile_photo: req.file.filename, role_id: Roles.DOCTOR });
         const data = await user.save();
         // check if folder exists
         if (! await existsSync(`./public/uploads/${data._id}`)) {

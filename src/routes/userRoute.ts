@@ -4,11 +4,14 @@ import Doctor_Register_POST from '../controllers/doctor/register';
 import { StatusCodes } from 'http-status-codes';
 import multer from 'multer';
 import path from 'path';
+import patientloginController from '../controllers/patient/login.controller';
 import register from '../controllers/patient/register.controller';
+import { ensureDir } from 'fs-extra';
 
 const router = express.Router()
 const storage = multer.diskStorage({ //multers disk storage settings
-    destination: function (req, file, cb) {
+    destination: async function (req, file, cb) {
+        await ensureDir('./public/uploads/');
         cb(null, './public/uploads/')
     },
     filename: function (req, file, cb) {
@@ -41,6 +44,7 @@ router.post(
     },
     register
 );
+
 router.post(
     "/doctor/register",
     function (req, res, next) {
@@ -55,6 +59,9 @@ router.post(
   },
     Doctor_Register_POST
 );
+
+router.post("/login",patientloginController.login);
+
 router.put(
     "/doctor/profession_info",
     Professional_PUT
