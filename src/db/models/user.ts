@@ -3,6 +3,7 @@ import mongoose from 'mongoose'
 import bcrypt from "bcrypt";
 import validator from 'validator'
 import { Roles } from '../../lib/roles';
+import path from 'path';
 
 const userSchema = new mongoose.Schema(
     {
@@ -79,6 +80,8 @@ const userSchema = new mongoose.Schema(
 userSchema.methods.toJSON = function () {
     const user = this
     const userObject = user.toObject()
+
+    userObject.profile_photo = `/uploads/${user._id}/${user.profile_photo}`
 
     delete userObject.password
     delete userObject.createdAt
