@@ -34,7 +34,7 @@ const Register_POST = async (req, res) => {
         if (
             registerData.password != registerData.confirmPassword
         ) {
-            throw new Error("Confirm Password does't match");
+            throw new Error("Confirm Password dosen't match");
         }
         if (!registerData.phone) {
             throw new Error("Please enter a Phone Number");
