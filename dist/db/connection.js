@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const getConnection = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // This is mongoDB ATLAS URI So you can use this same for your test.
     const dbUri = "mongodb://SohamDB:Pa$$w(2)Rd22@localhost:27017/thera_net?authSource=admin";
     try {
         yield mongoose_1.default.connect(dbUri);

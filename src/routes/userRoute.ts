@@ -9,11 +9,15 @@ router.post(
     PatientRegisterVal,
     Patient_Register_POST
 );
-router.post("/doctor/register", async function (req, res) {
-    const registerData = req.body;
-    const response = await Doctor_Register_POST(registerData);
-    const statuscode = response.statuscode;
-    delete response.statuscode;
-    res.status(statuscode).send(response);
-  });
+router.post(
+  "/doctor/register",
+  Doctor_Register_POST
+);
+// router.post("/doctor/register", async function (req, res) {
+//     const registerData = req.body;
+//     const response = await Doctor_Register_POST(registerData);
+//     const statuscode = response.statuscode;
+//     delete response.statuscode;
+//     res.status(statuscode).send(response);
+//   });
 export default router

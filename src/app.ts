@@ -2,6 +2,7 @@
 import express from 'express';
 import bodyparser from 'body-parser'
 import cors from 'cors'
+import path from "path";
 import getConnection from './db/connection'
 const app = express()
 app.use(express.json());
@@ -13,6 +14,7 @@ app.use((req, res, next) => {
     getConnection(req, res)
     next()
 })
+app.use("/public", express.static(path.join(__dirname, "public")));
 //ROUTES
 import userRoutes from './routes/userRoute'
 import superAdminRoutes from './routes/superAdminRoute'
