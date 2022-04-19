@@ -7,6 +7,9 @@ import path from 'path';
 import patientloginController from '../controllers/patient/login.controller';
 import register from '../controllers/patient/register.controller';
 import { ensureDir } from 'fs-extra';
+import healthData from '../controllers/patient/healthData.controller';
+import { healthDataSchema } from '../validator/patient';
+import { validateJoi } from '../middlewares/joi.middleware';
 
 const router = express.Router()
 const storage = multer.diskStorage({ //multers disk storage settings
@@ -45,22 +48,28 @@ router.post(
     register
 );
 
+router.put(
+    "/patient/healthData",
+    validateJoi(healthDataSchema),
+    healthData
+);
+
 router.post(
     "/doctor/register",
     function (req, res, next) {
-      upload(req, res, function (err) {
-          if (err) {
-              return res.status(StatusCodes.BAD_REQUEST).json({
-                  message: err.message
-              });
-          }
-          next();
-      })
-  },
+        upload(req, res, function (err) {
+            if (err) {
+                return res.status(StatusCodes.BAD_REQUEST).json({
+                    message: err.message
+                });
+            }
+            next();
+        })
+    },
     Doctor_Register_POST
 );
 
-router.post("/login",patientloginController.login);
+router.post("/login", patientloginController.login);
 
 router.put(
     "/doctor/profession_info",

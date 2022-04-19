@@ -59,8 +59,17 @@ const userSchema = new mongoose.Schema(
 
         current_practise_address: { type: Array },
 
-        license: { type: Array }
-
+        license: { type: Array },
+        weight: { type: Number },
+        height: { type: Number },
+        bmi: { type: Number },
+        medicalCondition: { type: String },
+        pastMedicalCondition: { type: String },
+        alergies: { type: String },
+        medication: { type: String },
+        smoking: { type: Boolean },
+        alcohol: { type: Boolean },
+        marijuana: { type: Boolean },
     },
     {
         timestamps: true
