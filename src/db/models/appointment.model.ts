@@ -1,20 +1,11 @@
-import { Schema, model, Document } from "mongoose";
-
-export interface IAppointmentDocument extends Document {
-  userId: number;
-  createdAt: Date;
-  doctorId: number;
-  status: string;
-  dateOfAppointment: Date;
-  appointmentType: string;
-  isEmergency: boolean;
-}
+import { Schema, model} from "mongoose";
 
 const AppointmentSchema: Schema = new Schema(
   {
     appointmentId: { type: Schema.Types.ObjectId },
     userId: { type: String, required: true },
-    doctorId: { type: Number, required: true },
+    // doctorId: { type: Number, required: true },
+    doctor: {type: Schema.Types.ObjectId, ref:'users'},
     appointmentType: { type: String, required: true },
     dateOfAppointment: { type: Date, required: true },
     status: { default: "Pending", type: String, required: true },
@@ -24,7 +15,7 @@ const AppointmentSchema: Schema = new Schema(
   { timestamps: true }
 );
 
-const Appointment = model<IAppointmentDocument>(
+const Appointment = model(
   "Appointment",
   AppointmentSchema
 );
