@@ -24,7 +24,7 @@ const upload = multer({
         }
         callback(null, true)
     },
-}).single('file');
+}).single('profile_image');
 
 router.post(
     "/patient/register",
