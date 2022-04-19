@@ -6,15 +6,40 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /* eslint-disable @typescript-eslint/no-this-alias */
 const mongoose_1 = __importDefault(require("mongoose"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const validator_1 = __importDefault(require("validator"));
 const userSchema = new mongoose_1.default.Schema({
-    email: { type: String, unique: true },
-    profile_photo: { type: String },
-    password: { type: String },
+    email: {
+        type: String, unique: true, validate: {
+            validator: validator_1.default.isEmail,
+            message: '{VALUE} is not a valid email'
+        },
+        required: true
+    },
+    profile_photo: { type: String, required: true },
+    password: {
+        type: String, required: true, minlength: 6, maxlength: 1024,
+        validate: {
+            validator: function (value) {
+                return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(value);
+            },
+            message: '{VALUE} is not a valid password'
+        },
+    },
     role_id: { type: String, enum: ["patient", "doctor"], required: true },
-    firstname: { type: String },
-    lastname: { type: String },
-    gender: { type: String },
-    dob: { type: String },
+    firstname: { type: String, required: true, minlength: 2, maxlength: 50 },
+    lastname: { type: String, required: true, minlength: 2, maxlength: 50 },
+    location: { type: String },
+    gender: { type: String, enum: ["male", "female", "other"], required: true },
+    dob: {
+        type: String, required: true, validate: {
+            validator: (value) => {
+                return validator_1.default.isDate(value, {
+                    format: 'YYYY/MM/DD',
+                });
+            },
+            message: '{VALUE} is not a valid date'
+        }
+    },
     phone: { type: Number },
     fax: { type: Number },
     specialty: { type: String },
@@ -25,6 +50,14 @@ const userSchema = new mongoose_1.default.Schema({
 }, {
     timestamps: true
 });
+userSchema.methods.toJSON = function () {
+    const user = this;
+    const userObject = user.toObject();
+    delete userObject.password;
+    delete userObject.createdAt;
+    delete userObject.updatedAt;
+    return userObject;
+};
 userSchema.pre("save", function (next) {
     const user = this;
     if (!user.isModified("password"))

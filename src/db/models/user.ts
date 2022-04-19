@@ -9,7 +9,8 @@ const userSchema = new mongoose.Schema(
             type: String, unique: true, validate: {
                 validator: validator.isEmail,
                 message: '{VALUE} is not a valid email'
-            }
+            },
+            required: true
         },
 
         profile_photo: { type: String, required: true },
@@ -30,9 +31,9 @@ const userSchema = new mongoose.Schema(
 
         lastname: { type: String, required: true, minlength: 2, maxlength: 50 },
 
-        location: { type: String, required: true, minlength: 2, maxlength: 50 },
+        location: { type: String },
 
-        gender: { type: String, enum: ["male", "female"], required: true },
+        gender: { type: String, enum: ["male", "female", "other"], required: true },
 
         dob: {
             type: String, required: true, validate: {
@@ -45,7 +46,7 @@ const userSchema = new mongoose.Schema(
             }
         },
 
-        phone: { type: Number, required: true, minlength: 10 },
+        phone: { type: Number },
 
         fax: { type: Number },
 
