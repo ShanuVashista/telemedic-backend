@@ -9,7 +9,9 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const path_1 = __importDefault(require("path"));
 const method_override_1 = __importDefault(require("method-override"));
+const dotenv_1 = require("dotenv");
 const connection_1 = __importDefault(require("./db/connection"));
+(0, dotenv_1.config)();
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 // app.use(bodyparser.json());
@@ -32,10 +34,7 @@ app.use(function (req, res, next) {
     }
 });
 //DATABASE CONNECTION
-app.use((req, res, next) => {
-    (0, connection_1.default)(req, res);
-    next();
-});
+app.use(connection_1.default);
 app.use("/public", express_1.default.static(path_1.default.join(__dirname, "public")));
 //ROUTES
 const userRoute_1 = __importDefault(require("./routes/userRoute"));

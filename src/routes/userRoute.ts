@@ -45,6 +45,16 @@ router.post(
 
 router.post(
     "/doctor/register",
+    function (req, res, next) {
+      upload(req, res, function (err) {
+          if (err) {
+              return res.status(StatusCodes.BAD_REQUEST).json({
+                  message: err.message
+              });
+          }
+          next();
+      })
+  },
     Doctor_Register_POST
 );
 

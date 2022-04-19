@@ -12,20 +12,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const http_status_codes_1 = require("http-status-codes");
 const mongoose_1 = __importDefault(require("mongoose"));
-const getConnection = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getConnection = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     // This is mongoDB ATLAS URI So you can use this same for your test.
-    const dbUri = "mongodb://SohamDB:Pa$$w(2)Rd22@localhost:27017/thera_net?authSource=admin";
+    const dbUri = process.env.database_uri;
     try {
         yield mongoose_1.default.connect(dbUri);
         console.log('Database Connected to the MongoDB');
+        next();
     }
     catch (error) {
-        return res.status(400).json({
+        console.log('Error in connecting to the MongoDB', error);
+        return res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
             message: 'Failed in Database Connection',
             status: false,
             error: error
-        });
+        }).end();
     }
 });
 exports.default = getConnection;
