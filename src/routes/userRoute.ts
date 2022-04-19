@@ -6,7 +6,7 @@ import Doctor_Register_POST from '../controllers/doctor/register';
 import { StatusCodes } from 'http-status-codes';
 import multer from 'multer';
 import path from 'path';
-import patientController from '../controllers/patient/patient.controller';
+import register from '../controllers/patient/register.controller';
 
 const router = express.Router()
 const storage = multer.diskStorage({ //multers disk storage settings
@@ -41,7 +41,7 @@ router.post(
             next();
         })
     },
-    patientController.register
+    register
 );
 router.post(
     "/doctor/register",
