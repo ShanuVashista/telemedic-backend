@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, rename, renameSync, unlinkSync } from "fs";
+import { existsSync, unlinkSync } from "fs";
 import { ensureDirSync, move } from "fs-extra";
 import { StatusCodes } from "http-status-codes";
 import jwt from "jsonwebtoken";
