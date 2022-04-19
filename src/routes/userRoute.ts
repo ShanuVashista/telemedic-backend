@@ -1,6 +1,4 @@
 import express from 'express';
-import PatientRegisterVal from '../validator/patient';
-// import DoctorRegisterVal from '../validator/doctor';
 import Professional_PUT from '../controllers/doctor/professional';
 import Doctor_Register_POST from '../controllers/doctor/register';
 import { StatusCodes } from 'http-status-codes';
@@ -48,8 +46,8 @@ router.post(
     Doctor_Register_POST
 );
 router.put(
-  "/doctor/profession_info",
-  Professional_PUT
+    "/doctor/profession_info",
+    Professional_PUT
 );
 // router.post("/doctor/register", async function (req, res) {
 //     const registerData = req.body;
