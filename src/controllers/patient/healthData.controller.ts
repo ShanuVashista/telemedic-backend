@@ -1,4 +1,5 @@
 import { StatusCodes } from "http-status-codes";
+import mongoose from "mongoose";
 import User from "../../db/models/user";
 import { Roles } from "../../lib/roles";
 
@@ -9,6 +10,13 @@ const healthData = async (req, res) => {
         if (!id) {
             return res.status(StatusCodes.BAD_REQUEST).json({
                 message: "Please provide a user id"
+            });
+        }
+
+        //check if valid bson id
+        if (!mongoose.isValidObjectId(id)) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                message: "Please provide a valid user id"
             });
         }
 
