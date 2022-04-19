@@ -1,10 +1,11 @@
 import express from 'express';
+import Professional_PUT from '../controllers/doctor/professional';
 import Doctor_Register_POST from '../controllers/doctor/register';
 import { StatusCodes } from 'http-status-codes';
 import multer from 'multer';
 import path from 'path';
-import patientController from '../controllers/patient/patient.controller';
 import patientloginController from '../controllers/patient/login.controller';
+import register from '../controllers/patient/register.controller';
 
 const router = express.Router()
 const storage = multer.diskStorage({ //multers disk storage settings
@@ -25,7 +26,7 @@ const upload = multer({
         }
         callback(null, true)
     },
-}).single('file');
+}).single('profile_image');
 
 router.post(
     "/patient/register",
@@ -39,13 +40,18 @@ router.post(
             next();
         })
     },
-    patientController.register
+    register
 );
+
 router.post(
     "/doctor/register",
     Doctor_Register_POST
 );
 
-router.post("/patient/login",patientloginController.login);
+router.post("/login",patientloginController.login);
 
+router.put(
+    "/doctor/profession_info",
+    Professional_PUT
+);
 export default router

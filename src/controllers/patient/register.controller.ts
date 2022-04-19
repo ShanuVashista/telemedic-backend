@@ -1,5 +1,6 @@
-import { unlinkSync } from "fs";
+import { existsSync, mkdirSync, renameSync, unlinkSync } from "fs";
 import { StatusCodes } from "http-status-codes";
+import jwt from "jsonwebtoken";
 import User from "../../db/models/user";
 
 const register = async (req, res) => {
@@ -19,12 +20,24 @@ const register = async (req, res) => {
         });
     }
     try {
+        await User.deleteMany()
         const user = await User.create({ ...req.body, profile_photo: req.file.filename });
         console.log({ user });
         console.log({ file: req.file })
+
+        // check if folder exists
+        if (! await existsSync(`./public/uploads/${user._id}`)) {
+            // create a folder in public/uploads named by user id
+            await mkdirSync(`./public/uploads/${user._id}`);
+        }
+        // move the file to the folder
+        await renameSync(`./public/uploads/${req.file.filename}`, `./public/uploads/${user._id}/${req.file.filename}`);
+
+        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
         res.status(StatusCodes.CREATED).json({
-            message: "User created successfully",
-            user
+            message: "User created successfully asdf",
+            user,
+            token,
         });
     } catch (error) {
         // mongoose email exists error
@@ -34,10 +47,13 @@ const register = async (req, res) => {
             });
         }
         console.log({ error });
-        unlinkSync(req.file.path);
+        //if file exists
+        if (await existsSync(req.file.path)) {
+            unlinkSync(req.file.path);
+        }
         return res.status(400).json({
             message: error.message
         })
     }
 }
-export default { register }
+export default register

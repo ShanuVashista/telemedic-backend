@@ -5,15 +5,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const body_parser_1 = __importDefault(require("body-parser"));
+// import bodyparser from 'body-parser'
 const cors_1 = __importDefault(require("cors"));
 const path_1 = __importDefault(require("path"));
+const method_override_1 = __importDefault(require("method-override"));
 const connection_1 = __importDefault(require("./db/connection"));
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
-app.use(body_parser_1.default.urlencoded({ extended: true }));
-app.use(body_parser_1.default.json());
+// app.use(bodyparser.json());
+app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cors_1.default)());
+app.use((0, method_override_1.default)("X-HTTP-Method-Override"));
+app.use(function (req, res, next) {
+    req.setEncoding("utf8");
+    // Website you wish to allow to connect
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    // Request methods you wish to allow
+    res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS");
+    // Request headers you wish to allow
+    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    if ("OPTIONS" == req.method) {
+        res.sendStatus(200);
+    }
+    else {
+        next();
+    }
+});
 //DATABASE CONNECTION
 app.use((req, res, next) => {
     (0, connection_1.default)(req, res);
