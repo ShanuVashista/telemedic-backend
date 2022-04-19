@@ -6,6 +6,12 @@ const healthData = async (req, res) => {
     try {
         const { id } = req.query;
 
+        if (!id) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                message: "Please provide a user id"
+            });
+        }
+
         const user = await User.findOneAndUpdate({
             _id: id,
             role_id: Roles.PATIENT
