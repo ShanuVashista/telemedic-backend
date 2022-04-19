@@ -1,25 +1,51 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import mongoose from 'mongoose'
 import bcrypt from "bcrypt";
+import validator from 'validator'
+
 const userSchema = new mongoose.Schema(
     {
-        email: { type: String, unique: true },
+        email: {
+            type: String, unique: true, validate: {
+                validator: validator.isEmail,
+                message: '{VALUE} is not a valid email'
+            }
+        },
 
-        profile_photo: { type: String },
+        profile_photo: { type: String, required: true },
 
-        password: { type: String },
+        password: {
+            type: String, required: true, minlength: 6, maxlength: 1024,
+            validate: {
+                validator: function (value) {
+                    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(value)
+                },
+                message: '{VALUE} is not a valid password'
+            },
+        },
 
         role_id: { type: String, enum: ["patient", "doctor"], required: true },
 
-        firstname: { type: String },
+        firstname: { type: String, required: true, minlength: 2, maxlength: 50 },
 
-        lastname: { type: String },
+        lastname: { type: String, required: true, minlength: 2, maxlength: 50 },
 
-        gender: { type: String },
+        location: { type: String, required: true, minlength: 2, maxlength: 50 },
 
-        dob: { type: String },
+        gender: { type: String, enum: ["male", "female"], required: true },
 
-        phone: { type: Number },
+        dob: {
+            type: String, required: true, validate: {
+                validator: (value) => {
+                    return validator.isDate(value, {
+                        format: 'YYYY/MM/DD',
+                    })
+                },
+                message: '{VALUE} is not a valid date'
+            }
+        },
+
+        phone: { type: Number, required: true, minlength: 10 },
 
         fax: { type: Number },
 
@@ -38,6 +64,18 @@ const userSchema = new mongoose.Schema(
         timestamps: true
     }
 )
+
+userSchema.methods.toJSON = function () {
+    const user = this
+    const userObject = user.toObject()
+
+    delete userObject.password
+    delete userObject.createdAt
+    delete userObject.updatedAt
+
+    return userObject
+}
+
 userSchema.pre("save", function (next) {
     const user = this;
     if (!user.isModified("password")) return next();
