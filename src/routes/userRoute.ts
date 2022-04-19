@@ -6,10 +6,12 @@ import multer from 'multer';
 import path from 'path';
 import patientloginController from '../controllers/patient/login.controller';
 import register from '../controllers/patient/register.controller';
+import { ensureDir } from 'fs-extra';
 
 const router = express.Router()
 const storage = multer.diskStorage({ //multers disk storage settings
-    destination: function (req, file, cb) {
+    destination: async function (req, file, cb) {
+        await ensureDir('./public/uploads/');
         cb(null, './public/uploads/')
     },
     filename: function (req, file, cb) {
