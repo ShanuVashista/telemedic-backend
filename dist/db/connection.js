@@ -16,9 +16,9 @@ const http_status_codes_1 = require("http-status-codes");
 const mongoose_1 = __importDefault(require("mongoose"));
 const getConnection = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     // This is mongoDB ATLAS URI So you can use this same for your test.
-    const dbUri = process.env.database_uri;
+    const dbUri = "mongodb://SohamDB:Pa$$w(2)Rd22@localhost:27017/thera_net?authSource=admin";
     try {
-        yield mongoose_1.default.connect(dbUri);
+        yield mongoose_1.default.connect(dbUri !== null && dbUri !== void 0 ? dbUri : process.env.database_uri);
         console.log('Database Connected to the MongoDB');
         next();
     }

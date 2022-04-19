@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -9,11 +18,16 @@ const register_1 = __importDefault(require("../controllers/doctor/register"));
 const http_status_codes_1 = require("http-status-codes");
 const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
-const patient_controller_1 = __importDefault(require("../controllers/patient/patient.controller"));
+const login_controller_1 = __importDefault(require("../controllers/patient/login.controller"));
+const register_controller_1 = __importDefault(require("../controllers/patient/register.controller"));
+const fs_extra_1 = require("fs-extra");
 const router = express_1.default.Router();
 const storage = multer_1.default.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, './public/uploads/');
+        return __awaiter(this, void 0, void 0, function* () {
+            yield (0, fs_extra_1.ensureDir)('./public/uploads/');
+            cb(null, './public/uploads/');
+        });
     },
     filename: function (req, file, cb) {
         const datetimestamp = Date.now();
@@ -39,7 +53,7 @@ router.post("/patient/register", function (req, res, next) {
         }
         next();
     });
-}, patient_controller_1.default.register);
+}, register_controller_1.default);
 router.post("/doctor/register", function (req, res, next) {
     upload(req, res, function (err) {
         if (err) {
@@ -50,6 +64,7 @@ router.post("/doctor/register", function (req, res, next) {
         next();
     });
 }, register_1.default);
+router.post("/login", login_controller_1.default.login);
 router.put("/doctor/profession_info", professional_1.default);
 exports.default = router;
 //# sourceMappingURL=userRoute.js.map

@@ -18,16 +18,13 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const email_validator_1 = __importDefault(require("email-validator"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const user_1 = __importDefault(require("../../db/models/user"));
+const roles_1 = require("../../lib/roles");
 const Register_POST = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         //Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character
         const pass_rgex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
         const registerData = req.body;
         console.log(req, 'req----');
-        if (registerData.role_id) {
-            if (registerData.role_id != 'doctor')
-                throw new Error("Wrong role id");
-        }
         if (!req.file) {
             return res.status(http_status_codes_1.default.BAD_REQUEST).json({
                 message: "Please upload a profile photo"
@@ -40,12 +37,23 @@ const Register_POST = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             if (!email_validator_1.default.validate(registerData.email)) {
                 throw new Error("Please enter a valid email");
             }
+            else {
+                const user_count = yield user_1.default.find({ 'email': registerData.email });
+                if (user_count.length != 0 && user_count[0].role_id == 'doctor') {
+                    throw new Error("Doctor already exist");
+                }
+                else {
+                    if (user_count.length != 0 && user_count[0].role_id != 'doctor') {
+                        throw new Error("This Email is already assiociate with us");
+                    }
+                }
+            }
         }
         if (!pass_rgex.test(registerData.password)) {
             throw new Error("Password must have minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character");
         }
         if (registerData.password != registerData.confirmPassword) {
-            throw new Error("Confirm Password does't match");
+            throw new Error("Confirm Password dosen't match");
         }
         if (!registerData.phone) {
             throw new Error("Please enter a Phone Number");
@@ -53,7 +61,7 @@ const Register_POST = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         if (!registerData.fax) {
             throw new Error("Please enter a Fax");
         }
-        const user = new user_1.default(Object.assign(Object.assign({}, req.body), { profile_photo: req.file.filename }));
+        const user = new user_1.default(Object.assign(Object.assign({}, req.body), { profile_photo: req.file.filename, role_id: roles_1.Roles.DOCTOR }));
         const data = yield user.save();
         // check if folder exists
         if (!(yield (0, fs_1.existsSync)(`./public/uploads/${data._id}`))) {

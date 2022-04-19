@@ -24,6 +24,15 @@ const Register_POST = async (req, res) => {
             if (!validator.validate(registerData.email)) {
                 throw new Error("Please enter a valid email");
 
+            } else {
+                const user_count = await User.find({ 'email': registerData.email });
+                if (user_count.length != 0 && user_count[0].role_id == 'doctor') {
+                    throw new Error("Doctor already exist");
+                } else {
+                    if (user_count.length != 0 && user_count[0].role_id != 'doctor') {
+                        throw new Error("This Email is already assiociate with us");
+                    }
+                }
             }
         }
         if (

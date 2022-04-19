@@ -7,6 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const validator_1 = __importDefault(require("validator"));
+const roles_1 = require("../../lib/roles");
 const userSchema = new mongoose_1.default.Schema({
     email: {
         type: String, unique: true, validate: {
@@ -25,7 +26,7 @@ const userSchema = new mongoose_1.default.Schema({
             message: '{VALUE} is not a valid password'
         },
     },
-    role_id: { type: String, enum: ["patient", "doctor"], required: true },
+    role_id: { type: String, enum: roles_1.Roles, required: true },
     firstname: { type: String, required: true, minlength: 2, maxlength: 50 },
     lastname: { type: String, required: true, minlength: 2, maxlength: 50 },
     location: { type: String },
