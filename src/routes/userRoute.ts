@@ -4,6 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import multer from 'multer';
 import path from 'path';
 import patientController from '../controllers/patient/patient.controller';
+import patientloginController from '../controllers/patient/login.controller';
 
 const router = express.Router()
 const storage = multer.diskStorage({ //multers disk storage settings
@@ -44,4 +45,7 @@ router.post(
     "/doctor/register",
     Doctor_Register_POST
 );
+
+router.post("/patient/login",patientloginController.login);
+
 export default router
