@@ -40,9 +40,13 @@ const Professional_PUT = async (req, res) => {
                 throw new Error("Please enter your license details");
             }
         }
-        const user_count = await User.find(cond).count();
-        if (user_count == 0) {
+        const user_count = await User.find(cond);
+        if (user_count.length == 0) {
             throw new Error("Doctor does't exist");
+        }else{
+            if(user_count[0].role_id != 'doctor'){
+                throw new Error("Doctor does't exist");
+            }
         }
         const user = await User.findByIdAndUpdate(cond, registerData, { new: true });
 
