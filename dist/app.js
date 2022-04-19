@@ -7,6 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
+const path_1 = __importDefault(require("path"));
 const connection_1 = __importDefault(require("./db/connection"));
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -18,13 +19,16 @@ app.use((req, res, next) => {
     (0, connection_1.default)(req, res);
     next();
 });
+app.use("/public", express_1.default.static(path_1.default.join(__dirname, "public")));
 //ROUTES
 const userRoute_1 = __importDefault(require("./routes/userRoute"));
 const superAdminRoute_1 = __importDefault(require("./routes/superAdminRoute"));
 const siteAdminRoute_1 = __importDefault(require("./routes/siteAdminRoute"));
+const appointment_1 = __importDefault(require("./routes/appointment"));
 app.use('/user', userRoute_1.default);
 app.use('/admin/super', superAdminRoute_1.default);
 app.use('/admin/site', siteAdminRoute_1.default);
+app.use('/appointments', appointment_1.default);
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
