@@ -16,16 +16,19 @@ import {
     listHealthProfile,
     updateHealthProfile,
 } from '../controllers/patient/healthProfile';
+import { Roles } from '../lib/roles';
+import userRole from '../middlewares/userRole.middleware';
 
 const patientRouter = express.Router();
 
 patientRouter.post('/register', uploadFile, register);
 
-patientRouter.put('/healthData', auth, validateJoi(healthDataSchema), healthData);
+patientRouter.put('/healthData', auth, userRole(Roles.PATIENT), validateJoi(healthDataSchema), healthData);
 
 patientRouter.post(
     '/healthProfiles',
     auth,
+    userRole(Roles.PATIENT),
     validateJoi(healthProfileSchema),
     addHealthProfile
 );
@@ -33,14 +36,15 @@ patientRouter.post(
 patientRouter.put(
     '/healthProfiles/:id',
     auth,
+    userRole(Roles.PATIENT),
     validateJoi(healthProfileUpdateSchema),
     updateHealthProfile
 );
 
-patientRouter.get('/healthProfiles', auth, listHealthProfile);
+patientRouter.get('/healthProfiles', auth, userRole(Roles.PATIENT), listHealthProfile);
 
-patientRouter.get('/healthProfiles/:id', auth, getHealthProfile);
+patientRouter.get('/healthProfiles/:id', auth, userRole(Roles.PATIENT), getHealthProfile);
 
-patientRouter.delete('/healthProfiles/:id', auth, deleteHealthProfile);
+patientRouter.delete('/healthProfiles/:id', auth, userRole(Roles.PATIENT), deleteHealthProfile);
 
 export default patientRouter;
