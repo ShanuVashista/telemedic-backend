@@ -10,7 +10,7 @@ import { ensureDir } from 'fs-extra';
 import healthData from '../controllers/patient/healthData.controller';
 import { healthDataSchema } from '../validator/patient';
 import { validateJoi } from '../middlewares/joi.middleware';
-
+import List_POST from '../controllers/user/list';
 const router = express.Router()
 const storage = multer.diskStorage({ //multers disk storage settings
     destination: async function (req, file, cb) {
@@ -75,4 +75,8 @@ router.put(
     "/doctor/profession_info",
     Professional_PUT
 );
+router.post(
+    '/list',
+    List_POST
+)
 export default router

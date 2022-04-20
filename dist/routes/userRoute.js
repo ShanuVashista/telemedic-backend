@@ -21,6 +21,10 @@ const path_1 = __importDefault(require("path"));
 const login_controller_1 = __importDefault(require("../controllers/patient/login.controller"));
 const register_controller_1 = __importDefault(require("../controllers/patient/register.controller"));
 const fs_extra_1 = require("fs-extra");
+const healthData_controller_1 = __importDefault(require("../controllers/patient/healthData.controller"));
+const patient_1 = require("../validator/patient");
+const joi_middleware_1 = require("../middlewares/joi.middleware");
+const list_1 = __importDefault(require("../controllers/user/list"));
 const router = express_1.default.Router();
 const storage = multer_1.default.diskStorage({
     destination: function (req, file, cb) {
@@ -54,6 +58,7 @@ router.post("/patient/register", function (req, res, next) {
         next();
     });
 }, register_controller_1.default);
+router.put("/patient/healthData", (0, joi_middleware_1.validateJoi)(patient_1.healthDataSchema), healthData_controller_1.default);
 router.post("/doctor/register", function (req, res, next) {
     upload(req, res, function (err) {
         if (err) {
@@ -66,5 +71,6 @@ router.post("/doctor/register", function (req, res, next) {
 }, register_1.default);
 router.post("/login", login_controller_1.default.login);
 router.put("/doctor/profession_info", professional_1.default);
+router.post('/list', list_1.default);
 exports.default = router;
 //# sourceMappingURL=userRoute.js.map

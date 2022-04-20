@@ -47,13 +47,24 @@ const userSchema = new mongoose_1.default.Schema({
     qualification: { type: String },
     total_exp: { type: String },
     current_practise_address: { type: Array },
-    license: { type: Array }
+    license: { type: Array },
+    weight: { type: Number },
+    height: { type: Number },
+    bmi: { type: Number },
+    medicalCondition: { type: String },
+    pastMedicalCondition: { type: String },
+    alergies: { type: String },
+    medication: { type: String },
+    smoking: { type: Boolean },
+    alcohol: { type: Boolean },
+    marijuana: { type: Boolean },
 }, {
     timestamps: true
 });
 userSchema.methods.toJSON = function () {
     const user = this;
     const userObject = user.toObject();
+    userObject.profile_photo = `/uploads/${user._id}/${user.profile_photo}`;
     delete userObject.password;
     delete userObject.createdAt;
     delete userObject.updatedAt;
