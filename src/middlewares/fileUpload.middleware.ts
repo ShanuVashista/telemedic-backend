@@ -1,14 +1,8 @@
-import express from 'express';
-import Professional_PUT from '../controllers/doctor/professional';
-import Doctor_Register_POST from '../controllers/doctor/register';
 import { StatusCodes } from 'http-status-codes';
 import multer from 'multer';
 import path from 'path';
-import patientloginController from '../controllers/patient/login.controller';
 import { ensureDir } from 'fs-extra';
-import patientRouter from './patient.route';
 
-const router = express.Router()
 const storage = multer.diskStorage({ //multers disk storage settings
     destination: async function (req, file, cb) {
         await ensureDir('./public/uploads/');
@@ -30,27 +24,14 @@ const upload = multer({
     },
 }).single('profile_image');
 
-router.use('/patient', patientRouter)
 
-router.post(
-    "/doctor/register",
-    function (req, res, next) {
-        upload(req, res, function (err) {
-            if (err) {
-                return res.status(StatusCodes.BAD_REQUEST).json({
-                    message: err.message
-                });
-            }
-            next();
-        })
-    },
-    Doctor_Register_POST
-);
-
-router.post("/login", patientloginController.login);
-
-router.put(
-    "/doctor/profession_info",
-    Professional_PUT
-);
-export default router
+export default function uploadFile(req, res, next) {
+    upload(req, res, function (err) {
+        if (err) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                message: err.message
+            });
+        }
+        next();
+    })
+}
