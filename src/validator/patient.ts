@@ -27,3 +27,7 @@ export const healthDataSchema = Joi.object().options({
     alcohol: Joi.boolean(),
     marijuana: Joi.boolean(),
 })
+
+export const healthProfileSchema = healthDataSchema.keys({
+    profile_name: Joi.string().required(),
+})

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import mongoose from 'mongoose';
 
-const userSchema = new mongoose.Schema(
+const healthProfileSchema = new mongoose.Schema(
     {
         profile_name: { type: String, required: true, minlength: 2, maxlength: 50 },
         userId: {
@@ -25,5 +25,5 @@ const userSchema = new mongoose.Schema(
     }
 );
 
-const User = mongoose.model('user', userSchema);
-export default User;
+const HealthProfile = mongoose.model('healthProfile', healthProfileSchema);
+export default HealthProfile;
