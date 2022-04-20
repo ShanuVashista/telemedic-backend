@@ -1,64 +1,11 @@
 import express from 'express';
-import Professional_PUT from '../controllers/doctor/professional';
-import Doctor_Register_POST from '../controllers/doctor/register';
-import { StatusCodes } from 'http-status-codes';
-import multer from 'multer';
-import path from 'path';
-import patientloginController from '../controllers/patient/login.controller';
-import { ensureDir } from 'fs-extra';
-import healthData from '../controllers/patient/healthData.controller';
-import { healthDataSchema } from '../validator/patient';
-import { validateJoi } from '../middlewares/joi.middleware';
+import Login from '../controllers/user/login.controller';
 import List_POST from '../controllers/user/list';
 import patientRouter from './patient.route';
-
+import auth from '../middlewares/auth.middleware';
 const router = express.Router()
-const storage = multer.diskStorage({ //multers disk storage settings
-    destination: async function (req, file, cb) {
-        await ensureDir('./public/uploads/');
-        cb(null, './public/uploads/')
-    },
-    filename: function (req, file, cb) {
-        const datetimestamp = Date.now();
-        cb(null, file.fieldname + '-' + datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length - 1])
-    }
-});
-const upload = multer({
-    storage,
-    fileFilter: function (req, file, callback) {
-        const ext = path.extname(file.originalname);
-        if (ext !== '.png' && ext !== '.jpg' && ext !== '.jpeg') {
-            return callback(new Error('Only images are allowed'))
-        }
-        callback(null, true)
-    },
-}).single('profile_image');
-
-router.use('/patient', patientRouter)
-
-router.post(
-    "/doctor/register",
-    function (req, res, next) {
-        upload(req, res, function (err) {
-            if (err) {
-                return res.status(StatusCodes.BAD_REQUEST).json({
-                    message: err.message
-                });
-            }
-            next();
-        })
-    },
-    Doctor_Register_POST
-);
-
-router.post("/login", patientloginController.login);
-
-router.put(
-    "/doctor/profession_info",
-    Professional_PUT
-);
-router.post(
-    '/list',
-    List_POST
-)
+router.use('/patient', patientRouter);
+router.use('/doctor', patientRouter);
+router.post("/login", Login.login);
+router.post('/list', auth, List_POST)
 export default router
