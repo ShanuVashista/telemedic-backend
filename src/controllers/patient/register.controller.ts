@@ -1,9 +1,9 @@
 import { existsSync, unlinkSync } from "fs";
 import { ensureDirSync, move } from "fs-extra";
 import { StatusCodes } from "http-status-codes";
-import jwt from "jsonwebtoken";
 import path from "path";
 import User from "../../db/models/user";
+import { createToken } from "../../lib/jwt";
 import { Roles } from "../../lib/roles";
 
 const register = async (req, res) => {
@@ -25,11 +25,8 @@ const register = async (req, res) => {
     try {
         // await User.deleteMany()
         const user = await User.create({ ...req.body, role_id: Roles.PATIENT, profile_photo: req.file.filename });
-        console.log({ user });
-        console.log({ file: req.file })
 
         const userDir = path.resolve(`./public/uploads/${user._id}`);
-        console.log(userDir)
         //ensure dir exists
         await ensureDirSync(userDir);
         // move the file to the folder
@@ -37,7 +34,7 @@ const register = async (req, res) => {
         const filePath = path.join(userDir, req.file.filename);
         await move(req.file.path, filePath);
 
-        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+        const token = createToken(user);
         res.status(StatusCodes.CREATED).json({
             message: "User created successfully asdf",
             user,
