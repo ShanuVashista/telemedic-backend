@@ -1,5 +1,4 @@
 import { StatusCodes } from "http-status-codes";
-import mongoose from "mongoose";
 import User from "../../db/models/user";
 import { Roles } from "../../lib/roles";
 

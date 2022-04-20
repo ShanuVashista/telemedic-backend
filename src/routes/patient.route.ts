@@ -6,7 +6,7 @@ import {
     healthDataSchema,
     healthProfileUpdateSchema,
 } from '../validator/patient';
-import { validateJoi } from '../middlewares/joi.middleware';
+import { validateBody, validateQuery } from '../middlewares/joi.middleware';
 import uploadFile from '../middlewares/fileUpload.middleware';
 import auth from '../middlewares/auth.middleware';
 import {
@@ -16,31 +16,58 @@ import {
     listHealthProfile,
     updateHealthProfile,
 } from '../controllers/patient/healthProfile';
+import { Roles } from '../lib/roles';
+import userRole from '../middlewares/userRole.middleware';
+import { paginationQuerySchema } from '../validator/util';
 
 const patientRouter = express.Router();
 
 patientRouter.post('/register', uploadFile, register);
 
-patientRouter.put('/healthData', auth, validateJoi(healthDataSchema), healthData);
+patientRouter.put(
+    '/healthData',
+    auth,
+    userRole(Roles.PATIENT),
+    validateBody(healthDataSchema),
+    healthData
+);
 
 patientRouter.post(
     '/healthProfiles',
     auth,
-    validateJoi(healthProfileSchema),
+    userRole(Roles.PATIENT),
+    validateBody(healthProfileSchema),
     addHealthProfile
 );
 
 patientRouter.put(
     '/healthProfiles/:id',
     auth,
-    validateJoi(healthProfileUpdateSchema),
+    userRole(Roles.PATIENT),
+    validateBody(healthProfileUpdateSchema),
     updateHealthProfile
 );
 
-patientRouter.get('/healthProfiles', auth, listHealthProfile);
+patientRouter.get(
+    '/healthProfiles',
+    auth,
+    userRole(Roles.PATIENT),
+    validateQuery(paginationQuerySchema),
+    listHealthProfile
+);
 
-patientRouter.get('/healthProfiles/:id', auth, getHealthProfile);
+patientRouter.get(
+    '/healthProfiles/:id',
+    auth,
+    userRole(Roles.PATIENT),
+    getHealthProfile
+);
 
-patientRouter.delete('/healthProfiles/:id', auth, deleteHealthProfile);
+patientRouter.delete(
+    '/healthProfiles/:id',
+    auth,
+    userRole(Roles.PATIENT),
+    deleteHealthProfile
+);
 
 export default patientRouter;
