@@ -5,12 +5,13 @@ import { StatusCodes } from 'http-status-codes';
 import multer from 'multer';
 import path from 'path';
 import patientloginController from '../controllers/patient/login.controller';
-import register from '../controllers/patient/register.controller';
 import { ensureDir } from 'fs-extra';
 import healthData from '../controllers/patient/healthData.controller';
 import { healthDataSchema } from '../validator/patient';
 import { validateJoi } from '../middlewares/joi.middleware';
 import List_POST from '../controllers/user/list';
+import patientRouter from './patient.route';
+
 const router = express.Router()
 const storage = multer.diskStorage({ //multers disk storage settings
     destination: async function (req, file, cb) {
@@ -33,26 +34,7 @@ const upload = multer({
     },
 }).single('profile_image');
 
-router.post(
-    "/patient/register",
-    function (req, res, next) {
-        upload(req, res, function (err) {
-            if (err) {
-                return res.status(StatusCodes.BAD_REQUEST).json({
-                    message: err.message
-                });
-            }
-            next();
-        })
-    },
-    register
-);
-
-router.put(
-    "/patient/healthData",
-    validateJoi(healthDataSchema),
-    healthData
-);
+router.use('/patient', patientRouter)
 
 router.post(
     "/doctor/register",
