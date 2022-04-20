@@ -21,7 +21,7 @@ const patientRouter = express.Router();
 
 patientRouter.post('/register', uploadFile, register);
 
-patientRouter.put('/healthData', validateJoi(healthDataSchema), healthData);
+patientRouter.put('/healthData', auth, validateJoi(healthDataSchema), healthData);
 
 patientRouter.post(
     '/healthProfiles',
