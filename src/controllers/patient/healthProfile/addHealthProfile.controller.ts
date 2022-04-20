@@ -1,10 +1,8 @@
 import { StatusCodes } from 'http-status-codes';
-import HealthProfile from '../../db/models/healthDataProfile';
+import HealthProfile from '../../../db/models/healthProfile';
 
-const addHealthProfile = async (req, res) => {
+export const addHealthProfile = async (req, res) => {
     try {
-        console.log(req.user);
-
         const healthProfile = await HealthProfile.create({
             ...req.body,
             userId: req.user._id,
@@ -21,4 +19,3 @@ const addHealthProfile = async (req, res) => {
         });
     }
 };
-export default addHealthProfile;

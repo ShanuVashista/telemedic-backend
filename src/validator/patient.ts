@@ -12,6 +12,7 @@ export const RegisterVal = [
     })
 ]
 
+
 export const healthDataSchema = Joi.object().options({
     abortEarly: false,
     allowUnknown: false
@@ -29,5 +30,9 @@ export const healthDataSchema = Joi.object().options({
 })
 
 export const healthProfileSchema = healthDataSchema.keys({
-    profile_name: Joi.string().required(),
+    name: Joi.string().required(),
+})
+
+export const healthProfileUpdateSchema = healthDataSchema.keys({
+    name: Joi.string(),
 })

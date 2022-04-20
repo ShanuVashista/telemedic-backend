@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 
 const healthProfileSchema = new mongoose.Schema(
     {
-        profile_name: { type: String, required: true, minlength: 2, maxlength: 50 },
+        name: { type: String, required: true, minlength: 2, maxlength: 50 },
         userId: {
             type: mongoose.Schema.Types.ObjectId,
             required: true,
