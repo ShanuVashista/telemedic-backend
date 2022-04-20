@@ -7,17 +7,20 @@ export const listHealthProfile = async (req, res) => {
             page = 1,
             limit = 10,
             sort = ['createdAt'],
+            f = {},
         } = req.query;
-        const healthProfiles = await HealthProfile.find({
+
+        const filter = {
             userId: req.user._id,
-        })
+            ...f,
+        };
+
+        const healthProfiles = await HealthProfile.find(filter)
             .skip((page - 1) * limit)
             .limit(limit)
             .sort(typeof sort === "string" ? sort : sort.join(" "));
 
-        const totalHealthProfiles = await HealthProfile.countDocuments({
-            userId: req.user._id,
-        });
+        const totalHealthProfiles = await HealthProfile.countDocuments(filter);
 
         const totalPages = Math.ceil(totalHealthProfiles / limit);
 
