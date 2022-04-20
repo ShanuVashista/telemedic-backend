@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response, NextFunction } from "express";
 // import axios, { AxiosResponse } from "axios";
@@ -19,11 +20,38 @@ const getAppointments = async (
   res: Response,
   next: NextFunction
 ) => {
-  const result = await Appointment.find({})
-  return res.status(200).json({
-    message:true ,
-    data: result
-  });
+  try {
+    let { skip, limit, sort, cond } = req.body;
+    if (!skip) {
+      skip = 0;
+    }
+    if (!limit) {
+      limit = 10;
+    }
+    if (!cond) {
+      cond = {}
+    }
+    limit = parseInt(limit);
+    const result = await Appointment.find(cond).sort(sort).skip(skip).limit(limit)
+    const result_count = await Appointment.find(cond).count()
+    return res.status(200).json({
+      status:true,
+      message: 'Appointment Fetch Successfully',
+      pagination:{
+        skip:skip,
+        limit:limit,
+        sub_total:result.length,
+        total:result_count,
+    },
+    data: result,
+    });
+
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
 };
 
 
@@ -34,20 +62,20 @@ const getAppointment = async (
   next: NextFunction
 ) => {
 
-  try{
-    const{Appointmentid} = req.params;
+  try {
+    const { Appointmentid } = req.params;
 
     const result = await Appointment.findById(Appointmentid);
 
     return res.status(200).json({
-      message:true ,
+      message: true,
       data: result
     });
 
-  }catch(Err){
+  } catch (Err) {
     // console.log(Err);
     res.status(404).json({
-      success:false,
+      success: false,
       message: "Appointment not found"
     })
   }
@@ -61,26 +89,26 @@ const updateAppointment = async (
   next: NextFunction
 ) => {
 
-  try{
-    const{Appointmentid} = req.params;
-    const{isEmergency,dateOfAppointment} = req.body;
+  try {
+    const { Appointmentid } = req.params;
+    const { isEmergency, dateOfAppointment } = req.body;
 
     const doc = await Appointment.findById(Appointmentid);
 
-    const update = {isEmergency: isEmergency, dateOfAppointment: dateOfAppointment};
+    const update = { isEmergency: isEmergency, dateOfAppointment: dateOfAppointment };
     await doc.updateOne(update);
 
     const updateDoc = await Appointment.findById(Appointmentid);
 
     return res.status(200).json({
-      message:true ,
+      message: true,
       data: updateDoc
     });
 
-  }catch(Err){
+  } catch (Err) {
     // console.log(Err);
     res.status(404).json({
-      success:false,
+      success: false,
       message: "Appointment not found"
     })
   }
@@ -95,20 +123,20 @@ const deleteAppointment = async (
   next: NextFunction
 ) => {
 
-  try{
-    const{Appointmentid} = req.params;
+  try {
+    const { Appointmentid } = req.params;
 
-    const result = await Appointment.deleteOne({_id: Appointmentid});
+    const result = await Appointment.deleteOne({ _id: Appointmentid });
 
     return res.status(200).json({
-      message:true ,
+      message: true,
       data: "Appointment Delete Successful"
     });
 
-  }catch(Err){
+  } catch (Err) {
     // console.log(Err);
     res.status(404).json({
-      success:false,
+      success: false,
       message: "Appointment not found"
     })
   }
@@ -140,13 +168,13 @@ const addAppointment = async (
     await newAppointment.save();
 
     res.status(201).json({
-      success:true,
+      success: true,
       data: newAppointment
     })
   } catch (Err) {
     console.log(Err);
     res.status(404).json({
-      success:false,
+      success: false,
       message: "One Or More Required Field is empty"
     })
   }
