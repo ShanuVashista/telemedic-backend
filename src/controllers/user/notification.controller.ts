@@ -2,7 +2,7 @@ import Notification from '../../db/models/notification.model';
 import { filterPaginate } from '../../lib/filterPaginate';
 
 export const listNotifications = async (req, res) => {
-    const { page = 1, limit = 10, sort = ['createdAt'], f = {} } = req.query;
+    const { f = {} } = req.query;
     const filter = {
         userId: req.user._id,
         ...f,
@@ -12,7 +12,9 @@ export const listNotifications = async (req, res) => {
         docs: notifications,
         totalDocs: totalNotifications,
         totalPages,
-    } = await filterPaginate(Notification, filter, page, limit, sort);
+        page,
+        limit,
+    } = await filterPaginate(Notification, filter, req.query);
 
     res.status(200).json({
         message: 'Notifications list',
