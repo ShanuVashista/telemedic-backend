@@ -19,6 +19,7 @@ import {
 import { Roles } from '../lib/roles';
 import userRole from '../middlewares/userRole.middleware';
 import { paginationQuerySchema } from '../validator/util';
+import { healthProfileQuerySchema } from '../validator/healthProfile';
 
 const patientRouter = express.Router();
 
@@ -52,7 +53,7 @@ patientRouter.get(
     '/healthProfiles',
     auth,
     userRole(Roles.PATIENT),
-    validateQuery(paginationQuerySchema),
+    validateQuery(healthProfileQuerySchema),
     listHealthProfile
 );
 
