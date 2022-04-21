@@ -37,6 +37,7 @@ const Prescription_PUT = async (req, res) => {
     try {
         const prescriptionData = req.body;
         const prescription_id = req.query;
+        req.user = JSON.parse(JSON.stringify(req.user))
         const checkForHexRegExp = /^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i
         if(typeof (prescription_id.id) == 'undefined' || prescription_id.id == null){
             throw new Error('Prescription id is missing');
@@ -44,7 +45,8 @@ const Prescription_PUT = async (req, res) => {
             if (!checkForHexRegExp.test(prescription_id.id)) {
                 throw new Error('Faild to match required pattern for Appointment Id');
             }else{
-                const prescription_count = await Prescription.find({"_id":prescription_id.id});
+                let prescription_count = await Prescription.find({"_id":prescription_id.id});
+                prescription_count = JSON.parse(JSON.stringify(prescription_count));
                 if(prescription_count.length == 0){
                     throw new Error('Prescription does not exist');
                 }
