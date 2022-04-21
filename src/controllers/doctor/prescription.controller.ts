@@ -48,13 +48,13 @@ const Prescription_PUT = async (req, res) => {
                 if(prescription_count.length == 0){
                     throw new Error('Prescription does not exist');
                 }
+                if(req.user.role_id != 'doctor'){
+                    throw new Error('Doctor does not exist');
+                }
                 if (prescription_count[0].doctor != req.user._id) {
                     throw new Error('This prescription is not belong to this doctor');
                 }
             }
-        }
-        if(req.user.role_id != 'doctor'){
-            throw new Error('Doctor does not exist');
         }
         if(typeof (prescriptionData.patient) != 'undefined' && prescriptionData.patient != null){
             if (!checkForHexRegExp.test(prescriptionData.patient)) {
