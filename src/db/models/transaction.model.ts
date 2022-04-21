@@ -46,7 +46,7 @@ transactionSchema.pre('save', async function (next) {
         this.dateTime = new Date();
     }
 
-    if (this.doctorId.toString() === this.patientID.toString()) {
+    if (this.doctorId.toString() === this.patientId.toString()) {
         return next(new Error('Doctor cannot be patient'));
     }
 
@@ -55,7 +55,7 @@ transactionSchema.pre('save', async function (next) {
         return next(new Error('Doctor does not exist'));
     }
 
-    const patientExists = await User.exists({ _id: this.patientID });
+    const patientExists = await User.exists({ _id: this.patientId });
     if (!patientExists) {
         return next(new Error('Patient does not exist'));
     }
