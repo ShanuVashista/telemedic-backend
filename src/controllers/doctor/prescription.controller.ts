@@ -44,9 +44,12 @@ const Prescription_PUT = async (req, res) => {
             if (!checkForHexRegExp.test(prescription_id.id)) {
                 throw new Error('Faild to match required pattern for Appointment Id');
             }else{
-                const prescription_count = await Prescription.find({"_id":prescription_id.id}).count();
-                if(prescription_count == 0){
+                const prescription_count = await Prescription.find({"_id":prescription_id.id});
+                if(prescription_count.length == 0){
                     throw new Error('Prescription does not exist');
+                }
+                if (prescription_count[0].doctor != req.user._id) {
+                    throw new Error('This prescription is not belong to this doctor');
                 }
             }
         }
