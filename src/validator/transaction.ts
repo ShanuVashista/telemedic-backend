@@ -5,10 +5,10 @@ export const createTransactionSchema = Joi.object().options({
     abortEarly: false,
     allowUnknown: false
 }).keys({
-    patientID: objectId.required(),
+    patientId: objectId.required(),
     doctorId: Joi.string().required(),
     amount: Joi.number().required(),
-    transectionID: Joi.string().required(),
+    transactionId: Joi.string().required(),
     Status: Joi.string().required(),
     dateTime: Joi.string().required(),
 })

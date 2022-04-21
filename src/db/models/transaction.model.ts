@@ -4,7 +4,7 @@ import User from './user';
 
 const transactionSchema = new mongoose.Schema(
     {
-        patientID: {
+        patientId: {
             type: mongoose.Schema.Types.ObjectId,
             required: true,
             ref: 'User',
@@ -19,7 +19,7 @@ const transactionSchema = new mongoose.Schema(
             required: true,
             min: 0,
         },
-        transectionID: {
+        transactionId: {
             type: String,
             required: true,
             minlength: 2,
