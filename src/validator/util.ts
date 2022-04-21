@@ -1,4 +1,5 @@
 import Joi from "joi";
+import mongoose from "mongoose";
 
 export const paginationQuerySchema = Joi.object({
     page: Joi.number().integer().min(1).default(1),
@@ -9,4 +10,12 @@ export const paginationQuerySchema = Joi.object({
     ).default(['createdAt']),
 }).options({
     allowUnknown: true,
+});
+
+export const objectId = Joi.string().custom((value, helpers) => {
+    if (mongoose.isValidObjectId(value)) {
+        return value;
+    }
+
+    return helpers.message({ custom: '{{#label}} is not a valid objectId' });
 });
