@@ -1,4 +1,5 @@
 import Joi from "joi";
+import mongoose from "mongoose";
 
 export const paginationQuerySchema = Joi.object({
     page: Joi.number().integer().min(1).default(1),
@@ -7,19 +8,18 @@ export const paginationQuerySchema = Joi.object({
         Joi.string(),
         Joi.array().items(Joi.string())
     ).default(['createdAt']),
-    f: Joi.object().keys({
-        name: Joi.string(),
-        weight: Joi.number(),
-        height: Joi.number(),
-        bmi: Joi.number(),
-        medicalCondition: Joi.string(),
-        pastMedicalCondition: Joi.string(),
-        alergies: Joi.string(),
-        medication: Joi.string(),
-        smoking: Joi.boolean(),
-        alcohol: Joi.boolean(),
-        marijuana: Joi.boolean(),
-    }).default({})
 }).options({
     allowUnknown: true,
+});
+
+export const objectId = Joi.string().custom((value, helpers) => {
+    if (mongoose.isValidObjectId(value)) {
+        return value;
+    }
+
+    return helpers.message({ custom: '{{#label}} is not a valid objectId' });
+});
+
+export const pathParamIdSchema = Joi.object({
+    id: objectId.required(),
 });

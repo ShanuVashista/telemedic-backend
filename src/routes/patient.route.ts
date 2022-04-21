@@ -6,7 +6,7 @@ import {
     healthDataSchema,
     healthProfileUpdateSchema,
 } from '../validator/patient';
-import { validateBody, validateQuery } from '../middlewares/joi.middleware';
+import { validateBody, validateParams, validateQuery } from '../middlewares/joi.middleware';
 import uploadFile from '../middlewares/fileUpload.middleware';
 import auth from '../middlewares/auth.middleware';
 import {
@@ -18,8 +18,11 @@ import {
 } from '../controllers/patient/healthProfile';
 import { Roles } from '../lib/roles';
 import userRole from '../middlewares/userRole.middleware';
-import { paginationQuerySchema } from '../validator/util';
+// import { paginationQuerySchema } from '../validator/util';
 import Prescription_Renewal_PUT from '../controllers/patient/prescription';
+import { healthProfileQuerySchema } from '../validator/healthProfile';
+import { pathParamIdSchema } from '../validator/util';
+
 const patientRouter = express.Router();
 
 patientRouter.post('/register', uploadFile, register);
@@ -44,6 +47,7 @@ patientRouter.put(
     '/healthProfiles/:id',
     auth,
     userRole(Roles.PATIENT),
+    validateParams(pathParamIdSchema),
     validateBody(healthProfileUpdateSchema),
     updateHealthProfile
 );
@@ -52,7 +56,7 @@ patientRouter.get(
     '/healthProfiles',
     auth,
     userRole(Roles.PATIENT),
-    validateQuery(paginationQuerySchema),
+    validateQuery(healthProfileQuerySchema),
     listHealthProfile
 );
 
@@ -60,6 +64,7 @@ patientRouter.get(
     '/healthProfiles/:id',
     auth,
     userRole(Roles.PATIENT),
+    validateParams(pathParamIdSchema),
     getHealthProfile
 );
 
@@ -67,6 +72,7 @@ patientRouter.delete(
     '/healthProfiles/:id',
     auth,
     userRole(Roles.PATIENT),
+    validateParams(pathParamIdSchema),
     deleteHealthProfile
 );
 patientRouter.put(

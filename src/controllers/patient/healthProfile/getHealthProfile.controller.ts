@@ -4,19 +4,9 @@ import HealthProfile from '../../../db/models/healthProfile';
 
 export const getHealthProfile = async (req, res) => {
     try {
-        // get id path param
-        const { id } = req.params;
-
-        // check if valid bson id
-        if (!mongoose.isValidObjectId(id)) {
-            return res.status(StatusCodes.BAD_REQUEST).json({
-                message: "Please provide a valid user id"
-            });
-        }
-
         const healthProfile = await HealthProfile.findOne({
             userId: req.user._id,
-            _id: id,
+            _id: req.params.id,
         });
 
         if (!healthProfile) {
