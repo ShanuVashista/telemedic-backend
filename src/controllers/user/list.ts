@@ -12,17 +12,22 @@ const List_POST = async (req, res) => {
         if (!limit) {
             limit = 10;
         }
+        if(!cond){
+            cond = {}
+        }
         limit = parseInt(limit);
         const user = await User.find(cond).sort(sort).skip(skip).limit(limit)
         const user_count = await User.find(cond).count()
         res.status(StatusCodes.OK).send({
+            status:true,
+            message:"User List Fetch Successfully",
             pagination:{
                 skip:skip,
                 limit:limit,
                 sub_total:user.length,
                 total:user_count,
             },
-            Info: user,
+            data: user,
         });
     } catch (error) {
             res.status(StatusCodes.BAD_REQUEST).json({

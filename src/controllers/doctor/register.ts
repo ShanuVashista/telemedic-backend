@@ -1,5 +1,5 @@
 /* eslint-disable no-useless-escape */
-import { existsSync, fstat, mkdirSync, renameSync, unlinkSync } from "fs";
+import { existsSync, mkdirSync, renameSync, unlinkSync } from "fs";
 import jwt from "jsonwebtoken";
 import validator from "email-validator";
 import StatusCodes from "http-status-codes";
