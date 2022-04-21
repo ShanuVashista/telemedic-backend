@@ -27,11 +27,11 @@ const register = async (req, res) => {
 
         await saveFile(user, req);
 
-        const token = createToken(user);
+        const accesstoken = createToken(user);
         res.status(StatusCodes.CREATED).json({
             message: "User created successfully asdf",
             user,
-            token,
+            accesstoken,
         });
     } catch (error) {
         // mongoose email exists error
