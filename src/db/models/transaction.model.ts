@@ -25,7 +25,7 @@ const transactionSchema = new mongoose.Schema(
             minlength: 2,
             maxlength: 50,
         },
-        Status: {
+        status: {
             type: String,
             required: true,
             minlength: 2,

@@ -9,6 +9,6 @@ export const createTransactionSchema = Joi.object().options({
     doctorId: Joi.string().required(),
     amount: Joi.number().required(),
     transactionId: Joi.string().required(),
-    Status: Joi.string().required(),
+    status: Joi.string().required(),
     dateTime: Joi.string().required(),
 })
