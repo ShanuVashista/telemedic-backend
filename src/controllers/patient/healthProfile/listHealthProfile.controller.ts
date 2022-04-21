@@ -4,7 +4,7 @@ import { filterPaginate } from '../../../lib/filterPaginate';
 
 export const listHealthProfile = async (req, res) => {
     try {
-        const { page = 1, limit = 10, sort = ['createdAt'], f = {} } = req.query;
+        const { f = {} } = req.query;
 
         const filter = {
             userId: req.user._id,
@@ -15,7 +15,9 @@ export const listHealthProfile = async (req, res) => {
             docs: healthProfiles,
             totalDocs: totalHealthProfiles,
             totalPages,
-        } = await filterPaginate(HealthProfile, filter, page, limit, sort);
+            page,
+            limit
+        } = await filterPaginate(HealthProfile, filter, req.query);
 
         return res.status(StatusCodes.OK).json({
             message: 'Health data list',

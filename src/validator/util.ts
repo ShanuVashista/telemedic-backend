@@ -19,3 +19,7 @@ export const objectId = Joi.string().custom((value, helpers) => {
 
     return helpers.message({ custom: '{{#label}} is not a valid objectId' });
 });
+
+export const pathParamIdSchema = Joi.object({
+    id: objectId.required(),
+});

@@ -9,6 +9,10 @@ export const validateQuery = (schema: Schema) => {
     return validate(schema, 'query');
 }
 
+export const validateParams = (schema: Schema) => {
+    return validate(schema, 'params');
+}
+
 export const validate = (schema: Schema, key) => {
     return (req, res, next) => {
         const { error } = schema.validate(req[key]);
