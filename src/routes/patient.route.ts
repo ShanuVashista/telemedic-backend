@@ -19,7 +19,7 @@ import {
 import { Roles } from '../lib/roles';
 import userRole from '../middlewares/userRole.middleware';
 import { paginationQuerySchema } from '../validator/util';
-
+import Prescription_Renewal_PUT from '../controllers/patient/prescription';
 const patientRouter = express.Router();
 
 patientRouter.post('/register', uploadFile, register);
@@ -69,5 +69,9 @@ patientRouter.delete(
     userRole(Roles.PATIENT),
     deleteHealthProfile
 );
-
+patientRouter.put(
+    '/prescription/update',
+    auth,
+    Prescription_Renewal_PUT
+);
 export default patientRouter;

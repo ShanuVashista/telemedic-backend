@@ -60,7 +60,7 @@ const Register_POST = async (req, res) => {
         }
         // move the file to the folder
         await renameSync(`./public/uploads/${req.file.filename}`, `./public/uploads/${data._id}/${req.file.filename}`);
-        const token = jwt.sign({ _id: data._id }, 'process.env.JWT_SECRET', { expiresIn: "1d" });
+        const token = jwt.sign({ _id: data._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
 
         res.status(201).json({
             success: true,
