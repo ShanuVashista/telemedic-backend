@@ -14,6 +14,7 @@ doctorRouter.post(
 );
 doctorRouter.put(
     "/profession_info",
+    auth,
     Professional_PUT
 );
 doctorRouter.put(
