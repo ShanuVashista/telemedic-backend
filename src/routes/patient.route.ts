@@ -22,7 +22,7 @@ import Prescription_Renewal_PUT from '../controllers/patient/prescription';
 import { healthProfileQuerySchema } from '../validator/healthProfile';
 import { pathParamIdSchema } from '../validator/util';
 import { paymentMethod } from '../validator/paymentMethods.validation';
-import { savePaymentMethod } from '../controllers/patient/paymentMethod.controller';
+import { getPaymentMethod, savePaymentMethod } from '../controllers/patient/paymentMethod.controller';
 
 const patientRouter = express.Router();
 
@@ -90,5 +90,12 @@ patientRouter.post(
     userRole(Roles.PATIENT),
     validateBody(paymentMethod),
     savePaymentMethod
+);
+
+patientRouter.get(
+    '/paymentMethods',
+    auth,
+    userRole(Roles.PATIENT),
+    getPaymentMethod
 );
 export default patientRouter;

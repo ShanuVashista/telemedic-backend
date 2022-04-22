@@ -16,7 +16,6 @@ interface card {
     card_expiry: string;
     card_cvv: string;
     type: string;
-    toJSON: () => card;
 }
 
 interface bank {
@@ -26,7 +25,6 @@ interface bank {
     account_type: string;
     ifsc_code: string;
     type: string;
-    toJSON: () => bank;
 }
 export interface IUser {
     email: string;
@@ -136,7 +134,7 @@ const userSchema = new mongoose.Schema<IUser>(
         smoking: { type: Boolean },
         alcohol: { type: Boolean },
         marijuana: { type: Boolean },
-        payment_method: { type: Object },
+        payment_method: { type: Object, get: obfuscatePaymentMethod },
     },
     {
         timestamps: true,
@@ -145,29 +143,12 @@ const userSchema = new mongoose.Schema<IUser>(
 
 userSchema.methods.toJSON = function (this: mongoose.HydratedDocument<IUser>) {
     const user = this;
+
     const userObject = user.toObject();
 
     userObject.profile_photo = `/uploads/${user._id}/${user.profile_photo}`;
 
     delete userObject.password;
-
-    if (user.payment_method.card) {
-        user.payment_method.card.toJSON = function (
-            this: card
-        ) {
-            return { ...this, card_number: `XXXX-XXXX-XXXX-${this.card_number.slice(-4)}` };
-        }
-        userObject.payment_method.card.card_number = `XXXX-XXXX-XXXX-${user.payment_method.card.card_number.slice(-4)}`;
-    }
-
-    if (user.payment_method.bank) {
-        user.payment_method.bank.toJSON = function (
-            this: bank
-        ) {
-            return { ...this, account_number: `XXXX-XXXX-XXXX-${this.account_number.slice(-4)}` };
-        }
-        userObject.payment_method.bank.account_number = `XXXX-XXXX-XXXX-${user.payment_method.bank.account_number.slice(-4)}`;
-    }
 
     return userObject;
 };
@@ -197,3 +178,21 @@ userSchema.methods.comparePassword = function (
 };
 const User = mongoose.model('user', userSchema);
 export default User;
+
+function obfuscatePaymentMethod(payment_method: IUser['payment_method']) {
+    if (!payment_method) return;
+
+    if (payment_method.card) {
+        payment_method.card.card_number = `XXXX-XXXX-XXXX-${payment_method.card.card_number.slice(
+            -4
+        )}`;
+    }
+
+    if (payment_method.bank) {
+        payment_method.bank.account_number = `XXXX-XXXX-XXXX-${payment_method.bank.account_number.slice(
+            -4
+        )}`;
+    }
+
+    return payment_method;
+}
