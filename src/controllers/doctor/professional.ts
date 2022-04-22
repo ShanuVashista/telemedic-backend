@@ -6,17 +6,21 @@ import User from '../../db/models/user';
 const Professional_PUT = async (req, res) => {
     try {
         const registerData = req.body;
-        const checkForHexRegExp = /^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i
-        let cond = {};
-        if (typeof (req.query.id) == 'undefined' || req.query.id == null) {
-            throw new Error('Missing doctor id');
-        } else {
-            if (!checkForHexRegExp.test(req.query['id'] as string)) {
-                throw new Error('Faild to match required pattern for Doctor Id');
-            } else {
-                cond = { '_id': req.query.id }
-            }
+        req.user = JSON.parse(JSON.stringify(req.user));
+        if(req.user.role_id != 'doctor'){
+            throw new Error('Doctor does not exist');
         }
+        // const checkForHexRegExp = /^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i
+        // let cond = {};
+        // if (typeof (req.query.id) == 'undefined' || req.query.id == null) {
+        //     throw new Error('Missing doctor id');
+        // } else {
+        //     if (!checkForHexRegExp.test(req.query['id'] as string)) {
+        //         throw new Error('Faild to match required pattern for Doctor Id');
+        //     } else {
+        //         cond = { '_id': req.query.id }
+        //     }
+        // }
         if (!registerData.specialty) {
             throw new Error("Please enter a specialty");
         }
@@ -40,15 +44,15 @@ const Professional_PUT = async (req, res) => {
                 throw new Error("Please enter your license details");
             }
         }
-        const user_count = await User.find(cond);
-        if (user_count.length == 0) {
-            throw new Error("Doctor does't exist");
-        }else{
-            if(user_count[0].role_id != 'doctor'){
-                throw new Error("Doctor does't exist");
-            }
-        }
-        const user = await User.findByIdAndUpdate(cond, registerData, { new: true });
+        // const user_count = await User.find(cond);
+        // if (user_count.length == 0) {
+        //     throw new Error("Doctor does't exist");
+        // }else{
+        //     if(user_count[0].role_id != 'doctor'){
+        //         throw new Error("Doctor does't exist");
+        //     }
+        // }
+        const user = await User.findByIdAndUpdate(req.user._id, registerData, { new: true });
 
         res.status(200).json({
             success: true,
