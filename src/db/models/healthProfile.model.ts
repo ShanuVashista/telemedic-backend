@@ -47,13 +47,13 @@ const healthProfileSchema = new mongoose.Schema(
 
 healthProfileSchema.methods.toJSON = function (this: mongoose.HydratedDocument<IHealthProfile>) {
     const healthProfile = this
-    const userObject = healthProfile.toObject()
+    const healthProfileObject = healthProfile.toObject()
 
-    if (userObject.profile_image) {
-        userObject.profile_image = `/uploads/${healthProfile.userId}/${healthProfile.profile_image}`
+    if (healthProfileObject.profile_image) {
+        healthProfileObject.profile_image = `/uploads/${healthProfile.userId}/${healthProfile.profile_image}`
     }
 
-    return userObject
+    return healthProfileObject
 }
 
 const HealthProfile = mongoose.model('healthProfile', healthProfileSchema);
