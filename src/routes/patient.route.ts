@@ -18,7 +18,6 @@ import {
 } from '../controllers/patient/healthProfile';
 import { Roles } from '../lib/roles';
 import userRole from '../middlewares/userRole.middleware';
-// import { paginationQuerySchema } from '../validator/util';
 import Prescription_Renewal_PUT from '../controllers/patient/prescription';
 import { healthProfileQuerySchema } from '../validator/healthProfile';
 import { pathParamIdSchema } from '../validator/util';
@@ -39,6 +38,7 @@ patientRouter.post(
     '/healthProfiles',
     auth,
     userRole(Roles.PATIENT),
+    uploadFile,
     validateBody(healthProfileSchema),
     addHealthProfile
 );
@@ -47,6 +47,7 @@ patientRouter.put(
     '/healthProfiles/:id',
     auth,
     userRole(Roles.PATIENT),
+    uploadFile,
     validateParams(pathParamIdSchema),
     validateBody(healthProfileUpdateSchema),
     updateHealthProfile

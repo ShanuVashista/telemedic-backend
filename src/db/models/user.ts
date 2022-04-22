@@ -3,9 +3,42 @@ import mongoose from 'mongoose'
 import bcrypt from "bcrypt";
 import validator from 'validator'
 import { Roles } from '../../lib/roles';
-import path from 'path';
 
-const userSchema = new mongoose.Schema(
+enum GenderEnum {
+    MALE = 'male',
+    FEMALE = 'female',
+    OTHER = 'other'
+}
+export interface IUser {
+    email: string;
+    profile_photo: string;
+    password: string;
+    role_id: Roles;
+    firstname: string;
+    lastname: string;
+    location?: string;
+    gender: GenderEnum;
+    dob: string;
+    phone?: number;
+    fax?: number;
+    specialty?: string;
+    qualification?: string;
+    total_exp?: string;
+    current_practise_address?: Array<unknown>;
+    license?: Array<unknown>;
+    weight?: number;
+    height?: number;
+    bmi?: number;
+    medicalCondition?: string;
+    pastMedicalCondition?: string;
+    alergies?: string;
+    medication?: string;
+    smoking?: boolean;
+    alcohol?: boolean;
+    marijuana?: boolean;
+}
+
+const userSchema = new mongoose.Schema<IUser>(
     {
         email: {
             type: String, unique: true, validate: {
@@ -35,7 +68,7 @@ const userSchema = new mongoose.Schema(
 
         location: { type: String },
 
-        gender: { type: String, enum: ["male", "female", "other"], required: true },
+        gender: { type: String, enum: GenderEnum, required: true },
 
         dob: {
             type: String, required: true, validate: {
@@ -77,20 +110,18 @@ const userSchema = new mongoose.Schema(
     }
 )
 
-userSchema.methods.toJSON = function () {
+userSchema.methods.toJSON = function (this: mongoose.HydratedDocument<IUser>) {
     const user = this
     const userObject = user.toObject()
 
     userObject.profile_photo = `/uploads/${user._id}/${user.profile_photo}`
 
     delete userObject.password
-    delete userObject.createdAt
-    delete userObject.updatedAt
 
     return userObject
 }
 
-userSchema.pre("save", function (next) {
+userSchema.pre("save", function (this: mongoose.HydratedDocument<IUser>, next) {
     const user = this;
     if (!user.isModified("password")) return next();
 
@@ -105,7 +136,7 @@ userSchema.pre("save", function (next) {
     user.email = user.email.toLowerCase();
 });
 
-userSchema.methods.comparePassword = function (password) {
+userSchema.methods.comparePassword = function (this: mongoose.HydratedDocument<IUser>, password) {
     const user = this;
 
     return bcrypt.compareSync(password, user.password);

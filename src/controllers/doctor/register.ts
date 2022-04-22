@@ -1,10 +1,11 @@
 /* eslint-disable no-useless-escape */
-import { existsSync, mkdirSync, renameSync, unlinkSync } from "fs";
+import { existsSync, mkdirSync, renameSync } from "fs";
 import jwt from "jsonwebtoken";
 import validator from "email-validator";
 import StatusCodes from "http-status-codes";
 import User from '../../db/models/user';
 import { Roles } from "../../lib/roles";
+import { deleteFileByPath } from "../../lib/deleteFileByPath";
 const Register_POST = async (req, res) => {
     try {
         //Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character
@@ -69,7 +70,7 @@ const Register_POST = async (req, res) => {
             data: data
         });
     } catch (error) {
-        unlinkSync(req.file.path);
+        deleteFileByPath(req.file?.path);
         if (error.code == 11000) {
             res.status(400).json({
                 success: false,
