@@ -16,6 +16,7 @@ router.use('/doctor', doctorRouter);
 router.post("/login", Login.login);
 router.post("/forgotPass",Passwordcontroller.forgotPassword)
 router.post("/password-reset/:userId/:token", Passwordcontroller.resetPassword)
+router.post("/password-change",auth, Passwordcontroller.changePassword)
 router.post('/list', auth, List_POST);
 router.post('/prescription/list', auth, Prescription_List_POST);
 router.use('/notifications', auth, notificationRouter)

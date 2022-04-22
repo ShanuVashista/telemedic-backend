@@ -2,9 +2,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response, NextFunction } from "express";
 import User from "../../db/models/user";
-import Token from "../../db/models/token";
+import Token from "../../db/models/Password-reset-token";
+import sendEmail from "../../services/sendEmail";
 import { StatusCodes } from "http-status-codes";
 import crypto from 'crypto';
+import bcrypt from 'bcrypt';
 import Joi from "joi";
 
 
@@ -36,7 +38,9 @@ const forgotPassword = async (
             }).save();
         }
 
-        const link = `${process.env.BASE_URL}/password-reset/${user._id}/${token.token}`;
+        const link = `${process.env.BASE_URL}/user/password-reset/${user._id}/${token.token}`;
+
+        // await sendEmail(user.email, "Password Reset", link);
 
         res.status(StatusCodes.OK).json({
             message: "Password Reset Link Send to your email",
@@ -88,16 +92,69 @@ const resetPassword = async (
         }
 
         user.password = password;
-        await user.save()
+        await user.save();
+        await token.delete();
         
         return res.status(StatusCodes.OK).json({
-            message: "Password change successful",
-            data: user.password
+            message: "Password Changed!",
         });
     }catch(err){
-
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: "An Error Occured!"
+        });
     }
 }
 
-export default {forgotPassword,resetPassword};
+const changePassword = async (
+    req,
+    res: Response,
+    next: NextFunction
+) => {
+    //Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character
+    const pass_rgex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    try{
+        const {currentPassword,newPassword,confirmNewPassword} = req.body;
+        const user = req.user
+        
+        const schema = Joi.object({currentPassword: Joi.string().required(),newPassword: Joi.string().required(),confirmNewPassword: Joi.string().required()});
+
+        const {error} = schema.validate(req.body);
+        if(error) return res.status(400).send(error.details[0].message);
+
+        const passwordIsValid = bcrypt.compareSync(
+            currentPassword,
+            user.password
+        )
+
+        if(!passwordIsValid){
+            return res.status(404).send({
+                message: "Invalid Current Password!"
+            });
+        }
+
+        if(!pass_rgex.test(newPassword)){
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                message: "Password must have minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character"
+            });        }
+        if(newPassword !== confirmNewPassword){
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                message: "New Password and Confirm Password Is not same"
+            });
+        }
+
+        user.password = newPassword;
+        await user.save()
+
+        return res.status(StatusCodes.OK).json({
+            message: "Password changed successful",
+            data: user,
+        });
+    }catch(error){
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: error.message
+        });
+    }
+}
+
+export default {forgotPassword,resetPassword,changePassword};
 

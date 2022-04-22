@@ -20,5 +20,5 @@ const tokenSchema = new Schema({
 });
 
 
-const Token = mongoose.model("token", tokenSchema);
+const Token = mongoose.model("ResetPasswordToken", tokenSchema);
 export default Token;

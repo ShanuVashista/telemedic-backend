@@ -25,7 +25,7 @@ const login = async (req, res) => {
                 );
 
                 if (!passwordIsValid) {
-                    return res.status(401).send({
+                    return res.status(404).send({
                         message: "Invalid Password!"
                     });
                 }
