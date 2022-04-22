@@ -21,6 +21,8 @@ import userRole from '../middlewares/userRole.middleware';
 import Prescription_Renewal_PUT from '../controllers/patient/prescription';
 import { healthProfileQuerySchema } from '../validator/healthProfile';
 import { pathParamIdSchema } from '../validator/util';
+import { paymentMethod } from '../validator/paymentMethods.validation';
+import { savePaymentMethod } from '../controllers/patient/paymentMethod.controller';
 
 const patientRouter = express.Router();
 
@@ -80,5 +82,13 @@ patientRouter.put(
     '/prescription/update',
     auth,
     Prescription_Renewal_PUT
+);
+
+patientRouter.post(
+    '/paymentMethods',
+    auth,
+    userRole(Roles.PATIENT),
+    validateBody(paymentMethod),
+    savePaymentMethod
 );
 export default patientRouter;

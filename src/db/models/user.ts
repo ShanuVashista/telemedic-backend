@@ -1,13 +1,32 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
-import mongoose from 'mongoose'
-import bcrypt from "bcrypt";
-import validator from 'validator'
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
+import validator from 'validator';
 import { Roles } from '../../lib/roles';
 
 enum GenderEnum {
     MALE = 'male',
     FEMALE = 'female',
-    OTHER = 'other'
+    OTHER = 'other',
+}
+
+interface card {
+    card_number: string;
+    card_name: string;
+    card_expiry: string;
+    card_cvv: string;
+    type: string;
+    toJSON: () => card;
+}
+
+interface bank {
+    bank_name: string;
+    account_number: string;
+    account_name: string;
+    account_type: string;
+    ifsc_code: string;
+    type: string;
+    toJSON: () => bank;
 }
 export interface IUser {
     email: string;
@@ -36,27 +55,38 @@ export interface IUser {
     smoking?: boolean;
     alcohol?: boolean;
     marijuana?: boolean;
+    payment_method?: {
+        card?: card;
+        bank?: bank;
+    };
 }
 
 const userSchema = new mongoose.Schema<IUser>(
     {
         email: {
-            type: String, unique: true, validate: {
+            type: String,
+            unique: true,
+            validate: {
                 validator: validator.isEmail,
-                message: '{VALUE} is not a valid email'
+                message: '{VALUE} is not a valid email',
             },
-            required: true
+            required: true,
         },
 
         profile_photo: { type: String, required: true },
 
         password: {
-            type: String, required: true, minlength: 6, maxlength: 1024,
+            type: String,
+            required: true,
+            minlength: 6,
+            maxlength: 1024,
             validate: {
                 validator: function (value) {
-                    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(value)
+                    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(
+                        value
+                    );
                 },
-                message: '{VALUE} is not a valid password'
+                message: '{VALUE} is not a valid password',
             },
         },
 
@@ -71,14 +101,16 @@ const userSchema = new mongoose.Schema<IUser>(
         gender: { type: String, enum: GenderEnum, required: true },
 
         dob: {
-            type: String, required: true, validate: {
+            type: String,
+            required: true,
+            validate: {
                 validator: (value) => {
                     return validator.isDate(value, {
                         format: 'YYYY/MM/DD',
-                    })
+                    });
                 },
-                message: '{VALUE} is not a valid date'
-            }
+                message: '{VALUE} is not a valid date',
+            },
         },
 
         phone: { type: Number },
@@ -104,26 +136,45 @@ const userSchema = new mongoose.Schema<IUser>(
         smoking: { type: Boolean },
         alcohol: { type: Boolean },
         marijuana: { type: Boolean },
+        payment_method: { type: Object },
     },
     {
-        timestamps: true
+        timestamps: true,
     }
-)
+);
 
 userSchema.methods.toJSON = function (this: mongoose.HydratedDocument<IUser>) {
-    const user = this
-    const userObject = user.toObject()
-
-    userObject.profile_photo = `/uploads/${user._id}/${user.profile_photo}`
-
-    delete userObject.password
-
-    return userObject
-}
-
-userSchema.pre("save", function (this: mongoose.HydratedDocument<IUser>, next) {
     const user = this;
-    if (!user.isModified("password")) return next();
+    const userObject = user.toObject();
+
+    userObject.profile_photo = `/uploads/${user._id}/${user.profile_photo}`;
+
+    delete userObject.password;
+
+    if (user.payment_method.card) {
+        user.payment_method.card.toJSON = function (
+            this: card
+        ) {
+            return { ...this, card_number: `XXXX-XXXX-XXXX-${this.card_number.slice(-4)}` };
+        }
+        userObject.payment_method.card.card_number = `XXXX-XXXX-XXXX-${user.payment_method.card.card_number.slice(-4)}`;
+    }
+
+    if (user.payment_method.bank) {
+        user.payment_method.bank.toJSON = function (
+            this: bank
+        ) {
+            return { ...this, account_number: `XXXX-XXXX-XXXX-${this.account_number.slice(-4)}` };
+        }
+        userObject.payment_method.bank.account_number = `XXXX-XXXX-XXXX-${user.payment_method.bank.account_number.slice(-4)}`;
+    }
+
+    return userObject;
+};
+
+userSchema.pre('save', function (this: mongoose.HydratedDocument<IUser>, next) {
+    const user = this;
+    if (!user.isModified('password')) return next();
 
     bcrypt.hash(user.password, 10, function (err, hash) {
         if (err) {
@@ -136,10 +187,13 @@ userSchema.pre("save", function (this: mongoose.HydratedDocument<IUser>, next) {
     user.email = user.email.toLowerCase();
 });
 
-userSchema.methods.comparePassword = function (this: mongoose.HydratedDocument<IUser>, password) {
+userSchema.methods.comparePassword = function (
+    this: mongoose.HydratedDocument<IUser>,
+    password
+) {
     const user = this;
 
     return bcrypt.compareSync(password, user.password);
 };
-const User = mongoose.model("user", userSchema);
+const User = mongoose.model('user', userSchema);
 export default User;
