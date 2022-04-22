@@ -31,8 +31,10 @@ export const healthDataSchema = Joi.object().options({
 
 export const healthProfileSchema = healthDataSchema.keys({
     name: Joi.string().required(),
+    relation: Joi.string().required(),
 })
 
 export const healthProfileUpdateSchema = healthDataSchema.keys({
     name: Joi.string(),
+    relation: Joi.string(),
 })

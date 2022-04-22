@@ -1,6 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import mongoose from 'mongoose';
-import HealthProfile from '../../../db/models/healthProfile';
+import HealthProfile from '../../../db/models/healthProfile.model';
 
 export const getHealthProfile = async (req, res) => {
     try {

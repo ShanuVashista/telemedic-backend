@@ -1,7 +1,6 @@
 /* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response, NextFunction } from "express";
-// import axios, { AxiosResponse } from "axios";
 import Appointment from "../../db/models/appointment.model";
 
 interface Appointment {

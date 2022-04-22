@@ -4,6 +4,7 @@ import { paginationQuerySchema } from "./util";
 export const healthProfileQuerySchema = paginationQuerySchema.keys({
     f: Joi.object().keys({
         name: Joi.string(),
+        relation: Joi.string(),
         weight: Joi.number(),
         height: Joi.number(),
         bmi: Joi.number(),
@@ -15,6 +16,7 @@ export const healthProfileQuerySchema = paginationQuerySchema.keys({
         alcohol: Joi.boolean(),
         marijuana: Joi.boolean(),
     }).default({}).options({
+        abortEarly: false,
         allowUnknown: false,
     })
 });

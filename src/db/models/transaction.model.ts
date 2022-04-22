@@ -1,6 +1,15 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import mongoose from 'mongoose';
-import User from './user';
+import User, { IUser } from './user';
+
+export interface ITransaction {
+    patientId: mongoose.PopulatedDoc<IUser>;
+    doctorId: mongoose.PopulatedDoc<IUser>;
+    amount: number;
+    transactionId: string;
+    status: string;
+    dateTime: string;
+}
 
 const transactionSchema = new mongoose.Schema(
     {

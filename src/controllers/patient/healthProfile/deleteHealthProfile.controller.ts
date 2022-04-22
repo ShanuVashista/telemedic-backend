@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import HealthProfile from '../../../db/models/healthProfile';
+import HealthProfile from '../../../db/models/healthProfile.model';
 
 export const deleteHealthProfile = async (req, res) => {
     try {
