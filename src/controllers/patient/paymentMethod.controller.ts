@@ -44,6 +44,12 @@ export const getPaymentMethod = async (req, res) => {
             });
         }
 
+        if (!user.payment_method) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                message: 'Payment method not found',
+            });
+        }
+
         return res.status(StatusCodes.OK).json({
             message: 'Payment method found',
             payment: user.payment_method,
