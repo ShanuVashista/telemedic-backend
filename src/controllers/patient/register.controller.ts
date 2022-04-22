@@ -1,9 +1,9 @@
-import { existsSync, unlinkSync } from "fs";
 import { StatusCodes } from "http-status-codes";
 import User from "../../db/models/user";
 import { createToken } from "../../lib/jwt";
 import { Roles } from "../../lib/roles";
 import { saveFile } from "../../lib/saveFile";
+import { deleteFileByPath } from "../../lib/deleteFileByPath";
 
 const register = async (req, res) => {
     if (!req.file) {
@@ -47,13 +47,14 @@ const register = async (req, res) => {
             });
         }
         console.log({ error });
-        //if file exists
-        if (await existsSync(req.file.path)) {
-            unlinkSync(req.file.path);
-        }
+
+        deleteFileByPath(req.file?.path);
+
         return res.status(400).json({
             message: error.message
         })
     }
 }
 export default register
+
+

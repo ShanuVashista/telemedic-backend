@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import HealthProfile from '../../../db/models/healthProfile';
+import HealthProfile from '../../../db/models/healthProfile.model';
 import { filterPaginate } from '../../../lib/filterPaginate';
 
 export const listHealthProfile = async (req, res) => {
