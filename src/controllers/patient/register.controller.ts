@@ -25,6 +25,12 @@ const register = async (req, res) => {
         // await User.deleteMany()
         const user = await User.create({ ...req.body, role_id: Roles.PATIENT, profile_photo: req.file?.filename });
 
+        // unset current_practise_address license
+        user.current_practise_address = undefined;
+        user.license = undefined;
+
+        await user.save({ validateBeforeSave: false });
+
         await saveFile(user, req);
 
         const accesstoken = createToken(user);
