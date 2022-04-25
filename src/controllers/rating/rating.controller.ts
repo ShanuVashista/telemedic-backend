@@ -97,28 +97,30 @@ const Application_POST = async (req, res) => {
 }
 const List_POST = async (req, res) => {
     try {
-        let { skip, limit, sort, cond } = req.body;
-        if (!skip) {
-            skip = 0;
+        let { page, limit, sort, cond } = req.body;
+        if (!page || page < 1) {
+            page = 1;
         }
         if (!limit) {
             limit = 10;
         }
-        if(!cond){
+        if (!cond) {
             cond = {}
         }
+        if (!sort) {
+            sort = { "createdAt": -1 }
+        }
         limit = parseInt(limit);
-        const rate = await RateSchema.find(cond).populate('doctor_details').populate('rater_details').sort(sort).skip(skip).limit(limit)
+        const rate = await RateSchema.find(cond).populate('doctor_details').populate('rater_details').sort(sort).skip((page - 1) * limit).limit(limit)
         const rate_count = await RateSchema.find(cond).count()
+        const totalPages = Math.ceil(rate_count / limit);
         res.status(StatusCodes.OK).send({
-            status:true,
-            message:"Rating List Fetch Successfully",
-            pagination:{
-                skip:skip,
-                limit:limit,
-                sub_total:rate.length,
-                total:rate_count,
-            },
+            status: true,
+            message: "Rating List Fetch Successfully",
+            page: page,
+            limit: limit,
+            totalPages: totalPages,
+            total: rate_count,
             data: rate,
         });
     } catch (error) {
