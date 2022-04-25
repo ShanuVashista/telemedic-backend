@@ -1,6 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import User from '../../db/models/user';
 import { filterPaginate } from '../../lib/filterPaginate';
+import { Roles } from '../../lib/roles';
 
 export const findMd = async (req, res) => {
     try {
@@ -10,6 +11,7 @@ export const findMd = async (req, res) => {
         delete f.location;
         const filter = {
             userId: req.user._id,
+            role_id: Roles.DOCTOR,
             ...f,
             ["license.location"]: {
                 $regex: new RegExp(filterLocation, "i")
