@@ -3,8 +3,8 @@ import mongoose from 'mongoose';
 import path from 'path';
 import HealthProfile, { IHealthProfile } from '../../../db/models/healthProfile.model';
 import { deleteFileByPath } from '../../../lib/deleteFileByPath';
-import { saveFile } from '../../../lib/saveFile';
-
+// import { saveFile } from '../../../lib/saveFile';
+import uploadFile from '../../../services/upload';
 export const updateHealthProfile = async (req, res) => {
     try {
         const healthProfile: mongoose.HydratedDocument<IHealthProfile> =
@@ -19,7 +19,7 @@ export const updateHealthProfile = async (req, res) => {
             });
         }
 
-        const oldProfileImage = healthProfile.profile_image;
+        // const oldProfileImage = healthProfile.profile_image;
 
         healthProfile.profile_image = req.file?.filename;
         Object.entries(req.body).forEach(([key, value]) => {
@@ -27,19 +27,24 @@ export const updateHealthProfile = async (req, res) => {
         });
 
         await healthProfile.save();
-
-        await saveFile(req.user, req);
-
-        if (oldProfileImage) {
-            const userDir = path.resolve(`./public/uploads/${req.user._id}`);
-            const oldFilePath = path.join(userDir, oldProfileImage);
-
-            await deleteFileByPath(oldFilePath);
+        const upload_data = {
+            db_response : healthProfile,
+            file : req.files[0]
         }
+        const image_uri = await uploadFile(upload_data);        
+        const response = await HealthProfile.findByIdAndUpdate(healthProfile._id,{$set:{"profile_image":image_uri.Location}},{new:true});
+        // await saveFile(req.user, req);
+
+        // if (oldProfileImage) {
+        //     const userDir = path.resolve(`./public/uploads/${req.user._id}`);
+        //     const oldFilePath = path.join(userDir, oldProfileImage);
+
+        //     await deleteFileByPath(oldFilePath);
+        // }
 
         return res.status(StatusCodes.OK).json({
             message: "Health data updated",
-            healthProfile,
+            response,
         });
 
     } catch (error) {

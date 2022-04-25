@@ -23,10 +23,12 @@ import { healthProfileQuerySchema } from '../validator/healthProfile';
 import { pathParamIdSchema } from '../validator/util';
 import { paymentMethod } from '../validator/paymentMethods.validation';
 import { getPaymentMethod, savePaymentMethod } from '../controllers/patient/paymentMethod.controller';
-
+import multer from 'multer';
+const storage = multer.memoryStorage();
+const upload = multer({storage});
 const patientRouter = express.Router();
 
-patientRouter.post('/register', uploadFile, register);
+patientRouter.post('/register', upload.any(), register);
 
 patientRouter.put(
     '/healthData',
@@ -40,7 +42,7 @@ patientRouter.post(
     '/healthProfiles',
     auth,
     userRole(Roles.PATIENT),
-    uploadFile,
+    upload.any(),
     validateBody(healthProfileSchema),
     addHealthProfile
 );
@@ -49,7 +51,7 @@ patientRouter.put(
     '/healthProfiles/:id',
     auth,
     userRole(Roles.PATIENT),
-    uploadFile,
+    upload.any(),
     validateParams(pathParamIdSchema),
     validateBody(healthProfileUpdateSchema),
     updateHealthProfile

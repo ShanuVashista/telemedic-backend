@@ -1,0 +1,1 @@
+export const Bucket_URI = 'telemd/';

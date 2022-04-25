@@ -71,7 +71,7 @@ const userSchema = new mongoose.Schema<IUser>(
             required: true,
         },
 
-        profile_photo: { type: String, required: true },
+        profile_photo: { type: String },
 
         password: {
             type: String,
@@ -141,17 +141,17 @@ const userSchema = new mongoose.Schema<IUser>(
     }
 );
 
-userSchema.methods.toJSON = function (this: mongoose.HydratedDocument<IUser>) {
-    const user = this;
+// userSchema.methods.toJSON = function (this: mongoose.HydratedDocument<IUser>) {
+//     const user = this;
 
-    const userObject = user.toObject();
+//     const userObject = user.toObject();
 
-    userObject.profile_photo = `/uploads/${user._id}/${user.profile_photo}`;
+//     userObject.profile_photo = `/uploads/${user._id}/${user.profile_photo}`;
 
-    delete userObject.password;
+//     delete userObject.password;
 
-    return userObject;
-};
+//     return userObject;
+// };
 
 userSchema.pre('save', function (this: mongoose.HydratedDocument<IUser>, next) {
     const user = this;
