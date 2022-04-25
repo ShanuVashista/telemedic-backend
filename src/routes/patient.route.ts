@@ -7,7 +7,7 @@ import {
     healthProfileUpdateSchema,
 } from '../validator/patient';
 import { validateBody, validateParams, validateQuery } from '../middlewares/joi.middleware';
-import uploadFile from '../middlewares/fileUpload.middleware';
+// import uploadFile from '../middlewares/fileUpload.middleware';
 import auth from '../middlewares/auth.middleware';
 import {
     addHealthProfile,
@@ -20,13 +20,17 @@ import { Roles } from '../lib/roles';
 import userRole from '../middlewares/userRole.middleware';
 import Prescription_Renewal_PUT from '../controllers/patient/prescription';
 import { healthProfileQuerySchema } from '../validator/healthProfile';
-import { pathParamIdSchema } from '../validator/util';
+import { paginationQuerySchema, pathParamIdSchema } from '../validator/util';
 import { paymentMethod } from '../validator/paymentMethods.validation';
-import { getPaymentMethod, savePaymentMethod } from '../controllers/patient/paymentMethod.controller';
+import multer from 'multer';
+const storage = multer.memoryStorage();
+const upload = multer({storage});
+import { deletePaymentMethod, getPaymentMethod, savePaymentMethod } from '../controllers/patient/paymentMethod.controller';
+import { findMd } from '../controllers/doctor/findMd.controller';
 
 const patientRouter = express.Router();
 
-patientRouter.post('/register', uploadFile, register);
+patientRouter.post('/register', upload.any(), register);
 
 patientRouter.put(
     '/healthData',
@@ -40,7 +44,7 @@ patientRouter.post(
     '/healthProfiles',
     auth,
     userRole(Roles.PATIENT),
-    uploadFile,
+    upload.any(),
     validateBody(healthProfileSchema),
     addHealthProfile
 );
@@ -49,7 +53,7 @@ patientRouter.put(
     '/healthProfiles/:id',
     auth,
     userRole(Roles.PATIENT),
-    uploadFile,
+    upload.any(),
     validateParams(pathParamIdSchema),
     validateBody(healthProfileUpdateSchema),
     updateHealthProfile
@@ -96,6 +100,22 @@ patientRouter.get(
     '/paymentMethods',
     auth,
     userRole(Roles.PATIENT),
+    validateQuery(paginationQuerySchema),
     getPaymentMethod
+);
+
+patientRouter.delete(
+    '/paymentMethods/:id',
+    auth,
+    userRole(Roles.PATIENT),
+    deletePaymentMethod
+);
+
+patientRouter.get(
+    '/findMd',
+    auth,
+    userRole(Roles.PATIENT),
+    validateQuery(paginationQuerySchema),
+    findMd
 );
 export default patientRouter;

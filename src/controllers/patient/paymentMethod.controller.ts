@@ -1,30 +1,17 @@
 import { StatusCodes } from 'http-status-codes';
-import User from '../../db/models/user';
+import PaymentMethod from '../../db/models/paymentMethod.model';
+import { filterPaginate } from '../../lib/filterPaginate';
 
 export const savePaymentMethod = async (req, res) => {
     try {
-        const user = await User.findOne({ _id: req.user._id });
-
-        if (!user) {
-            return res.status(StatusCodes.NOT_FOUND).json({
-                message: 'User not found',
-            });
-        }
-
-        const { type: paymentMethodType, ...paymentMethod } = req.body;
-        if (!user.payment_method) {
-            user.payment_method = {};
-        }
-        user.payment_method = {
-            ...user.payment_method,
-            [paymentMethodType]: paymentMethod,
-        };
-
-        const updatedUser = await user.save({ validateBeforeSave: false });
+        const paymentMethod = await PaymentMethod.create({
+            ...req.body,
+            userId: req.user._id,
+        });
 
         return res.status(StatusCodes.OK).json({
             message: 'Payment method saved',
-            user: updatedUser,
+            paymentMethod,
         });
     } catch (error) {
         console.log({ error });
@@ -36,23 +23,56 @@ export const savePaymentMethod = async (req, res) => {
 
 export const getPaymentMethod = async (req, res) => {
     try {
-        const user = await User.findOne({ _id: req.user._id });
+        const { f = {} } = req.query;
 
-        if (!user) {
-            return res.status(StatusCodes.NOT_FOUND).json({
-                message: 'User not found',
-            });
-        }
+        const filter = {
+            userId: req.user._id,
+            ...f,
+        };
 
-        if (!user.payment_method) {
+        const {
+            docs: paymentMethods,
+            total,
+            totalPages,
+            page,
+            limit
+        } = await filterPaginate(PaymentMethod, filter, req.query);
+
+        return res.status(StatusCodes.OK).json({
+            message: 'Payment method found',
+            paymentMethods,
+            total,
+            page,
+            limit,
+            totalPages,
+        });
+    } catch (error) {
+        console.log({ error });
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: error.message,
+        });
+    }
+};
+
+export const deletePaymentMethod = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const paymentMethod = await PaymentMethod.findOne({
+            _id: id,
+            userId: req.user._id,
+        });
+
+        if (!paymentMethod) {
             return res.status(StatusCodes.NOT_FOUND).json({
                 message: 'Payment method not found',
             });
         }
 
+        await paymentMethod.remove();
+
         return res.status(StatusCodes.OK).json({
-            message: 'Payment method found',
-            payment: user.payment_method,
+            message: 'Payment method deleted',
         });
     } catch (error) {
         console.log({ error });

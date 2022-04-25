@@ -20,6 +20,8 @@ const List_POST = async (req, res) => {
         }
         limit = parseInt(limit);
         const user = await User.find(cond).sort(sort).skip((page - 1) * limit).limit(limit)
+        user.forEach(oneUser => oneUser.populate('paymentMethods'))
+
         const user_count = await User.find(cond).count()
         const totalPages = Math.ceil(user_count / limit);
         res.status(StatusCodes.OK).send({
