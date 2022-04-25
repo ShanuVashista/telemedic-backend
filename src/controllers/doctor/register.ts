@@ -12,7 +12,7 @@ const Register_POST = async (req, res) => {
         //Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character
         const pass_rgex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
         const registerData = req.body;
-        console.log(req, 'req----');
+        // console.log(req, 'req----');
         if (!req.files) {
             return res.status(StatusCodes.BAD_REQUEST).json({
                 message: "Please upload a profile photo"
