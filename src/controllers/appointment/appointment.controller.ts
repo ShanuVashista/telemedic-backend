@@ -20,9 +20,9 @@ const getAppointments = async (
   next: NextFunction
 ) => {
   try {
-    let { skip, limit, sort, cond } = req.body;
-    if (!skip) {
-      skip = 0;
+    let { page, limit, sort, cond } = req.body;
+    if (!page || page < 1) {
+      page = 1;
     }
     if (!limit) {
       limit = 10;
@@ -30,19 +30,21 @@ const getAppointments = async (
     if (!cond) {
       cond = {}
     }
+    if (!sort) {
+      sort = { "createdAt": -1 }
+    }
     limit = parseInt(limit);
-    const result = await Appointment.find(cond).sort(sort).skip(skip).limit(limit)
+    const result = await Appointment.find(cond).sort(sort).skip((page - 1) * limit).limit(limit)
     const result_count = await Appointment.find(cond).count()
+    const totalPages = Math.ceil(result_count / limit);
     return res.status(200).json({
-      status:true,
+      status: true,
       message: 'Appointment Fetch Successfully',
-      pagination:{
-        skip:skip,
-        limit:limit,
-        sub_total:result.length,
-        total:result_count,
-    },
-    data: result,
+      page: page,
+      limit: limit,
+      totalPages: totalPages,
+      total: result_count,
+      data: result,
     });
 
   } catch (error) {
