@@ -4,7 +4,6 @@ const AppointmentSchema: Schema = new Schema(
   {
     appointmentId: { type: Schema.Types.ObjectId },
     patientId: { type: Schema.Types.ObjectId, required: true },
-    // doctorId: { type: Number, required: true },
     doctorId: {type: Schema.Types.ObjectId, ref:'users'},
     appointmentType: { type: String, required: true },
     dateOfAppointment: { type: Date, required: true },

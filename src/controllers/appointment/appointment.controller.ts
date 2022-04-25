@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express";
 import Appointment from "../../db/models/appointment.model";
 
 interface Appointment {
-  userId: number;
+  patientId: number;
   appointmentId: number;
   createdAt: Date;
   doctorId: number;
@@ -146,34 +146,40 @@ const deleteAppointment = async (
 
 // Function to Create an Appointment
 const addAppointment = async (
-  req: Request,
+  req,
   res: Response,
   next: NextFunction
 ) => {
   // Get the data from query body
   const {
-    userId,
-    doctor,
+    doctorId,
     appointmentType,
     dateOfAppointment,
   }: Appointment = req.body;
 
+  const user = JSON.parse(JSON.stringify(req.user));
+  if(user.role_id != 'patient') {
+    return res.status(404).json({
+      success: false,
+      message: "You are not authorise to create an Appointment"
+    })
+  }
+
   try {
-    // const doctor = doctorId
     const newAppointment = new Appointment({
-      userId,
-      doctor,
+      patientId: user._id,
+      doctorId,
       appointmentType,
       dateOfAppointment,
     });
     await newAppointment.save();
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       data: newAppointment
     })
   } catch (Err) {
-    console.log(Err);
+    // console.log(Err);
     res.status(404).json({
       success: false,
       message: "One Or More Required Field is empty"
