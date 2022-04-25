@@ -13,7 +13,7 @@ export const listTransaction = async (req, res) => {
 
         const {
             docs: transactions,
-            totalDocs: totalTransactions,
+            total,
             totalPages,
             page,
             limit,
@@ -22,7 +22,7 @@ export const listTransaction = async (req, res) => {
         return res.status(StatusCodes.OK).json({
             message: 'Transaction list',
             transactions,
-            totalCount: totalTransactions,
+            total,
             page,
             limit,
             totalPages,

@@ -10,7 +10,7 @@ export const listNotifications = async (req, res) => {
 
     const {
         docs: notifications,
-        totalDocs: totalNotifications,
+        total,
         totalPages,
         page,
         limit,
@@ -19,7 +19,7 @@ export const listNotifications = async (req, res) => {
     res.status(200).json({
         message: 'Notifications list',
         notifications,
-        totalCount: totalNotifications,
+        total,
         page,
         limit,
         totalPages,
