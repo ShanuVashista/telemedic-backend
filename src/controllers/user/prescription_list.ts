@@ -5,35 +5,37 @@ import StatusCodes from "http-status-codes";
 // import User from '../../db/models/user';
 const Prescription_List_POST = async (req, res) => {
     try {
-        let { skip, limit, sort, cond } = req.body;
-        if (!skip) {
-            skip = 0;
+        let { page, limit, sort, cond } = req.body;
+        if (!page || page < 1) {
+            page = 1;
         }
         if (!limit) {
             limit = 10;
         }
-        if(!cond){
+        if (!cond) {
             cond = {}
         }
+        if (!sort) {
+            sort = { "createdAt": -1 }
+        }
         limit = parseInt(limit);
-        const prescription = await Prescription.find(cond).populate('patient_details').populate('doctor_details').populate('appointment_details').sort(sort).skip(skip).limit(limit)
+        const prescription = await Prescription.find(cond).populate('patient_details').populate('doctor_details').populate('appointment_details').sort(sort).skip((page - 1) * limit).limit(limit)
         const prescription_count = await Prescription.find(cond).count()
+        const totalPages = Math.ceil(prescription_count / limit);
         res.status(StatusCodes.OK).send({
-            status:true,
-            message:"Prescription List Fetch Successfully",
-            pagination:{
-                skip:skip,
-                limit:limit,
-                sub_total:prescription.length,
-                total:prescription_count,
-            },
+            status: true,
+            message: "Prescription List Fetch Successfully",
+            page: page,
+            limit: limit,
+            totalPages: totalPages,
+            total: prescription_count,
             data: prescription,
         });
     } catch (error) {
-            res.status(StatusCodes.BAD_REQUEST).json({
-                success: false,
-                message: error.message
-            });
+        res.status(StatusCodes.BAD_REQUEST).json({
+            success: false,
+            message: error.message
+        });
     }
 }
 export default Prescription_List_POST

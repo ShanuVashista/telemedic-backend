@@ -13,7 +13,7 @@ export const listHealthProfile = async (req, res) => {
 
         const {
             docs: healthProfiles,
-            totalDocs: totalHealthProfiles,
+            total,
             totalPages,
             page,
             limit
@@ -22,7 +22,7 @@ export const listHealthProfile = async (req, res) => {
         return res.status(StatusCodes.OK).json({
             message: 'Health data list',
             healthProfiles,
-            totalCount: totalHealthProfiles,
+            total,
             page,
             limit,
             totalPages,
