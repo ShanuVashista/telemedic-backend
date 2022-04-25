@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import validator from 'validator';
 import { Roles } from '../../lib/roles';
+import PaymentMethod from './paymentMethod.model';
 
 enum GenderEnum {
     MALE = 'male',
@@ -10,22 +11,6 @@ enum GenderEnum {
     OTHER = 'other',
 }
 
-interface card {
-    card_number: string;
-    card_name: string;
-    card_expiry: string;
-    card_cvv: string;
-    type: string;
-}
-
-interface bank {
-    bank_name: string;
-    account_number: string;
-    account_name: string;
-    account_type: string;
-    ifsc_code: string;
-    type: string;
-}
 export interface IUser {
     email: string;
     profile_photo: string;
@@ -53,10 +38,6 @@ export interface IUser {
     smoking?: boolean;
     alcohol?: boolean;
     marijuana?: boolean;
-    payment_method?: {
-        card?: card;
-        bank?: bank;
-    };
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -134,12 +115,21 @@ const userSchema = new mongoose.Schema<IUser>(
         smoking: { type: Boolean },
         alcohol: { type: Boolean },
         marijuana: { type: Boolean },
-        payment_method: { type: Object, get: obfuscatePaymentMethod },
     },
     {
         timestamps: true,
     }
 );
+
+// add payment method virtual
+userSchema.virtual('paymentMethods', {
+    ref: PaymentMethod,
+    localField: '_id',
+    foreignField: 'userId',
+});
+
+userSchema.set('toObject', { virtuals: true });
+userSchema.set('toJSON', { virtuals: true });
 
 userSchema.methods.toJSON = function (this: mongoose.HydratedDocument<IUser>) {
     const user = this;
@@ -178,21 +168,3 @@ userSchema.methods.comparePassword = function (
 };
 const User = mongoose.model('user', userSchema);
 export default User;
-
-function obfuscatePaymentMethod(payment_method: IUser['payment_method']) {
-    if (!payment_method) return;
-
-    if (payment_method.card) {
-        payment_method.card.card_number = `XXXX-XXXX-XXXX-${payment_method.card.card_number.slice(
-            -4
-        )}`;
-    }
-
-    if (payment_method.bank) {
-        payment_method.bank.account_number = `XXXX-XXXX-XXXX-${payment_method.bank.account_number.slice(
-            -4
-        )}`;
-    }
-
-    return payment_method;
-}
