@@ -23,6 +23,7 @@ import { healthProfileQuerySchema } from '../validator/healthProfile';
 import { paginationQuerySchema, pathParamIdSchema } from '../validator/util';
 import { paymentMethod } from '../validator/paymentMethods.validation';
 import { deletePaymentMethod, getPaymentMethod, savePaymentMethod } from '../controllers/patient/paymentMethod.controller';
+import { findMd } from '../controllers/doctor/findMd.controller';
 
 const patientRouter = express.Router();
 
@@ -105,5 +106,13 @@ patientRouter.delete(
     auth,
     userRole(Roles.PATIENT),
     deletePaymentMethod
+);
+
+patientRouter.get(
+    '/findMd',
+    auth,
+    userRole(Roles.PATIENT),
+    validateQuery(paginationQuerySchema),
+    findMd
 );
 export default patientRouter;
