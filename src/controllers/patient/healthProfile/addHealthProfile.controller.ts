@@ -9,20 +9,24 @@ export const addHealthProfile = async (req, res) => {
             userId: req.user._id
         });
         const upload_data = {
-            db_response : healthProfile,
-            file : req.files[0]
+            db_response: healthProfile,
+            file: req.files[0]
         }
-        const image_uri = await uploadFile(upload_data);        
-        const response = await HealthProfile.findByIdAndUpdate(healthProfile._id,{$set:{"profile_image":image_uri.Location}},{new:true});
+        const image_uri = await uploadFile(upload_data);
+        const response = await HealthProfile.findByIdAndUpdate(healthProfile._id, { $set: { "profile_image": image_uri.Location } }, { new: true });
         // await saveFile(req.user, req);
 
         return res.status(StatusCodes.OK).json({
+            type: "success",
             message: 'Health data added',
-            response,
+            data: {
+                ...response.toObject(),
+            },
         });
     } catch (error) {
         console.log({ error });
         return res.status(400).json({
+            type: "error",
             message: error.message,
         });
     }
