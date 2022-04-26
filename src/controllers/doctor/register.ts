@@ -73,6 +73,7 @@ const Register_POST = async (req, res) => {
         // await renameSync(`./public/uploads/${req.file.filename}`, `./public/uploads/${data._id}/${req.file.filename}`);
         const token = jwt.sign({ _id: data._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
         res.status(201).json({
+            status: true,
             type: 'success',
             message: 'Doctor Registration Successfully',
             data: {
@@ -84,11 +85,13 @@ const Register_POST = async (req, res) => {
         deleteFileByPath(req.file?.path);
         if (error.code == 11000) {
             res.status(400).json({
+                status: false,
                 type: 'error',
                 message: "Email Already exist"
             });
         } else {
             res.status(400).json({
+                status: false,
                 type: 'error',
                 message: error.message
             });
