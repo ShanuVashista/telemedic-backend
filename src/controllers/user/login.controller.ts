@@ -36,6 +36,7 @@ const login = async (req, res) => {
 
 
                 res.status(StatusCodes.OK).json({
+                    status: true,
                     type: "success",
                     message: "User Successfully Logged-In",
                     data: {
