@@ -18,7 +18,7 @@ export const getTransaction = async (req, res) => {
         return res.status(StatusCodes.OK).json({
             type: "success",
             message: 'Transaction found',
-            transaction,
+            data: { transaction },
         });
     } catch (error) {
         console.log({ error });
