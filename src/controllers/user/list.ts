@@ -25,7 +25,8 @@ const List_POST = async (req, res) => {
         const user_count = await User.find(cond).count()
         const totalPages = Math.ceil(user_count / limit);
         res.status(StatusCodes.OK).send({
-            status: true,
+            status:true,
+            type: 'success',
             message: "User List Fetch Successfully",
             page: page,
             limit: limit,
@@ -35,7 +36,8 @@ const List_POST = async (req, res) => {
         });
     } catch (error) {
         res.status(StatusCodes.BAD_REQUEST).json({
-            success: false,
+            status:false,
+            type: 'error',
             message: error.message
         });
     }

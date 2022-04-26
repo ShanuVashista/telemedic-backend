@@ -34,14 +34,16 @@ const Doctor_Appointment_PUT = async (req, res) => {
         const appointment_update = await Appointment.findByIdAndUpdate(body.appointment_id,{$set:{status:body.status}},{new:true});
 
         res.status(200).json({
-            success: true,
+            status:true,
+            type: 'success',
             message: 'Appointment update successfully',
             data: appointment_update
         });
         
     } catch (error) {
         res.status(400).json({
-            success: false,
+            status:false,
+            type: 'error',
             message: error.message
         });
     }

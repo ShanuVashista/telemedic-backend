@@ -45,13 +45,15 @@ const Doctor_POST = async (req, res) => {
         }
         const data = await RateSchema.create(rating_details);
         res.status(StatusCodes.OK).json({
-            success: true,
+            status:true,
+            type: 'success',
             message: "Thanks for rating",
             data: data
         });
     } catch (error) {
         res.status(StatusCodes.BAD_REQUEST).json({
-            success: false,
+            status:false,
+            type: 'error',
             message: error.message
         });
     }
@@ -84,13 +86,15 @@ const Application_POST = async (req, res) => {
         }
         const data = await RateSchema.create(rating_details);
         res.status(StatusCodes.OK).json({
-            success: true,
+            status:true,
+            type: 'success',
             message: "Thanks for rating",
             data: data
         });
     } catch (error) {
         res.status(StatusCodes.BAD_REQUEST).json({
-            success: false,
+            status:false,
+            type: 'error',
             message: error.message
         });
     }
@@ -115,7 +119,8 @@ const List_POST = async (req, res) => {
         const rate_count = await RateSchema.find(cond).count()
         const totalPages = Math.ceil(rate_count / limit);
         res.status(StatusCodes.OK).send({
-            status: true,
+            status:true,
+            type: 'success',
             message: "Rating List Fetch Successfully",
             page: page,
             limit: limit,
@@ -125,7 +130,8 @@ const List_POST = async (req, res) => {
         });
     } catch (error) {
         res.status(StatusCodes.BAD_REQUEST).json({
-            success: false,
+            status:false,
+            type: 'error',
             message: error.message
         });
     }
