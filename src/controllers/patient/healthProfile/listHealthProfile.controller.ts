@@ -20,6 +20,7 @@ export const listHealthProfile = async (req, res) => {
         } = await filterPaginate(HealthProfile, filter, req.query);
 
         return res.status(StatusCodes.OK).json({
+            type: "success",
             message: 'Health data list',
             healthProfiles,
             total,
@@ -30,6 +31,7 @@ export const listHealthProfile = async (req, res) => {
     } catch (error) {
         console.log({ error });
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            type: "error",
             message: error.message,
         });
     }

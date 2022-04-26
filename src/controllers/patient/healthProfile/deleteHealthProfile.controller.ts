@@ -10,16 +10,19 @@ export const deleteHealthProfile = async (req, res) => {
 
         if (!healthProfile) {
             return res.status(StatusCodes.NOT_FOUND).json({
+                type: "error",
                 message: "Health data not found",
             });
         }
 
         return res.status(StatusCodes.OK).json({
+            type: "success",
             message: "Health data deleted"
         });
     } catch (error) {
         console.log({ error });
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            type: "error",
             message: error.message,
         });
     }
