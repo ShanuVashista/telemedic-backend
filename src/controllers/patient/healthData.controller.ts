@@ -11,24 +11,28 @@ const healthData = async (req, res) => {
 
         if (!user) {
             return res.status(StatusCodes.NOT_FOUND).json({
+                type: "error",
                 message: "User not found"
             });
         }
 
         return res.status(StatusCodes.OK).json({
+            type: "success",
             message: "Health data updated",
-            user,
+            data: { user },
         });
 
     } catch (error) {
         // mongoose email exists error
         if (error.code === 11000) {
             return res.status(StatusCodes.BAD_REQUEST).json({
+                type: "error",
                 message: "User already exists"
             });
         }
         console.log({ error });
         return res.status(400).json({
+            type: "error",
             message: error.message
         })
     }
