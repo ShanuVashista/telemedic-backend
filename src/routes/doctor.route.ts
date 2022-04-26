@@ -5,11 +5,14 @@ import Professional_PUT from '../controllers/doctor/professional';
 import Doctor_Appointment_PUT from '../controllers/doctor/appointment_update';
 import auth from '../middlewares/auth.middleware';
 import controller from '../controllers/doctor/prescription.controller';
+import multer from 'multer';
+const storage = multer.memoryStorage();
+const upload = multer({storage});
 const doctorRouter = express.Router()
 
 doctorRouter.post(
     "/register",
-    uploadFile,
+    upload.any(),
     Doctor_Register_POST
 );
 doctorRouter.put(

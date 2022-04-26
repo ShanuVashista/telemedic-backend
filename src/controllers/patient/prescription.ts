@@ -34,13 +34,15 @@ const Prescription_Renewal_PUT = async (req, res) => {
         const data = await Prescription.findByIdAndUpdate(prescription_id.id, { $set: { 'status': prescriptionData.status } }, { new: true });
 
         res.status(StatusCodes.OK).json({
-            success: true,
+            status:true,
+            type: 'success',
             message: 'Successfully chnage the Prescription status to renewal',
             data: data
         });
     } catch (error) {
         res.status(StatusCodes.BAD_REQUEST).json({
-            success: false,
+            status:false,
+            type: 'error',
             message: error.message
         });
     }

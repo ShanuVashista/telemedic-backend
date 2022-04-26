@@ -1,10 +1,10 @@
 /* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Request, Response, NextFunction } from "express";
-import Appointment from "../../db/models/appointment.model";
+import { Request, Response, NextFunction } from 'express';
+import Appointment from '../../db/models/appointment.model';
 
 interface Appointment {
-  userId: number;
+  patientId: number;
   appointmentId: number;
   createdAt: Date;
   doctorId: number;
@@ -28,14 +28,19 @@ const getAppointments = async (
       limit = 10;
     }
     if (!cond) {
-      cond = {}
+      cond = {};
     }
     if (!sort) {
-      sort = { "createdAt": -1 }
+      sort = { createdAt: -1 };
     }
     limit = parseInt(limit);
-    const result = await Appointment.find(cond).sort(sort).skip((page - 1) * limit).limit(limit)
-    const result_count = await Appointment.find(cond).count()
+    const result = await Appointment.find(cond)
+      .populate('patient_details')
+      .populate('doctor_details')
+      .sort(sort)
+      .skip((page - 1) * limit)
+      .limit(limit);
+    const result_count = await Appointment.find(cond).count();
     const totalPages = Math.ceil(result_count / limit);
     return res.status(200).json({
       status: true,
@@ -46,15 +51,13 @@ const getAppointments = async (
       total: result_count,
       data: result,
     });
-
   } catch (error) {
     return res.status(400).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
-
 
 // Get Appointment By ID
 const getAppointment = async (
@@ -62,25 +65,22 @@ const getAppointment = async (
   res: Response,
   next: NextFunction
 ) => {
-
   try {
     const { Appointmentid } = req.params;
 
-    const result = await Appointment.findById(Appointmentid);
+    const result = await Appointment.findById(Appointmentid).populate('patient_details').populate('doctor_details');
 
     return res.status(200).json({
       message: true,
-      data: result
+      data: result,
     });
-
   } catch (Err) {
     // console.log(Err);
     res.status(404).json({
       success: false,
-      message: "Appointment not found"
-    })
+      message: 'Appointment not found',
+    });
   }
-
 };
 
 // Update an Appointment By ID
@@ -89,33 +89,32 @@ const updateAppointment = async (
   res: Response,
   next: NextFunction
 ) => {
-
   try {
     const { Appointmentid } = req.params;
     const { isEmergency, dateOfAppointment } = req.body;
 
     const doc = await Appointment.findById(Appointmentid);
 
-    const update = { isEmergency: isEmergency, dateOfAppointment: dateOfAppointment };
+    const update = {
+      isEmergency: isEmergency,
+      dateOfAppointment: dateOfAppointment,
+    };
     await doc.updateOne(update);
 
     const updateDoc = await Appointment.findById(Appointmentid);
 
     return res.status(200).json({
       message: true,
-      data: updateDoc
+      data: updateDoc,
     });
-
   } catch (Err) {
     // console.log(Err);
     res.status(404).json({
       success: false,
-      message: "Appointment not found"
-    })
+      message: 'Appointment not found',
+    });
   }
-
 };
-
 
 // Delete Appointment ById
 const deleteAppointment = async (
@@ -123,7 +122,6 @@ const deleteAppointment = async (
   res: Response,
   next: NextFunction
 ) => {
-
   try {
     const { Appointmentid } = req.params;
 
@@ -131,53 +129,50 @@ const deleteAppointment = async (
 
     return res.status(200).json({
       message: true,
-      data: "Appointment Delete Successful"
+      data: 'Appointment Delete Successful',
     });
-
   } catch (Err) {
     // console.log(Err);
     res.status(404).json({
       success: false,
-      message: "Appointment not found"
-    })
+      message: 'Appointment not found',
+    });
   }
-
 };
 
 // Function to Create an Appointment
-const addAppointment = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const addAppointment = async (req, res: Response, next: NextFunction) => {
   // Get the data from query body
-  const {
-    userId,
-    doctor,
-    appointmentType,
-    dateOfAppointment,
-  }: Appointment = req.body;
+  const { doctorId, appointmentType, dateOfAppointment }: Appointment =
+    req.body;
+
+  const user = JSON.parse(JSON.stringify(req.user));
+  if (user.role_id != 'patient') {
+    return res.status(404).json({
+      success: false,
+      message: 'You are not authorise to create an Appointment',
+    });
+  }
 
   try {
-    // const doctor = doctorId
     const newAppointment = new Appointment({
-      userId,
-      doctor,
+      patientId: user._id,
+      doctorId,
       appointmentType,
       dateOfAppointment,
     });
     await newAppointment.save();
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
-      data: newAppointment
-    })
+      data: newAppointment,
+    });
   } catch (Err) {
-    console.log(Err);
+    // console.log(Err);
     res.status(404).json({
       success: false,
-      message: "One Or More Required Field is empty"
-    })
+      message: 'One Or More Required Field is empty',
+    });
   }
 };
 
@@ -186,5 +181,10 @@ const addAppointment = async (
 // We need to Fetch User Details using UserID by virtual method from user collection
 // Need to change name _id to appointmentId
 
-
-export default { getAppointments, addAppointment, getAppointment, updateAppointment, deleteAppointment };
+export default {
+  getAppointments,
+  addAppointment,
+  getAppointment,
+  updateAppointment,
+  deleteAppointment,
+};

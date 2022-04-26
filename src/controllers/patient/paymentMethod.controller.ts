@@ -10,12 +10,16 @@ export const savePaymentMethod = async (req, res) => {
         });
 
         return res.status(StatusCodes.OK).json({
+            type: "success",
+            status: true,
             message: 'Payment method saved',
-            paymentMethod,
+            data: { paymentMethod },
         });
     } catch (error) {
         console.log({ error });
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            type: "error",
+            status: false,
             message: error.message,
         });
     }
@@ -39,6 +43,8 @@ export const getPaymentMethod = async (req, res) => {
         } = await filterPaginate(PaymentMethod, filter, req.query);
 
         return res.status(StatusCodes.OK).json({
+            type: "success",
+            status: true,
             message: 'Payment method found',
             paymentMethods,
             total,
@@ -49,6 +55,8 @@ export const getPaymentMethod = async (req, res) => {
     } catch (error) {
         console.log({ error });
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            type: "error",
+            status: false,
             message: error.message,
         });
     }
@@ -65,6 +73,8 @@ export const deletePaymentMethod = async (req, res) => {
 
         if (!paymentMethod) {
             return res.status(StatusCodes.NOT_FOUND).json({
+                type: "error",
+                status: false,
                 message: 'Payment method not found',
             });
         }
@@ -72,11 +82,15 @@ export const deletePaymentMethod = async (req, res) => {
         await paymentMethod.remove();
 
         return res.status(StatusCodes.OK).json({
+            type: "success",
+            status: true,
             message: 'Payment method deleted',
         });
     } catch (error) {
         console.log({ error });
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            type: "error",
+            status: false,
             message: error.message,
         });
     }

@@ -1,29 +1,36 @@
 import { StatusCodes } from 'http-status-codes';
-import HealthProfile from '../../../db/models/healthProfile.model';
-import { filterPaginate } from '../../../lib/filterPaginate';
+import User from '../../db/models/user';
+import { filterPaginate } from '../../lib/filterPaginate';
+import { Roles } from '../../lib/roles';
 
-export const listHealthProfile = async (req, res) => {
+export const findMd = async (req, res) => {
     try {
         const { f = {} } = req.query;
+        const filterLocation = f.location ?? req.user.location;
 
+        delete f.location;
         const filter = {
             userId: req.user._id,
+            role_id: Roles.DOCTOR,
             ...f,
+            ["license.location"]: {
+                $regex: new RegExp(filterLocation, "i")
+            },
         };
 
         const {
-            docs: healthProfiles,
+            docs: doctors,
             total,
             totalPages,
             page,
             limit
-        } = await filterPaginate(HealthProfile, filter, req.query);
+        } = await filterPaginate(User, filter, req.query);
 
         return res.status(StatusCodes.OK).json({
             type: "success",
             status: true,
-            message: 'Health data list',
-            healthProfiles,
+            message: 'MD list',
+            doctors,
             total,
             page,
             limit,
@@ -37,5 +44,4 @@ export const listHealthProfile = async (req, res) => {
             message: error.message,
         });
     }
-};
-
+}

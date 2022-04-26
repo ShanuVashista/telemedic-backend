@@ -18,6 +18,8 @@ export default async function auth(req, res, next) {
 
         if (!user) {
             return res.status(StatusCodes.UNAUTHORIZED).json({
+                status: false,
+                type: 'error',
                 message: 'User not found',
             });
         }
@@ -25,15 +27,27 @@ export default async function auth(req, res, next) {
         req.user = user;
         next();
     } catch (error) {
-        console.log(error.message);
+        // console.log(error.message,'---jwt error');
         if (error.message == 'invalid signature') {
             return res.status(StatusCodes.UNAUTHORIZED).json({
+                status: false,
+                type: 'error',
                 message: 'Invalid token',
             });
         } else {
-            return res.status(StatusCodes.UNAUTHORIZED).json({
-                message: error.message,
-            });
+            if (error.message == 'jwt malformed') {
+                return res.status(StatusCodes.UNAUTHORIZED).json({
+                    status: false,
+                    type: 'error',
+                    message: 'Token is not valid',
+                });
+            } else {
+                return res.status(StatusCodes.UNAUTHORIZED).json({
+                    status: false,
+                    type: 'error',
+                    message: error.message,
+                });
+            }
         }
     }
 }

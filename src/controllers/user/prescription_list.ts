@@ -23,7 +23,8 @@ const Prescription_List_POST = async (req, res) => {
         const prescription_count = await Prescription.find(cond).count()
         const totalPages = Math.ceil(prescription_count / limit);
         res.status(StatusCodes.OK).send({
-            status: true,
+            status:true,
+            type: 'success',
             message: "Prescription List Fetch Successfully",
             page: page,
             limit: limit,
@@ -33,7 +34,8 @@ const Prescription_List_POST = async (req, res) => {
         });
     } catch (error) {
         res.status(StatusCodes.BAD_REQUEST).json({
-            success: false,
+            status:false,
+            type: 'error',
             message: error.message
         });
     }

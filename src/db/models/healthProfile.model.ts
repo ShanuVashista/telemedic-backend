@@ -45,16 +45,16 @@ const healthProfileSchema = new mongoose.Schema(
     }
 );
 
-healthProfileSchema.methods.toJSON = function (this: mongoose.HydratedDocument<IHealthProfile>) {
-    const healthProfile = this
-    const healthProfileObject = healthProfile.toObject()
+// healthProfileSchema.methods.toJSON = function (this: mongoose.HydratedDocument<IHealthProfile>) {
+//     const healthProfile = this
+//     const healthProfileObject = healthProfile.toObject()
 
-    if (healthProfileObject.profile_image) {
-        healthProfileObject.profile_image = `/uploads/${healthProfile.userId}/${healthProfile.profile_image}`
-    }
+//     if (healthProfileObject.profile_image) {
+//         healthProfileObject.profile_image = `/uploads/${healthProfile.userId}/${healthProfile.profile_image}`
+//     }
 
-    return healthProfileObject
-}
+//     return healthProfileObject
+// }
 
 const HealthProfile = mongoose.model('healthProfile', healthProfileSchema);
 export default HealthProfile;

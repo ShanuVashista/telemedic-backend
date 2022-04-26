@@ -55,13 +55,15 @@ const Professional_PUT = async (req, res) => {
         const user = await User.findByIdAndUpdate(req.user._id, registerData, { new: true });
 
         res.status(200).json({
-            success: true,
+            status:true,
+            type: 'success',
             message: 'Successfully submitted professional info',
             data: user
         });
     } catch (error) {
         res.status(400).json({
-            success: false,
+            status:false,
+            type: 'error',
             message: error.message
         });
     }

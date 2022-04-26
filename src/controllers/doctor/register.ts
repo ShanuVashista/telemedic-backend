@@ -1,18 +1,19 @@
 /* eslint-disable no-useless-escape */
-import { existsSync, mkdirSync, renameSync } from "fs";
+// import { existsSync, mkdirSync, renameSync } from "fs";
 import jwt from "jsonwebtoken";
 import validator from "email-validator";
 import StatusCodes from "http-status-codes";
 import User from '../../db/models/user';
 import { Roles } from "../../lib/roles";
 import { deleteFileByPath } from "../../lib/deleteFileByPath";
+import uploadFile from '../../services/upload';
 const Register_POST = async (req, res) => {
     try {
         //Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character
         const pass_rgex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
         const registerData = req.body;
-        console.log(req, 'req----');
-        if (!req.file) {
+        // console.log(req, 'req----');
+        if (!req.files) {
             return res.status(StatusCodes.BAD_REQUEST).json({
                 message: "Please upload a profile photo"
             });
@@ -52,33 +53,46 @@ const Register_POST = async (req, res) => {
         if (!registerData.fax) {
             throw new Error("Please enter a Fax");
         }
-        const user = new User({ ...req.body, profile_photo: req.file.filename, role_id: Roles.DOCTOR });
-        const data = await user.save();
-        // check if folder exists
-        if (! await existsSync(`./public/uploads/${data._id}`)) {
-            // create a folder in public/uploads named by user id
-            await mkdirSync(`./public/uploads/${data._id}`);
+        const user = new User({ ...req.body, role_id: Roles.DOCTOR });
+        let data = await user.save();
+        data = JSON.parse(JSON.stringify(data));
+        const upload_data = {
+            db_response: data,
+            file: req.files[0]
         }
-        // move the file to the folder
-        await renameSync(`./public/uploads/${req.file.filename}`, `./public/uploads/${data._id}/${req.file.filename}`);
-        const token = jwt.sign({ _id: data._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+        const image_uri = await uploadFile(upload_data);
 
+        const response = await User.findByIdAndUpdate(data._id, { $set: { "profile_photo": image_uri.Location } }, { new: true });
+
+        // // check if folder exists
+        // if (! await existsSync(`./public/uploads/${data._id}`)) {
+        //     // create a folder in public/uploads named by user id
+        //     await mkdirSync(`./public/uploads/${data._id}`);
+        // }
+        // // move the file to the folder
+        // await renameSync(`./public/uploads/${req.file.filename}`, `./public/uploads/${data._id}/${req.file.filename}`);
+        const token = jwt.sign({ _id: data._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
         res.status(201).json({
-            success: true,
-            message: 'Register successfully',
-            accesstoken: token,
-            data: data
+            status: true,
+            type: 'success',
+            message: 'Doctor Registration Successfully',
+            data: {
+                ...response.toObject(),
+                token: token,
+            }
         });
     } catch (error) {
         deleteFileByPath(req.file?.path);
         if (error.code == 11000) {
             res.status(400).json({
-                success: false,
+                status: false,
+                type: 'error',
                 message: "Email Already exist"
             });
         } else {
             res.status(400).json({
-                success: false,
+                status: false,
+                type: 'error',
                 message: error.message
             });
         }

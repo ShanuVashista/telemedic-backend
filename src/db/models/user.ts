@@ -52,7 +52,7 @@ const userSchema = new mongoose.Schema<IUser>(
             required: true,
         },
 
-        profile_photo: { type: String, required: true },
+        profile_photo: { type: String },
 
         password: {
             type: String,
@@ -130,18 +130,6 @@ userSchema.virtual('paymentMethods', {
 
 userSchema.set('toObject', { virtuals: true });
 userSchema.set('toJSON', { virtuals: true });
-
-userSchema.methods.toJSON = function (this: mongoose.HydratedDocument<IUser>) {
-    const user = this;
-
-    const userObject = user.toObject();
-
-    userObject.profile_photo = `/uploads/${user._id}/${user.profile_photo}`;
-
-    delete userObject.password;
-
-    return userObject;
-};
 
 userSchema.pre('save', function (this: mongoose.HydratedDocument<IUser>, next) {
     const user = this;
