@@ -15,6 +15,7 @@ export const updateHealthProfile = async (req, res) => {
         if (!healthProfile) {
             return res.status(StatusCodes.NOT_FOUND).json({
                 type: "error",
+                status: false,
                 message: "Health data not found"
             });
         }
@@ -44,6 +45,7 @@ export const updateHealthProfile = async (req, res) => {
 
         return res.status(StatusCodes.OK).json({
             type: "success",
+            status: true,
             message: "Health data updated",
             response,
         });
@@ -53,6 +55,7 @@ export const updateHealthProfile = async (req, res) => {
         deleteFileByPath(req.file?.path);
         return res.status(400).json({
             type: "error",
+            status: false,
             message: error.message,
         });
     }

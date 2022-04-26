@@ -42,6 +42,7 @@ const register = async (req, res) => {
         const accesstoken = createToken(user);
         res.status(StatusCodes.CREATED).json({
             type: "success",
+            status: true,
             message: "User created successfully",
             data: {
                 ...user.toObject(),
@@ -53,6 +54,7 @@ const register = async (req, res) => {
         if (error.code === 11000) {
             return res.status(StatusCodes.BAD_REQUEST).json({
                 type: "error",
+                status: false,
                 message: "User already exists"
             });
         }
@@ -62,6 +64,7 @@ const register = async (req, res) => {
 
         return res.status(StatusCodes.BAD_REQUEST).json({
             type: "error",
+            status: false,
             message: error.message
         })
     }

@@ -28,6 +28,7 @@ export const findMd = async (req, res) => {
 
         return res.status(StatusCodes.OK).json({
             type: "success",
+            status: true,
             message: 'Health data list',
             healthProfiles,
             total,
@@ -39,6 +40,7 @@ export const findMd = async (req, res) => {
         console.log({ error });
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             type: "error",
+            status: false,
             message: error.message,
         });
     }
