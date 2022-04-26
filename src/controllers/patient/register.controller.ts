@@ -29,25 +29,30 @@ const register = async (req, res) => {
         user.current_practise_address = undefined;
         user.license = undefined;
 
-        await user.save({ validateBeforeSave: false });
         const upload_data = {
-            db_response : user,
-            file : req.files[0]
+            db_response: user,
+            file: req.files[0]
         }
         const image_uri = await uploadFile(upload_data);
-        const response = await User.findByIdAndUpdate(user._id,{$set:{"profile_photo":image_uri.Location}},{new:true});
+        // const response = await User.findByIdAndUpdate(user._id,{$set:{"profile_photo":image_uri.Location}},{new:true});
         // await saveFile(user, req);
+        user.profile_photo = image_uri.Location;
+        await user.save({ validateBeforeSave: false });
 
         const accesstoken = createToken(user);
         res.status(StatusCodes.CREATED).json({
-            message: "User created successfully asdf",
-            response,
-            accesstoken,
+            type: "success",
+            message: "User created successfully",
+            data: {
+                ...user.toObject(),
+                token: accesstoken,
+            },
         });
     } catch (error) {
         // mongoose email exists error
         if (error.code === 11000) {
             return res.status(StatusCodes.BAD_REQUEST).json({
+                type: "error",
                 message: "User already exists"
             });
         }
@@ -55,7 +60,8 @@ const register = async (req, res) => {
 
         deleteFileByPath(req.file?.path);
 
-        return res.status(400).json({
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            type: "error",
             message: error.message
         })
     }

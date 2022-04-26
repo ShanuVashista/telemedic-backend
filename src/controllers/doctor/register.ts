@@ -57,13 +57,13 @@ const Register_POST = async (req, res) => {
         let data = await user.save();
         data = JSON.parse(JSON.stringify(data));
         const upload_data = {
-            db_response : data,
-            file : req.files[0]
+            db_response: data,
+            file: req.files[0]
         }
         const image_uri = await uploadFile(upload_data);
-        
-        const response = await User.findByIdAndUpdate(data._id,{$set:{"profile_photo":image_uri.Location}},{new:true});
-        
+
+        const response = await User.findByIdAndUpdate(data._id, { $set: { "profile_photo": image_uri.Location } }, { new: true });
+
         // // check if folder exists
         // if (! await existsSync(`./public/uploads/${data._id}`)) {
         //     // create a folder in public/uploads named by user id
@@ -72,23 +72,24 @@ const Register_POST = async (req, res) => {
         // // move the file to the folder
         // await renameSync(`./public/uploads/${req.file.filename}`, `./public/uploads/${data._id}/${req.file.filename}`);
         const token = jwt.sign({ _id: data._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-
         res.status(201).json({
-            success: true,
-            message: 'Register successfully',
-            accesstoken: token,
-            data: response
+            type: 'success',
+            message: 'Doctor Registration Successfully',
+            data: {
+                ...response.toObject(),
+                token: token,
+            }
         });
     } catch (error) {
         deleteFileByPath(req.file?.path);
         if (error.code == 11000) {
             res.status(400).json({
-                success: false,
+                type: 'error',
                 message: "Email Already exist"
             });
         } else {
             res.status(400).json({
-                success: false,
+                type: 'error',
                 message: error.message
             });
         }
