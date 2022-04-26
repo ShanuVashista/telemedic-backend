@@ -22,6 +22,7 @@ import siteAdminRoutes from './routes/siteAdminRoute'
 import appointment from './routes/appointment'
 import rating from './routes/rating'
 import clinicalNote from './routes/clinicalNote'
+import referral from './routes/referral'
 
 app.use('/user', userRoutes);
 app.use('/admin/super', superAdminRoutes)
@@ -29,6 +30,7 @@ app.use('/admin/site', siteAdminRoutes)
 app.use('/appointments', appointment)
 app.use('/rating', rating)
 app.use('/clinicalNote', clinicalNote)
+app.use('/referral', referral)
 
 app.get('/', (req, res) => {
   res.send('Hello World!')

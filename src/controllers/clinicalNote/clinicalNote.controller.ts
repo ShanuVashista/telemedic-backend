@@ -33,13 +33,15 @@ const addClinicalNote = async (
      let doctorId= req.user._id
      if(req.user.role_id != 'doctor'){
         res.status(400).json({
-            success: false,
+          status: false,
+          type:"Error",
             message : "You Are Not Authorized For Generate Clinical Note "
           })
      }else{
         if(eventOutcome.length <= 0){
             res.status(400).json({
-                success: false,
+              status: false,
+              type:"Error",
                 message : "Please Select Atleast One Checkbox"
               })
          }else{
@@ -56,9 +58,14 @@ const addClinicalNote = async (
             });
            let clinicalNoteData = await newClinicalNote.save();
             if(clinicalNoteData){
+                let condition = {
+                   _id : clinicalNoteData._id
+                }
+                const data = await clinicalNote.find(condition).populate('patient_details').populate('doctor_details')     
                 res.status(201).json({
-                    success: true,
-                    data: newClinicalNote
+                  status: true,
+                  type:"success",
+                    data: data
                 })
             } 
          }
@@ -66,8 +73,9 @@ const addClinicalNote = async (
   } catch (Err) {
     console.log(Err);
     res.status(404).json({
-      success: false,
-      message: "One Or More Required Field is empty"
+      status: false,
+      type:"Error",
+      message: Err.message
     })
   }
 };
