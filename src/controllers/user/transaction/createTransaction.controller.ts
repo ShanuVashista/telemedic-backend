@@ -9,12 +9,14 @@ export const createTransaction = async (req, res) => {
         });
 
         return res.status(StatusCodes.OK).json({
+            type: "success",
             message: 'Transaction created',
-            transaction,
+            data: { transaction },
         });
     } catch (error) {
         console.log({ error });
         return res.status(400).json({
+            type: "error",
             message: error.message,
         });
     }

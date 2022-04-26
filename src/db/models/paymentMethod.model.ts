@@ -36,6 +36,9 @@ const isType = function (type: PaymentMethodEnum) {
     };
 };
 
+const obfuscate = (value: string | undefined): string =>
+    value?.replace(/.(?=.{4})/g, '*');
+
 const paymentMethodSchema = new mongoose.Schema<IPaymentMethod>(
     {
         userId: {
@@ -50,6 +53,7 @@ const paymentMethodSchema = new mongoose.Schema<IPaymentMethod>(
         account_number: {
             type: String,
             required: isType(PaymentMethodEnum.BANK),
+            get: obfuscate,
         },
         account_name: {
             type: String,
@@ -66,7 +70,7 @@ const paymentMethodSchema = new mongoose.Schema<IPaymentMethod>(
         card_number: {
             type: String,
             required: isType(PaymentMethodEnum.CARD),
-            get: (value: string) => value.replace(/.(?=.{4})/g, '*'),
+            get: obfuscate,
         },
         card_name: {
             type: String,
@@ -88,6 +92,10 @@ const paymentMethodSchema = new mongoose.Schema<IPaymentMethod>(
     },
     {
         timestamps: true,
+        toJSON: {
+            getters: true,
+            virtuals: true,
+        },
     }
 );
 

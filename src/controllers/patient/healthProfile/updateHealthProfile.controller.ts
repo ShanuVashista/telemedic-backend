@@ -1,10 +1,9 @@
 import { StatusCodes } from 'http-status-codes';
 import mongoose from 'mongoose';
-import path from 'path';
 import HealthProfile, { IHealthProfile } from '../../../db/models/healthProfile.model';
 import { deleteFileByPath } from '../../../lib/deleteFileByPath';
-// import { saveFile } from '../../../lib/saveFile';
 import uploadFile from '../../../services/upload';
+
 export const updateHealthProfile = async (req, res) => {
     try {
         const healthProfile: mongoose.HydratedDocument<IHealthProfile> =
@@ -15,6 +14,7 @@ export const updateHealthProfile = async (req, res) => {
 
         if (!healthProfile) {
             return res.status(StatusCodes.NOT_FOUND).json({
+                type: "error",
                 message: "Health data not found"
             });
         }
@@ -28,11 +28,11 @@ export const updateHealthProfile = async (req, res) => {
 
         await healthProfile.save();
         const upload_data = {
-            db_response : healthProfile,
-            file : req.files[0]
+            db_response: healthProfile,
+            file: req.files[0]
         }
-        const image_uri = await uploadFile(upload_data);        
-        const response = await HealthProfile.findByIdAndUpdate(healthProfile._id,{$set:{"profile_image":image_uri.Location}},{new:true});
+        const image_uri = await uploadFile(upload_data);
+        const response = await HealthProfile.findByIdAndUpdate(healthProfile._id, { $set: { "profile_image": image_uri.Location } }, { new: true });
         // await saveFile(req.user, req);
 
         // if (oldProfileImage) {
@@ -43,6 +43,7 @@ export const updateHealthProfile = async (req, res) => {
         // }
 
         return res.status(StatusCodes.OK).json({
+            type: "success",
             message: "Health data updated",
             response,
         });
@@ -51,6 +52,7 @@ export const updateHealthProfile = async (req, res) => {
         console.log({ error });
         deleteFileByPath(req.file?.path);
         return res.status(400).json({
+            type: "error",
             message: error.message,
         });
     }
