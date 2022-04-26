@@ -23,7 +23,7 @@ const Prescription_POST = async (req, res) => {
                 throw new Error ('Appointment does not exist')
             }else{                
                 if(JSON.parse(JSON.stringify(appointment_count[0].doctorId)) != JSON.parse(JSON.stringify(req.user._id))){
-                    throw new Error ('You are not belongs to this appointment')
+                    throw new Error ('Doctor is not belongs to this appointment')
                 }
             }
         }
