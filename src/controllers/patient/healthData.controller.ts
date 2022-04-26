@@ -12,12 +12,14 @@ const healthData = async (req, res) => {
         if (!user) {
             return res.status(StatusCodes.NOT_FOUND).json({
                 type: "error",
+                status: false,
                 message: "User not found"
             });
         }
 
         return res.status(StatusCodes.OK).json({
             type: "success",
+            status: true,
             message: "Health data updated",
             data: { user },
         });
@@ -27,12 +29,14 @@ const healthData = async (req, res) => {
         if (error.code === 11000) {
             return res.status(StatusCodes.BAD_REQUEST).json({
                 type: "error",
+                status: false,
                 message: "User already exists"
             });
         }
         console.log({ error });
         return res.status(400).json({
             type: "error",
+            status: false,
             message: error.message
         })
     }

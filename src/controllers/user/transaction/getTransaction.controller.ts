@@ -11,12 +11,14 @@ export const getTransaction = async (req, res) => {
         if (!transaction) {
             return res.status(StatusCodes.NOT_FOUND).json({
                 type: "error",
+                status: false,
                 message: 'Transaction not found',
             });
         }
 
         return res.status(StatusCodes.OK).json({
             type: "success",
+            status: true,
             message: 'Transaction found',
             data: { transaction },
         });
@@ -24,6 +26,7 @@ export const getTransaction = async (req, res) => {
         console.log({ error });
         return res.status(400).json({
             type: "error",
+            status: false,
             message: error.message,
         });
     }

@@ -34,16 +34,17 @@ const login = async (req, res) => {
                     expiresIn: 86400  //24 hours
                 });
 
-
-                res.status(StatusCodes.OK).json({
-                    status: true,
-                    type: "success",
-                    message: "User Successfully Logged-In",
-                    data: {
-                        ...user.toObject(),
-                        token: token,
-                    },
-                });
+                user.populate('paymentMethods', (err, user) => {
+                    res.status(StatusCodes.OK).json({
+                        type: "success",
+                        status: true,
+                        message: "User Successfully Logged-In",
+                        data: {
+                            ...user.toObject(),
+                            token: token,
+                        },
+                    });
+                })
             })
 
 

@@ -18,6 +18,7 @@ export const addHealthProfile = async (req, res) => {
 
         return res.status(StatusCodes.OK).json({
             type: "success",
+            status: true,
             message: 'Health data added',
             data: {
                 ...response.toObject(),
@@ -27,6 +28,7 @@ export const addHealthProfile = async (req, res) => {
         console.log({ error });
         return res.status(400).json({
             type: "error",
+            status: false,
             message: error.message,
         });
     }
