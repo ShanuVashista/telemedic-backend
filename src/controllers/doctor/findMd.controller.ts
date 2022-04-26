@@ -19,7 +19,7 @@ export const findMd = async (req, res) => {
         };
 
         const {
-            docs: healthProfiles,
+            docs: mdList,
             total,
             totalPages,
             page,
@@ -29,8 +29,8 @@ export const findMd = async (req, res) => {
         return res.status(StatusCodes.OK).json({
             type: "success",
             status: true,
-            message: 'Health data list',
-            healthProfiles,
+            message: 'MD list',
+            mdList,
             total,
             page,
             limit,
