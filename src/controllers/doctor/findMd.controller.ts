@@ -19,7 +19,7 @@ export const findMd = async (req, res) => {
         };
 
         const {
-            docs: mdList,
+            docs: doctors,
             total,
             totalPages,
             page,
@@ -30,7 +30,7 @@ export const findMd = async (req, res) => {
             type: "success",
             status: true,
             message: 'MD list',
-            mdList,
+            doctors,
             total,
             page,
             limit,
