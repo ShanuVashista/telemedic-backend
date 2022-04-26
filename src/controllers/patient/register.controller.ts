@@ -4,7 +4,7 @@ import { createToken } from "../../lib/jwt";
 import { Roles } from "../../lib/roles";
 // import { saveFile } from "../../lib/saveFile";
 import { deleteFileByPath } from "../../lib/deleteFileByPath";
-import uploadFile from '../../services/upload';
+import S3 from '../../services/upload';
 const register = async (req, res) => {
     if (!req.files) {
         return res.status(StatusCodes.BAD_REQUEST).json({
@@ -33,7 +33,7 @@ const register = async (req, res) => {
             db_response: user,
             file: req.files[0]
         }
-        const image_uri = await uploadFile(upload_data);
+        const image_uri = await S3.uploadFile(upload_data);
         // const response = await User.findByIdAndUpdate(user._id,{$set:{"profile_photo":image_uri.Location}},{new:true});
         // await saveFile(user, req);
         user.profile_photo = image_uri.Location;

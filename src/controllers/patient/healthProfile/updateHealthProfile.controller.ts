@@ -1,8 +1,8 @@
 import { StatusCodes } from 'http-status-codes';
 import mongoose from 'mongoose';
 import HealthProfile, { IHealthProfile } from '../../../db/models/healthProfile.model';
-import { deleteFileByPath } from '../../../lib/deleteFileByPath';
-import uploadFile from '../../../services/upload';
+// import { deleteFileByPath } from '../../../lib/deleteFileByPath';
+import S3 from '../../../services/upload';
 
 export const updateHealthProfile = async (req, res) => {
     try {
@@ -22,20 +22,23 @@ export const updateHealthProfile = async (req, res) => {
 
         // const oldProfileImage = healthProfile.profile_image;
 
-        healthProfile.profile_image = req.file?.filename;
+        // healthProfile.profile_image = req.file?.filename;
         Object.entries(req.body).forEach(([key, value]) => {
             healthProfile[key] = value;
         });
 
         await healthProfile.save();
-        const upload_data = {
-            db_response: healthProfile,
-            file: req.files[0]
+        let response = {};
+        if(typeof (req.files) != 'undefined' && req.files != null){
+            const upload_data = {
+                db_response: healthProfile,
+                file: req.files[0]
+            }
+            await S3.deleteFile(JSON.parse(JSON.stringify(healthProfile)));
+            const image_uri = await S3.uploadFile(upload_data);
+            response = await HealthProfile.findByIdAndUpdate(healthProfile._id, { $set: { "profile_image": image_uri.Location } }, { new: true });
         }
-        const image_uri = await uploadFile(upload_data);
-        const response = await HealthProfile.findByIdAndUpdate(healthProfile._id, { $set: { "profile_image": image_uri.Location } }, { new: true });
-        // await saveFile(req.user, req);
-
+        
         // if (oldProfileImage) {
         //     const userDir = path.resolve(`./public/uploads/${req.user._id}`);
         //     const oldFilePath = path.join(userDir, oldProfileImage);
@@ -51,8 +54,8 @@ export const updateHealthProfile = async (req, res) => {
         });
 
     } catch (error) {
-        console.log({ error });
-        deleteFileByPath(req.file?.path);
+        // console.log({ error });
+        // deleteFileByPath(req.file?.path);
         return res.status(400).json({
             type: "error",
             status: false,

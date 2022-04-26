@@ -26,4 +26,21 @@ const uploadFile = async (request) => {
         return error
     }
 }
-export default uploadFile;
+const deleteFile = async (request) => {
+    try {
+        const file = request.profile_image;
+        const fileName = file.substring(file.lastIndexOf('/')+1)
+
+        const params = {
+            Bucket: Bucket_URI + request._id + '/image',
+            Key: fileName
+        };
+        const s3_response = s3.deleteObject(params)
+        
+        if(!s3_response) throw s3_response;
+        return await s3_response.promise()
+    } catch (error) {
+        return error
+    }
+}
+export default {uploadFile,deleteFile};
