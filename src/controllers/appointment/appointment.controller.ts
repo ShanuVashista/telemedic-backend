@@ -6,6 +6,7 @@ import Appointment from '../../db/models/appointment.model';
 interface Appointment {
   patientId: number;
   appointmentId: number;
+  symptoms:Array<string>;
   createdAt: Date;
   doctorId: number;
   doctor: number;
@@ -150,7 +151,7 @@ const deleteAppointment = async (
 // Function to Create an Appointment
 const addAppointment = async (req, res: Response, next: NextFunction) => {
   // Get the data from query body
-  const { doctorId, appointmentType, dateOfAppointment }: Appointment =
+  const { doctorId, appointmentType, dateOfAppointment,symptoms }: Appointment =
     req.body;
 
   const user = JSON.parse(JSON.stringify(req.user));
@@ -165,6 +166,7 @@ const addAppointment = async (req, res: Response, next: NextFunction) => {
   try {
     const newAppointment = new Appointment({
       patientId: user._id,
+      symptoms,
       doctorId,
       appointmentType,
       dateOfAppointment,
