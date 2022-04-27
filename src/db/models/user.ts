@@ -128,6 +128,10 @@ userSchema.virtual('paymentMethods', {
     foreignField: 'userId',
 });
 
+userSchema.virtual('name').get(function (this: mongoose.HydratedDocument<IUser>) {
+    return `${this.firstname} ${this.lastname}`;
+});
+
 userSchema.set('toObject', { virtuals: true });
 userSchema.set('toJSON', { virtuals: true });
 
