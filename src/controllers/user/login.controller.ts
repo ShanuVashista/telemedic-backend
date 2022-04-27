@@ -51,6 +51,8 @@ const login = async (req, res) => {
 
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            type: "error",
+            status: false,
             message: error.message
         })
     }
