@@ -1,6 +1,8 @@
 /* eslint-disable no-useless-escape */
 import StatusCodes from "http-status-codes";
 import Prescription from '../../db/models/prescription.model';
+import Appointment from "../../db/models/appointment.model";
+
 // import User from '../../db/models/user';
 const Prescription_POST = async (req, res) => {
     try {
@@ -15,6 +17,15 @@ const Prescription_POST = async (req, res) => {
         }
         if (!checkForHexRegExp.test(prescriptionData.appointment)) {
             throw new Error('Faild to match required pattern for Appointment Id');
+        }else{
+            const appointment_count = await Appointment.find({_id:prescriptionData.appointment});
+            if(appointment_count.length == 0){
+                throw new Error ('Appointment does not exist')
+            }else{                
+                if(JSON.parse(JSON.stringify(appointment_count[0].doctorId)) != JSON.parse(JSON.stringify(req.user._id))){
+                    throw new Error ('Doctor is not belongs to this appointment')
+                }
+            }
         }
         if (typeof (prescriptionData.prescription) == 'undefined' || prescriptionData.prescription == null || prescriptionData.prescription.length == 0) {
             throw new Error('Prescription should contain some data');

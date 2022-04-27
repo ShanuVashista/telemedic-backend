@@ -6,7 +6,7 @@ import StatusCodes from "http-status-codes";
 import User from '../../db/models/user';
 import { Roles } from "../../lib/roles";
 import { deleteFileByPath } from "../../lib/deleteFileByPath";
-import uploadFile from '../../services/upload';
+import S3 from '../../services/upload';
 const Register_POST = async (req, res) => {
     try {
         //Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character
@@ -60,7 +60,7 @@ const Register_POST = async (req, res) => {
             db_response: data,
             file: req.files[0]
         }
-        const image_uri = await uploadFile(upload_data);
+        const image_uri = await S3.uploadFile(upload_data);
 
         const response = await User.findByIdAndUpdate(data._id, { $set: { "profile_photo": image_uri.Location } }, { new: true });
 

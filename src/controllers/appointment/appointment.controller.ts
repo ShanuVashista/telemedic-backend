@@ -6,6 +6,7 @@ import Appointment from '../../db/models/appointment.model';
 interface Appointment {
   patientId: number;
   appointmentId: number;
+  symptoms:Array<string>;
   createdAt: Date;
   doctorId: number;
   doctor: number;
@@ -44,6 +45,7 @@ const getAppointments = async (
     const totalPages = Math.ceil(result_count / limit);
     return res.status(200).json({
       status: true,
+      type: "success",
       message: 'Appointment Fetch Successfully',
       page: page,
       limit: limit,
@@ -53,7 +55,7 @@ const getAppointments = async (
     });
   } catch (error) {
     return res.status(400).json({
-      success: false,
+      status: false,
       message: error.message,
     });
   }
@@ -71,13 +73,16 @@ const getAppointment = async (
     const result = await Appointment.findById(Appointmentid).populate('patient_details').populate('doctor_details');
 
     return res.status(200).json({
-      message: true,
+      status: true,
+      type:"success",
+      message: "Appointment List Fetched",
       data: result,
     });
   } catch (Err) {
     // console.log(Err);
     res.status(404).json({
-      success: false,
+      statue: false,
+      type:"error",
       message: 'Appointment not found',
     });
   }
@@ -104,13 +109,15 @@ const updateAppointment = async (
     const updateDoc = await Appointment.findById(Appointmentid);
 
     return res.status(200).json({
-      message: true,
+      status: true,
+      type:"success",
+      message: "Appointment Updated Sucessfully",
       data: updateDoc,
     });
   } catch (Err) {
     // console.log(Err);
     res.status(404).json({
-      success: false,
+      status: false,
       message: 'Appointment not found',
     });
   }
@@ -128,8 +135,9 @@ const deleteAppointment = async (
     const result = await Appointment.deleteOne({ _id: Appointmentid });
 
     return res.status(200).json({
-      message: true,
-      data: 'Appointment Delete Successful',
+      status: true,
+      type:"success",
+      message: 'Appointment Delete Successful',
     });
   } catch (Err) {
     // console.log(Err);
@@ -143,13 +151,14 @@ const deleteAppointment = async (
 // Function to Create an Appointment
 const addAppointment = async (req, res: Response, next: NextFunction) => {
   // Get the data from query body
-  const { doctorId, appointmentType, dateOfAppointment }: Appointment =
+  const { doctorId, appointmentType, dateOfAppointment,symptoms }: Appointment =
     req.body;
 
   const user = JSON.parse(JSON.stringify(req.user));
   if (user.role_id != 'patient') {
     return res.status(404).json({
-      success: false,
+      status: false,
+      type:"success",
       message: 'You are not authorise to create an Appointment',
     });
   }
@@ -157,29 +166,27 @@ const addAppointment = async (req, res: Response, next: NextFunction) => {
   try {
     const newAppointment = new Appointment({
       patientId: user._id,
+      symptoms,
       doctorId,
       appointmentType,
       dateOfAppointment,
     });
     await newAppointment.save();
 
-    res.status(200).json({
-      success: true,
+    res.status(201).json({
+      status: true,
+      type:"success",
       data: newAppointment,
     });
   } catch (Err) {
     // console.log(Err);
     res.status(404).json({
-      success: false,
+      status: false,
       message: 'One Or More Required Field is empty',
     });
   }
 };
 
-// TODO:
-// We Need to Fetch Doctor Details using DoctorId by virtual Method doctor collection
-// We need to Fetch User Details using UserID by virtual method from user collection
-// Need to change name _id to appointmentId
 
 export default {
   getAppointments,

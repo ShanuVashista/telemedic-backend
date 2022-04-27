@@ -1,6 +1,19 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, PopulatedDoc } from "mongoose";
+import { IUser } from "./user";
 
-const AppointmentSchema: Schema = new Schema(
+export interface IAppointment {
+  appointmentId: Schema.Types.ObjectId;
+  patientId: PopulatedDoc<IUser>;
+  doctorId: PopulatedDoc<IUser>;
+  appointmentType: string;
+  dateOfAppointment: Date;
+  status: string;
+  isEmergency: boolean;
+  symptoms: Array<string>;
+  Meta: string;
+}
+
+const AppointmentSchema = new Schema<IAppointment>(
   {
     appointmentId: { type: Schema.Types.ObjectId },
     patientId: { type: Schema.Types.ObjectId, ref: 'user', required: true },
@@ -9,6 +22,7 @@ const AppointmentSchema: Schema = new Schema(
     dateOfAppointment: { type: Date, required: true },
     status: { default: "Pending", type: String, required: true },
     isEmergency: { default: false, type: Boolean, required: true },
+    symptoms:[{type: String, required: true, default:null}],
     Meta: { type: String },
   },
   { timestamps: true, toJSON: { virtuals: true } }
