@@ -47,7 +47,7 @@ export const waitList = async (req, res) => {
             doctorId: appointment.doctorId,
             dateOfAppointment: {
                 $gte: start,
-                $lt: end,
+                $lt: appointment.dateOfAppointment,
             },
         }).sort({ dateOfAppointment: 1 });
 

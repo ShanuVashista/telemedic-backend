@@ -133,6 +133,7 @@ userSchema.set('toJSON', { virtuals: true });
 
 userSchema.pre('save', function (this: mongoose.HydratedDocument<IUser>, next) {
     const user = this;
+    console.log(user)
     if (!user.isModified('password')) return next();
 
     bcrypt.hash(user.password, 10, function (err, hash) {
@@ -145,6 +146,12 @@ userSchema.pre('save', function (this: mongoose.HydratedDocument<IUser>, next) {
 
     user.email = user.email.toLowerCase();
 });
+
+userSchema.methods.toJSON = function (this: mongoose.HydratedDocument<IUser>) {
+    const user = this.toObject();
+    delete user.password;
+    return user;
+};
 
 userSchema.methods.comparePassword = function (
     this: mongoose.HydratedDocument<IUser>,
