@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response, NextFunction } from "express";
 import clinicalNote from "../../db/models/clinicalNote.model";
+import activityLog from "../../services/activityLog"
 
 interface clinicalNote {
   doctorId : string,
@@ -31,6 +32,8 @@ const addClinicalNote = async (
   try {
 
      let doctorId= req.user._id
+     let doctorAdmin= req.user.role_id
+     
      if(req.user.role_id != 'doctor'){
         res.status(400).json({
           status: false,
@@ -58,6 +61,10 @@ const addClinicalNote = async (
             });
            let clinicalNoteData = await newClinicalNote.save();
             if(clinicalNoteData){
+              let tempArray = {}
+              tempArray['oldData'] = null
+              tempArray['newData'] = clinicalNoteData
+              let activityData = await activityLog.create(req.user._id,req.user.role_id,'created','macAddress','clinicalNote',tempArray)
                 let condition = {
                    _id : clinicalNoteData._id
                 }
