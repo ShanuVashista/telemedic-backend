@@ -10,7 +10,7 @@ const router = express.Router();
 
 
 router.post("/", auth, controller.addAppointment);
-router.post("/list", controller.getAppointments);
+router.post("/list",auth, controller.getAppointments);
 router.get(
     '/waitlist',
     auth,
