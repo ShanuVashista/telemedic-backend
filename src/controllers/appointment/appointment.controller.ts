@@ -16,12 +16,22 @@ interface Appointment {
 
 //getting all Appointments
 const getAppointments = async (
-  req: Request,
+  req,
   res: Response,
   next: NextFunction
 ) => {
   try {
+    const user = JSON.parse(JSON.stringify(req.user));
     let { page, limit, sort, cond } = req.body;
+
+    if(user.role_id === "doctor"){
+      cond={"doctorId": user._id,...cond}
+    }
+
+    if(user.role_id === "patient"){
+      cond = {"patientId": user._id,...cond}
+    }
+
     if (!page || page < 1) {
       page = 1;
     }
@@ -34,7 +44,9 @@ const getAppointments = async (
     if (!sort) {
       sort = { createdAt: -1 };
     }
+
     limit = parseInt(limit);
+    // console.log(cond);
     const result = await Appointment.find(cond)
       .populate('patient_details')
       .populate('doctor_details')
@@ -117,6 +129,7 @@ const updateAppointment = async (
   } catch (Err) {
     // console.log(Err);
     res.status(404).json({
+      type: "error",
       status: false,
       message: 'Appointment not found',
     });
