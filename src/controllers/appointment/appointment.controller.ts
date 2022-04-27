@@ -25,7 +25,7 @@ const getAppointments = async (
     let { page, limit, sort, cond } = req.body;
 
     if(user.role_id === "doctor"){
-      cond={"doctorId": user._id,...cond}
+      cond={...cond,"doctorId": user._id}
     }
 
     if(user.role_id === "patient"){
