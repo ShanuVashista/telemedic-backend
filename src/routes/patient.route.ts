@@ -24,7 +24,7 @@ import { paginationQuerySchema, pathParamIdSchema } from '../validator/util';
 import { paymentMethod } from '../validator/paymentMethods.validation';
 import multer from 'multer';
 const storage = multer.memoryStorage();
-const upload = multer({storage});
+const upload = multer({ storage });
 import { deletePaymentMethod, getPaymentMethod, savePaymentMethod } from '../controllers/patient/paymentMethod.controller';
 import { findMd } from '../controllers/doctor/findMd.controller';
 
