@@ -1,6 +1,7 @@
 /* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response, NextFunction } from "express";
+import { ACTIVITY_LOG_TYPES } from "../../../constant";
 import referral from "../../db/models/referral.model";
 import activityLog from "../../services/activityLog"
 
@@ -27,7 +28,7 @@ const addReferral = async (
     }: referral = req.body;
     try {
         let doctorId = req.user._id
-        let doctorAdmin = req.user.role_id   
+        let doctorAdmin = req.user.role_id
         const newReferral = new referral({
             doctorId,
             reasonForConsult,
@@ -35,12 +36,12 @@ const addReferral = async (
             doctorsEmail,
             patientId
         });
-         let referralData = await newReferral.save();
+        let referralData = await newReferral.save();
         if (referralData) {
             let tempArray = {}
             tempArray['oldData'] = null
             tempArray['newData'] = referralData
-            let activityData = await activityLog.create(req.user._id,req.user.role_id,'created','macAddress','Referral',tempArray)
+            let activityData = await activityLog.create(req.user._id, req.user.role_id, ACTIVITY_LOG_TYPES.CREATED, req, tempArray)
             let condition = {
                 _id: referralData._id
             }

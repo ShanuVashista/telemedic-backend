@@ -5,6 +5,8 @@ import { Roles } from "../../lib/roles";
 // import { saveFile } from "../../lib/saveFile";
 import { deleteFileByPath } from "../../lib/deleteFileByPath";
 import S3 from '../../services/upload';
+import activityLog from "../../services/activityLog";
+import { ACTIVITY_LOG_TYPES } from "../../../constant";
 const register = async (req, res) => {
     if (!req.files) {
         return res.status(StatusCodes.BAD_REQUEST).json({
@@ -40,6 +42,11 @@ const register = async (req, res) => {
         await user.save({ validateBeforeSave: false });
 
         const accesstoken = createToken(user);
+
+        const tempArray = {}
+        tempArray['oldData'] = null
+        tempArray['newData'] = user
+        await activityLog.create(user?._id, user?.role_id, ACTIVITY_LOG_TYPES.CREATED, req, tempArray)
         res.status(StatusCodes.CREATED).json({
             type: "success",
             status: true,
