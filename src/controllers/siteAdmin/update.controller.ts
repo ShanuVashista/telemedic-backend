@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { ACTIVITY_LOG_TYPES } from "../../../constant";
 import User from "../../db/models/user";
 import { Roles } from "../../lib/roles";
+import S3 from '../../services/upload';
 import activityLog from "../../services/activityLog";
 
 export const updateAdmin = async (req, res) => {
@@ -27,6 +28,16 @@ export const updateAdmin = async (req, res) => {
         });
 
         await admin.save();
+        let response = {};
+        if(typeof (req.files) != 'undefined' && req.files != null){
+            const upload_data = {
+                db_response: admin,
+                file: req.files[0]
+            }
+            await S3.deleteFile(JSON.parse(JSON.stringify(admin)));
+            const image_uri = await S3.uploadFile(upload_data);
+            response = await User.findByIdAndUpdate(admin._id, { $set: { "profile_photo": image_uri.Location } }, { new: true });
+        }
 
         tempArray['newData'] = admin;
         await activityLog.create(
@@ -41,7 +52,7 @@ export const updateAdmin = async (req, res) => {
             type: "success",
             status: true,
             message: "Admin Updated",
-            data: admin
+            data: response
         });
     } catch (Err) {
         console.log(Err);
