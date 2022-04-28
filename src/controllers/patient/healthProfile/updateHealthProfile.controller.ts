@@ -1,6 +1,8 @@
 import { StatusCodes } from 'http-status-codes';
 import mongoose from 'mongoose';
+import { ACTIVITY_LOG_TYPES } from '../../../../constant';
 import HealthProfile, { IHealthProfile } from '../../../db/models/healthProfile.model';
+import activityLog from '../../../services/activityLog';
 // import { deleteFileByPath } from '../../../lib/deleteFileByPath';
 import S3 from '../../../services/upload';
 
@@ -20,6 +22,8 @@ export const updateHealthProfile = async (req, res) => {
             });
         }
 
+        const tempArray = {};
+        tempArray['oldData'] = { ...healthProfile.toObject() };
         // const oldProfileImage = healthProfile.profile_image;
 
         // healthProfile.profile_image = req.file?.filename;
@@ -29,7 +33,7 @@ export const updateHealthProfile = async (req, res) => {
 
         await healthProfile.save();
         let response = {};
-        if(typeof (req.files) != 'undefined' && req.files != null){
+        if (typeof (req.files) != 'undefined' && req.files != null) {
             const upload_data = {
                 db_response: healthProfile,
                 file: req.files[0]
@@ -38,7 +42,7 @@ export const updateHealthProfile = async (req, res) => {
             const image_uri = await S3.uploadFile(upload_data);
             response = await HealthProfile.findByIdAndUpdate(healthProfile._id, { $set: { "profile_image": image_uri.Location } }, { new: true });
         }
-        
+
         // if (oldProfileImage) {
         //     const userDir = path.resolve(`./public/uploads/${req.user._id}`);
         //     const oldFilePath = path.join(userDir, oldProfileImage);
@@ -46,6 +50,14 @@ export const updateHealthProfile = async (req, res) => {
         //     await deleteFileByPath(oldFilePath);
         // }
 
+        tempArray['newData'] = healthProfile;
+        await activityLog.create(
+            req.user?._id,
+            req.user?.role_id,
+            ACTIVITY_LOG_TYPES.UPDATED,
+            req,
+            tempArray
+        );
         return res.status(StatusCodes.OK).json({
             type: "success",
             status: true,

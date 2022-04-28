@@ -1,6 +1,8 @@
 import { StatusCodes } from "http-status-codes";
+import { ACTIVITY_LOG_TYPES } from "../../../constant";
 import User from "../../db/models/user";
 import { Roles } from "../../lib/roles";
+import activityLog from "../../services/activityLog";
 
 export const updateAdmin = async (req, res) => {
     try {
@@ -17,11 +19,23 @@ export const updateAdmin = async (req, res) => {
             })
         }
 
+        const tempArray = {};
+        tempArray['oldData'] = { ...admin.toObject() };
+
         Object.entries(req.body).forEach(([key, value]) => {
             admin[key] = value;
         });
 
         await admin.save();
+
+        tempArray['newData'] = admin;
+        await activityLog.create(
+            req.user?._id,
+            req.user?.role_id,
+            ACTIVITY_LOG_TYPES.UPDATED,
+            req,
+            tempArray
+        );
 
         return res.status(StatusCodes.OK).json({
             type: "success",
