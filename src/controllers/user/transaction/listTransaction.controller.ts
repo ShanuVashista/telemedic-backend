@@ -20,9 +20,10 @@ export const listTransaction = async (req, res) => {
         } = await filterPaginate(Transaction, filter, req.query);
 
         return res.status(StatusCodes.OK).json({
+            status:true,
             type: 'success',
             message: 'Transaction list',
-            transactions,
+            data:transactions,
             total,
             page,
             limit,
@@ -31,6 +32,7 @@ export const listTransaction = async (req, res) => {
     } catch (error) {
         console.log({ error });
         return res.status(400).json({
+            status: false,
             type: 'error',
             message: error.message,
         });
