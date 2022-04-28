@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-useless-escape */
 // import { existsSync, mkdirSync, renameSync } from "fs";
 import jwt from "jsonwebtoken";
@@ -58,11 +59,11 @@ const Register_POST = async (req, res) => {
         // }
         const user = new User({ ...req.body, role_id: Roles.DOCTOR });
         let data = await user.save();
-        let tempArray = {}
-          tempArray['oldData'] = null
-          tempArray['newData'] = data
-          let activityData = await activityLog.create(req.user._id, req.user.role_id, ACTIVITY_LOG_TYPES.CREATED, req, tempArray)
-          
+        const tempArray = {}
+        tempArray['oldData'] = null
+        tempArray['newData'] = data
+        const activityData = await activityLog.create(req.user._id, req.user.role_id, ACTIVITY_LOG_TYPES.CREATED, req, tempArray)
+
 
         data = JSON.parse(JSON.stringify(data));
         const upload_data = {
