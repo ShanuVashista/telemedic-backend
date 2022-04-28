@@ -28,7 +28,7 @@ const uploadFile = async (request) => {
 }
 const deleteFile = async (request) => {
     try {
-        const file = request.profile_image;
+        const file = request.profile_image?request.profile_image:request.profile_photo;
         const fileName = file.substring(file.lastIndexOf('/')+1)
 
         const params = {

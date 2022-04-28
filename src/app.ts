@@ -15,6 +15,8 @@ app.use(methodOverride("X-HTTP-Method-Override"));
 //DATABASE CONNECTION
 app.use(getConnection)
 app.use("/public", express.static("./public"));
+//View Engine
+app.set('view engine', 'ejs')
 //ROUTES
 import userRoutes from './routes/userRoute'
 import superAdminRoutes from './routes/superAdminRoute'
@@ -23,6 +25,7 @@ import appointment from './routes/appointment'
 import rating from './routes/rating'
 import clinicalNote from './routes/clinicalNote'
 import referral from './routes/referral'
+import template from './routes/template'
 
 app.use('/user', userRoutes);
 app.use('/admin/super', superAdminRoutes)
@@ -31,11 +34,11 @@ app.use('/appointments', appointment)
 app.use('/rating', rating)
 app.use('/clinicalNote', clinicalNote)
 app.use('/referral', referral)
+app.use('/template', template)
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   return console.log(`Express is listening at http://localhost:${PORT}`)
