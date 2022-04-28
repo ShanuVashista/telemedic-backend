@@ -5,7 +5,7 @@ import StatusCodes from "http-status-codes";
 import User from '../../db/models/user';
 const List_POST = async (req, res) => {
     try {
-        if(req.user.role_id == 'admin'){
+        if (req.user.role_id == 'admin') {
             let { page, limit, sort, cond } = req.body;
             if (!page || page < 1) {
                 page = 1;
@@ -19,34 +19,96 @@ const List_POST = async (req, res) => {
             if (!sort) {
                 sort = { "createdAt": -1 }
             }
+            if (typeof (cond.search) == 'undefined' || cond.search == null) {
+                cond.search = "";
+            } else {
+                cond.search = String(cond.search)
+            }
+            if (typeof (cond.role_id) != 'undefined' && cond.role_id != null) {
+                cond = [
+                    { $addFields: { phonestr: { $toString: '$phone' } } },
+                    {
+                        $match: {
+                            $and: [{ "role_id": cond.role_id }, {
+                                $or: [
+                                    { "email": { $regex: cond.search } },
+                                    { "firstname": { $regex: cond.search } },
+                                    { "lastname": { $regex: cond.search } },
+                                    { "phonestr": { $regex: cond.search } },
+                                ]
+                            }]
+                        }
+                    },
+                    { $project: { "phonestr": 0 } },
+                    { $sort: sort },
+                    {
+                        $facet: {
+                            data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+                            total: [
+                                {
+                                    $count: 'count'
+                                }
+                            ]
+                        }
+                    }
+                ]
+            } else {
+                cond = [
+                    { $addFields: { phonestr: { $toString: '$phone' } } },
+                    {
+                        $match: {
+                            $or: [
+                                { "email": { $regex: cond.search } },
+                                { "firstname": { $regex: cond.search } },
+                                { "lastname": { $regex: cond.search } },
+                                { "phonestr": { $regex: cond.search } },
+                            ]
+                        }
+                    },
+                    { $project: { "phonestr": 0 } },
+                    { $sort: sort },
+                    {
+                        $facet: {
+                            data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+                            total: [
+                                {
+                                    $count: 'count'
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+
             limit = parseInt(limit);
-            const user = await User.find(cond).sort(sort).skip((page - 1) * limit).limit(limit)
-            user.forEach(oneUser => oneUser.populate('paymentMethods'))
-    
-            const user_count = await User.find(cond).count()
-            const totalPages = Math.ceil(user_count / limit);
+            let user = await User.aggregate(cond)
+            user = JSON.parse(JSON.stringify(user));
+
+            // user.forEach(oneUser => oneUser.populate('paymentMethods'))
+            let totalPages = 0;
+            totalPages = Math.ceil(user[0].total.length != 0 ? user[0].total[0].count : 0 / limit);
             res.status(StatusCodes.OK).send({
-                status:true,
+                status: true,
                 type: 'success',
                 message: "User List Fetch Successfully",
                 page: page,
                 limit: limit,
                 totalPages: totalPages,
-                total: user_count,
-                data: user,
+                total: user[0].total.length != 0 ? user[0].total[0].count : 0,
+                data: user[0].data,
             });
-        }else{
+        } else {
             res.status(400).send({
-                status:false,
+                status: false,
                 type: 'error',
                 message: "You Are Not Authorized User"
             });
         }
-        
-        
+
+
     } catch (error) {
         res.status(StatusCodes.BAD_REQUEST).json({
-            status:false,
+            status: false,
             type: 'error',
             message: error.message
         });

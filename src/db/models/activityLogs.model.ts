@@ -2,7 +2,7 @@ import { Schema, model} from "mongoose";
 
 const activityLogSchema: Schema = new Schema(
   {
-    userId : { type: String, required: true },
+    roleId : { type: String, required: true },
     userType : { type: String, required: true },
     type: { type: String, required: true },
     time: { type: String, required: true },
