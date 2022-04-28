@@ -1,16 +1,35 @@
 import { StatusCodes } from 'http-status-codes';
 import Availability from '../../db/models/availability.model';
+import { filterPaginate } from '../../lib/filterPaginate';
 
-export const addAvailability = async (req, res) => {
+export const updateAvailability = async (req, res) => {
     try {
         await checkForConflict(req.body, req.user._id);
-        const availabilities = await Availability.insertMany(
-            req.body.map((availability) => ({
-                ...availability,
-                doctorId: req.user._id,
-            }))
+        const availabilities = await Availability.bulkWrite(
+            req.body.map((availability) =>
+                availability._id
+                    ? {
+                        updateOne: {
+                            filter: {
+                                _id: availability._id,
+                                doctorId: req.user._id,
+                            },
+                            update: {
+                                ...availability,
+                                doctorId: req.user._id,
+                            },
+                        },
+                    }
+                    : {
+                        insertOne: {
+                            document: {
+                                ...availability,
+                                doctorId: req.user._id,
+                            },
+                        },
+                    }
+            )
         );
-
         res.status(StatusCodes.OK).json({
             type: 'success',
             status: true,
@@ -27,29 +46,164 @@ export const addAvailability = async (req, res) => {
     }
 };
 
-export async function checkForConflict(availabilities, doctorId) {
-    const sortedAvailabilities = availabilities.sort((a, b) => {
-        return a.start - b.start;
-    }).map((availability) => ({
-        ...availability,
-        start: new Date(availability.start),
-        end: new Date(availability.end),
-    }));
+export const listAvailability = async (req, res) => {
+    try {
+        const { f = {} } = req.query;
 
+        const filter = {
+            doctorId: req.user._id,
+            ...f,
+        };
+
+        const availabilities = await filterPaginate(Availability, filter, req.query);
+
+        if (availabilities.total === 0) {
+            return res.status(StatusCodes.OK).json({
+                type: 'success',
+                status: true,
+                message: 'No availability found',
+                data: { availabilities },
+            });
+        }
+
+        res.status(StatusCodes.OK).json({
+            type: 'success',
+            status: true,
+            message: 'Availability found',
+            data: { availabilities },
+        });
+    } catch (error) {
+        console.log('Error in listing availability', error);
+
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            type: 'error',
+            status: false,
+            message: error.message,
+        });
+    }
+};
+
+export const getAvailability = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const availability = await Availability.findOne({
+            _id: id,
+            doctorId: req.user._id,
+        });
+
+        if (!availability) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                type: 'error',
+                status: false,
+                message: 'Availability not found',
+            });
+        }
+
+        res.status(StatusCodes.OK).json({
+            type: 'success',
+            status: true,
+            message: 'Availability found',
+            data: { availability },
+        });
+    } catch (error) {
+        console.log('Error in listing availability', error);
+
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            type: 'error',
+            status: false,
+            message: error.message,
+        });
+    }
+};
+
+export const deleteAvailability = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const availability = await Availability.findOne({
+            _id: id,
+            doctorId: req.user._id,
+        });
+
+        if (!availability) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                type: 'error',
+                status: false,
+                message: 'Availability not found',
+            });
+        }
+
+        await Availability.deleteOne({
+            _id: id,
+            doctorId: req.user._id,
+        });
+
+        res.status(StatusCodes.OK).json({
+            type: 'success',
+            status: true,
+            message: 'Availability deleted',
+        });
+    } catch (error) {
+        console.log('Error in deleting availability', error);
+
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            type: 'error',
+            status: false,
+            message: error.message,
+        });
+    }
+};
+
+export async function checkForConflict(availabilities, doctorId) {
+    const sortedAvailabilities = availabilities
+        .map((availability) => ({
+            ...availability,
+            start: new Date(availability.start),
+            end: new Date(availability.end),
+        }))
+        .sort((a, b) => {
+            if (a.start < b.start) {
+                return -1;
+            }
+            if (a.start > b.start) {
+                return 1;
+            }
+            return 0;
+        });
+
+    checkConflictInSortedData(sortedAvailabilities);
+    await checkConflictWithDatabase(doctorId, sortedAvailabilities);
+}
+
+function checkConflictInSortedData(sortedAvailabilities: {
+    start: Date;
+    end: Date;
+}[]): void {
     for (let i = 0; i < sortedAvailabilities.length - 1; i++) {
         const current = sortedAvailabilities[i];
         const next = sortedAvailabilities[i + 1];
-
         if (current.end >= next.start) {
             throw new Error('Conflict in provided availability data');
         }
     }
+}
 
-    // Check for overlapping availability in the db
+async function checkConflictWithDatabase(
+    doctorId: string,
+    sortedAvailabilities: {
+        _id: string;
+        start: Date;
+        end: Date;
+    }[]
+) {
     const dbAvailabilities = await Availability.find({
         doctorId: doctorId,
         $or: [
             ...sortedAvailabilities.map((availability) => ({
+                _id: {
+                    $ne: availability._id,
+                },
                 $or: [
                     {
                         start: { $lte: availability.start },
@@ -62,7 +216,7 @@ export async function checkForConflict(availabilities, doctorId) {
                     {
                         start: { $gte: availability.start },
                         end: { $lte: availability.end },
-                    }
+                    },
                 ],
             })),
         ],
