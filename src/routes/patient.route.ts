@@ -88,29 +88,6 @@ patientRouter.put(
     Prescription_Renewal_PUT
 );
 
-patientRouter.post(
-    '/paymentMethods',
-    auth,
-    userRole(Roles.PATIENT),
-    validateBody(paymentMethod),
-    savePaymentMethod
-);
-
-patientRouter.get(
-    '/paymentMethods',
-    auth,
-    userRole(Roles.PATIENT),
-    validateQuery(paginationQuerySchema),
-    getPaymentMethod
-);
-
-patientRouter.delete(
-    '/paymentMethods/:id',
-    auth,
-    userRole(Roles.PATIENT),
-    deletePaymentMethod
-);
-
 patientRouter.get(
     '/findMd',
     auth,
