@@ -50,9 +50,9 @@ const Register_POST = async (req, res) => {
         if (!registerData.phone) {
             throw new Error("Please enter a Phone Number");
         }
-        if (!registerData.fax) {
-            throw new Error("Please enter a Fax");
-        }
+        // if (!registerData.fax) {
+        //     throw new Error("Please enter a Fax");
+        // }
         const user = new User({ ...req.body, role_id: Roles.DOCTOR });
         let data = await user.save();
         data = JSON.parse(JSON.stringify(data));
