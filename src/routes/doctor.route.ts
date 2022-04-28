@@ -1,17 +1,18 @@
 import express from 'express';
-import uploadFile from '../middlewares/fileUpload.middleware';
 import Doctor_Register_POST from '../controllers/doctor/register';
 import Professional_PUT from '../controllers/doctor/professional';
 import Doctor_Appointment_PUT from '../controllers/doctor/appointment_update';
 import auth from '../middlewares/auth.middleware';
 import controller from '../controllers/doctor/prescription.controller';
 import profileUpdate from '../controllers/doctor/profileUpdate';
+import sickNote from '../controllers/doctor/sickNote';
 import multer from 'multer';
 import userRole from '../middlewares/userRole.middleware';
 import { Roles } from '../lib/roles';
-import { validateBody } from '../middlewares/joi.middleware';
-import { addAvailability } from '../controllers/doctor/availability.controller';
-import { addAvailabilitySchema } from '../validator/availability.validation';
+import { validateBody, validateParams, validateQuery } from '../middlewares/joi.middleware';
+import { deleteAvailability, listAvailability, updateAvailability } from '../controllers/doctor/availability.controller';
+import { listAvailabilitySchema, updateAvailabilitySchema } from '../validator/availability.validation';
+import { pathParamIdSchema } from '../validator/util';
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 const doctorRouter = express.Router()
@@ -41,16 +42,48 @@ doctorRouter.put(
     auth,
     controller.Prescription_PUT
 );
+
 doctorRouter.put(
     "/profile/update",
     auth,
     profileUpdate
 );
-doctorRouter.post(
+
+doctorRouter.put(
     "/availability",
     auth,
     userRole(Roles.DOCTOR),
-    validateBody(addAvailabilitySchema),
-    addAvailability
+    validateBody(updateAvailabilitySchema),
+    updateAvailability
+);
+
+doctorRouter.get(
+    "/availability",
+    auth,
+    userRole(Roles.DOCTOR),
+    validateQuery(listAvailabilitySchema),
+    listAvailability
+);
+
+doctorRouter.get(
+    "/availability/:id",
+    auth,
+    userRole(Roles.DOCTOR),
+    validateParams(pathParamIdSchema),
+    listAvailability
+);
+
+doctorRouter.delete(
+    "/availability/:id",
+    auth,
+    userRole(Roles.DOCTOR),
+    validateParams(pathParamIdSchema),
+    deleteAvailability
+);
+doctorRouter.post(
+    "/sickNote",
+    auth,
+    userRole(Roles.DOCTOR),
+    sickNote
 );
 export default doctorRouter
