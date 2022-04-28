@@ -7,6 +7,9 @@ import User from '../../db/models/user';
 import { Roles } from "../../lib/roles";
 import { deleteFileByPath } from "../../lib/deleteFileByPath";
 import S3 from '../../services/upload';
+import activityLog from "../../services/activityLog"
+import { ACTIVITY_LOG_TYPES } from "../../../constant";
+
 const Register_POST = async (req, res) => {
     try {
         //Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character
@@ -55,6 +58,12 @@ const Register_POST = async (req, res) => {
         }
         const user = new User({ ...req.body, role_id: Roles.DOCTOR });
         let data = await user.save();
+        let tempArray = {}
+          tempArray['oldData'] = null
+          tempArray['newData'] = data
+          let activityData = await activityLog.create(req.user._id, req.user.role_id, ACTIVITY_LOG_TYPES.CREATED, req, tempArray)
+          
+
         data = JSON.parse(JSON.stringify(data));
         const upload_data = {
             db_response: data,
