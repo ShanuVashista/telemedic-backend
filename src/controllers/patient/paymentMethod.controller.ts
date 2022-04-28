@@ -1,6 +1,8 @@
 import { StatusCodes } from 'http-status-codes';
+import { ACTIVITY_LOG_TYPES } from '../../../constant';
 import PaymentMethod from '../../db/models/paymentMethod.model';
 import { filterPaginate } from '../../lib/filterPaginate';
+import activityLog from '../../services/activityLog';
 
 export const savePaymentMethod = async (req, res) => {
     try {
@@ -9,6 +11,16 @@ export const savePaymentMethod = async (req, res) => {
             userId: req.user._id,
         });
 
+        const tempArray = {};
+        tempArray['oldData'] = null;
+        tempArray['newData'] = paymentMethod;
+        await activityLog.create(
+            req.user?._id,
+            req.user?.role_id,
+            ACTIVITY_LOG_TYPES.CREATED,
+            req,
+            tempArray
+        );
         return res.status(StatusCodes.OK).json({
             type: "success",
             status: true,
@@ -78,6 +90,17 @@ export const deletePaymentMethod = async (req, res) => {
                 message: 'Payment method not found',
             });
         }
+
+        const tempArray = {};
+        tempArray['oldData'] = paymentMethod;
+        tempArray['newData'] = null;
+        await activityLog.create(
+            req.user?._id,
+            req.user?.role_id,
+            ACTIVITY_LOG_TYPES.DELETED,
+            req,
+            tempArray
+        );
 
         await paymentMethod.remove();
 

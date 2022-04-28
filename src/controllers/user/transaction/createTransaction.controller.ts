@@ -1,5 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
+import { ACTIVITY_LOG_TYPES } from '../../../../constant';
 import Transaction from '../../../db/models/transaction.model';
+import activityLog from '../../../services/activityLog';
 
 export const createTransaction = async (req, res) => {
     try {
@@ -7,6 +9,17 @@ export const createTransaction = async (req, res) => {
             ...req.body,
             patientID: req.user._id,
         });
+
+        const tempArray = {};
+        tempArray['oldData'] = null;
+        tempArray['newData'] = transaction;
+        await activityLog.create(
+            req.user?._id,
+            req.user?.role_id,
+            ACTIVITY_LOG_TYPES.CREATED,
+            req,
+            tempArray
+        );
 
         return res.status(StatusCodes.OK).json({
             type: "success",
