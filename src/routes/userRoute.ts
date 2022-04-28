@@ -11,8 +11,11 @@ import transactionRouter from './transaction.route';
 import userRole from '../middlewares/userRole.middleware';
 import { Roles } from '../lib/roles';
 import { updateAdmin } from '../controllers/siteAdmin/update.controller';
-import { validateBody } from '../middlewares/joi.middleware';
+import { validateBody, validateQuery } from '../middlewares/joi.middleware';
 import { adminUpdateSchema } from '../validator/admin.validation';
+import { deletePaymentMethod, getPaymentMethod, savePaymentMethod } from '../controllers/patient/paymentMethod.controller';
+import { paymentMethod } from '../validator/paymentMethods.validation';
+import { paginationQuerySchema } from '../validator/util';
 
 const router = express.Router()
 router.use('/patient', patientRouter);
@@ -27,4 +30,25 @@ router.post('/list', auth, List_POST);
 router.post('/prescription/list', auth, Prescription_List_POST);
 router.use('/notifications', auth, notificationRouter)
 router.use('/transactions', auth, transactionRouter)
+
+router.post(
+    '/paymentMethods',
+    auth,
+    validateBody(paymentMethod),
+    savePaymentMethod
+);
+
+router.get(
+    '/paymentMethods',
+    auth,
+    validateQuery(paginationQuerySchema),
+    getPaymentMethod
+);
+
+router.delete(
+    '/paymentMethods/:id',
+    auth,
+    deletePaymentMethod
+);
+
 export default router
