@@ -2,11 +2,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response, NextFunction } from 'express';
 import Appointment from '../../db/models/appointment.model';
+import Availability from '../../db/models/availability.model';
 
 interface Appointment {
   patientId: number;
   appointmentId: number;
-  symptoms:Array<string>;
+  symptoms: Array<string>;
   createdAt: Date;
   doctorId: number;
   doctor: number;
@@ -24,12 +25,12 @@ const getAppointments = async (
     const user = JSON.parse(JSON.stringify(req.user));
     let { page, limit, sort, cond } = req.body;
 
-    if(user.role_id === "doctor"){
-      cond={...cond,"doctorId": user._id}
+    if (user.role_id === "doctor") {
+      cond = { ...cond, "doctorId": user._id }
     }
 
-    if(user.role_id === "patient"){
-      cond = {"patientId": user._id,...cond}
+    if (user.role_id === "patient") {
+      cond = { "patientId": user._id, ...cond }
     }
 
     if (!page || page < 1) {
@@ -86,7 +87,7 @@ const getAppointment = async (
 
     return res.status(200).json({
       status: true,
-      type:"success",
+      type: "success",
       message: "Appointment List Fetched",
       data: result,
     });
@@ -94,7 +95,7 @@ const getAppointment = async (
     // console.log(Err);
     res.status(404).json({
       statue: false,
-      type:"error",
+      type: "error",
       message: 'Appointment not found',
     });
   }
@@ -122,7 +123,7 @@ const updateAppointment = async (
 
     return res.status(200).json({
       status: true,
-      type:"success",
+      type: "success",
       message: "Appointment Updated Sucessfully",
       data: updateDoc,
     });
@@ -149,7 +150,7 @@ const deleteAppointment = async (
 
     return res.status(200).json({
       status: true,
-      type:"success",
+      type: "success",
       message: 'Appointment Delete Successful',
     });
   } catch (Err) {
@@ -164,19 +165,49 @@ const deleteAppointment = async (
 // Function to Create an Appointment
 const addAppointment = async (req, res: Response, next: NextFunction) => {
   // Get the data from query body
-  const { doctorId, appointmentType, dateOfAppointment,symptoms }: Appointment =
+  const { doctorId, appointmentType, dateOfAppointment, symptoms }: Appointment =
     req.body;
 
   const user = JSON.parse(JSON.stringify(req.user));
   if (user.role_id != 'patient') {
     return res.status(404).json({
       status: false,
-      type:"success",
+      type: "success",
       message: 'You are not authorise to create an Appointment',
     });
   }
 
   try {
+    const doctorAvailability = await Availability.findOne({
+      doctorId: doctorId,
+      start: {
+        $lte: dateOfAppointment,
+      },
+      end: {
+        $gte: dateOfAppointment,
+      },
+      $or: [
+        {
+          break_start: {
+            $gte: dateOfAppointment,
+          },
+        },
+        {
+          break_end: {
+            $lte: dateOfAppointment,
+          },
+        },
+      ],
+    });
+
+    if (!doctorAvailability) {
+      return res.status(404).json({
+        status: false,
+        type: "success",
+        message: 'Doctor is not available on this date/time',
+      });
+    }
+
     const newAppointment = new Appointment({
       patientId: user._id,
       symptoms,
@@ -188,7 +219,7 @@ const addAppointment = async (req, res: Response, next: NextFunction) => {
 
     res.status(201).json({
       status: true,
-      type:"success",
+      type: "success",
       data: newAppointment,
     });
   } catch (Err) {
