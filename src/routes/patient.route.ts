@@ -28,6 +28,7 @@ const upload = multer({ storage });
 import { deletePaymentMethod, getPaymentMethod, savePaymentMethod } from '../controllers/patient/paymentMethod.controller';
 import { findMd } from '../controllers/doctor/findMd.controller';
 
+import profileUpdate from '../controllers/patient/profileUpdate';
 const patientRouter = express.Router();
 
 patientRouter.post('/register', upload.any(), register);
@@ -94,5 +95,11 @@ patientRouter.get(
     userRole(Roles.PATIENT),
     validateQuery(paginationQuerySchema),
     findMd
+);
+patientRouter.put(
+    '/profile/update',
+    auth,
+    userRole(Roles.PATIENT),
+    profileUpdate
 );
 export default patientRouter;

@@ -5,6 +5,7 @@ import Professional_PUT from '../controllers/doctor/professional';
 import Doctor_Appointment_PUT from '../controllers/doctor/appointment_update';
 import auth from '../middlewares/auth.middleware';
 import controller from '../controllers/doctor/prescription.controller';
+import profileUpdate from '../controllers/doctor/profileUpdate';
 import multer from 'multer';
 import userRole from '../middlewares/userRole.middleware';
 import { Roles } from '../lib/roles';
@@ -40,7 +41,11 @@ doctorRouter.put(
     auth,
     controller.Prescription_PUT
 );
-
+doctorRouter.put(
+    "/profile/update",
+    auth,
+    profileUpdate
+);
 doctorRouter.post(
     "/availability",
     auth,

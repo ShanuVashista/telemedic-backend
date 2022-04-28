@@ -1,7 +1,6 @@
 import Appointment from "../../db/models/appointment.model";
 const Doctor_Appointment_PUT = async (req, res) => {
     try {
-        console.log(req);
         const user = JSON.parse(JSON.stringify(req.user));
         const checkForHexRegExp = /^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i
         if (user.role_id != 'doctor') {

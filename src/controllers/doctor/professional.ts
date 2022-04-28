@@ -1,6 +1,9 @@
 // import jwt from "jsonwebtoken";
 // import validator from "email-validator";
 import User from '../../db/models/user';
+import activityLog from "../../services/activityLog"
+import { ACTIVITY_LOG_TYPES } from "../../../constant";
+
 // import multer from 'multer';
 // const upload = multer({ dest: 'public/' });
 const Professional_PUT = async (req, res) => {
@@ -52,8 +55,26 @@ const Professional_PUT = async (req, res) => {
         //         throw new Error("Doctor does't exist");
         //     }
         // }
-        const user = await User.findByIdAndUpdate(req.user._id, registerData, { new: true });
+        const admin = await User.findOne({
+            _id: req.user._id
+        })
+        const tempArray = {};
+        tempArray['oldData'] = { ...admin.toObject() };
 
+        Object.entries(req.body).forEach(([key, value]) => {
+            admin[key] = value;
+        });
+        
+        
+        const user = await User.findByIdAndUpdate(req.user._id, registerData, { new: true });      
+        tempArray['newData'] = user;
+        await activityLog.create(
+            req.user._id,
+            req.user.role_id,
+            ACTIVITY_LOG_TYPES.UPDATED,
+            req,
+            tempArray
+        );
         res.status(200).json({
             status:true,
             type: 'success',

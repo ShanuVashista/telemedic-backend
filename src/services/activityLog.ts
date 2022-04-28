@@ -12,7 +12,7 @@ const create = async (userId, userType, type, req, data) => {
     let currentDate = new Date()
     // Get the data from query body
     const newActivity = new activityLog({
-        userId: userId,
+        roleId: userId,
         userType: userType,
         type: type,
         time: currentDate,
