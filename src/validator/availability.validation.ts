@@ -49,6 +49,7 @@ export const updateAvailabilitySchema = Joi.array()
     });
 
 export const listAvailabilitySchema = paginationQuerySchema.keys({
+    upcoming: Joi.number().integer().min(0).max(1).default(0),
     f: Joi.object().keys({
         start: Joi.string().isoDate(),
         end: Joi.string().isoDate(),

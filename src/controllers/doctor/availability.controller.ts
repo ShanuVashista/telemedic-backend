@@ -48,12 +48,18 @@ export const updateAvailability = async (req, res) => {
 
 export const listAvailability = async (req, res) => {
     try {
-        const { f = {} } = req.query;
+        const { f = {}, upcoming = 1 } = req.query;
 
         const filter = {
             doctorId: req.user._id,
             ...f,
         };
+
+        if (upcoming > 0) {
+            filter.end = {
+                $gte: new Date(),
+            };
+        }
 
         const availabilities = await filterPaginate(Availability, filter, req.query);
 
