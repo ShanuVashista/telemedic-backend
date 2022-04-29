@@ -6,6 +6,8 @@ import auth from '../middlewares/auth.middleware';
 import controller from '../controllers/doctor/prescription.controller';
 import profileUpdate from '../controllers/doctor/profileUpdate';
 import sickNote from '../controllers/doctor/sickNote';
+import spaciality from '../controllers/doctor/spaciality';
+import qualification from '../controllers/doctor/qualification';
 import multer from 'multer';
 import userRole from '../middlewares/userRole.middleware';
 import { Roles } from '../lib/roles';
@@ -85,5 +87,17 @@ doctorRouter.post(
     auth,
     userRole(Roles.DOCTOR),
     sickNote
+);
+doctorRouter.get(
+    "/qualification",
+    auth,
+    userRole(Roles.DOCTOR),
+    qualification
+);
+doctorRouter.get(
+    "/spaciality",
+    auth,
+    userRole(Roles.DOCTOR),
+    spaciality
 );
 export default doctorRouter

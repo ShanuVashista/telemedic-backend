@@ -9,6 +9,7 @@ import { ACTIVITY_LOG_TYPES } from "../../../constant";
 const Professional_PUT = async (req, res) => {
     try {
         const registerData = req.body;
+        registerData.isProfessionalInfo = true;
         req.user = JSON.parse(JSON.stringify(req.user));
         if(req.user.role_id != 'doctor'){
             throw new Error('Doctor does not exist');
@@ -59,12 +60,7 @@ const Professional_PUT = async (req, res) => {
             _id: req.user._id
         })
         const tempArray = {};
-        tempArray['oldData'] = { ...admin.toObject() };
-
-        Object.entries(req.body).forEach(([key, value]) => {
-            admin[key] = value;
-        });
-        
+        tempArray['oldData'] = { ...admin.toObject() };        
         
         const user = await User.findByIdAndUpdate(req.user._id, registerData, { new: true });      
         tempArray['newData'] = user;
