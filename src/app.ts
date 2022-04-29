@@ -26,15 +26,17 @@ import rating from './routes/rating'
 import clinicalNote from './routes/clinicalNote'
 import referral from './routes/referral'
 import template from './routes/template'
+import CountryStateCity from './routes/country_state_city';
 
 app.use('/user', userRoutes);
-app.use('/admin/super', superAdminRoutes)
-app.use('/admin/site', siteAdminRoutes)
+// app.use('/admin/super', superAdminRoutes)
+// app.use('/admin/site', siteAdminRoutes)
 app.use('/appointments', appointment)
 app.use('/rating', rating)
 app.use('/clinicalNote', clinicalNote)
 app.use('/referral', referral)
 app.use('/template', template)
+app.use('/get', CountryStateCity)
 
 app.get('/', (req, res) => {
   res.send('Hello World!')

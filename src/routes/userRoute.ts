@@ -16,20 +16,25 @@ import { adminUpdateSchema } from '../validator/admin.validation';
 import { deletePaymentMethod, getPaymentMethod, savePaymentMethod } from '../controllers/patient/paymentMethod.controller';
 import { paymentMethod } from '../validator/paymentMethods.validation';
 import { paginationQuerySchema } from '../validator/util';
+import admin from '../routes/admin'
+import List_User from '../controllers/user/list';
+import corporateRoute from './corporate.route';
 
 const router = express.Router()
 router.use('/patient', patientRouter);
 router.use('/doctor', doctorRouter);
 router.post("/login", Login.login);
 router.post("/admin/login", Login.admin);
+router.use("/admin",admin);
 router.put("/admin", auth, userRole(Roles.ADMIN), validateBody(adminUpdateSchema), updateAdmin);
 router.post("/forgotPass", Passwordcontroller.forgotPassword)
 router.post("/password-reset/:userId/:token", Passwordcontroller.resetPassword)
 router.post("/password-change", auth, Passwordcontroller.changePassword)
-router.post('/list', auth, List_POST);
+router.post('/list', auth, List_User);
 router.post('/prescription/list', auth, Prescription_List_POST);
 router.use('/notifications', auth, notificationRouter)
 router.use('/transactions', auth, transactionRouter)
+router.use('/corporate',auth,userRole(Roles.CORPORATE),corporateRoute)
 
 router.post(
     '/paymentMethods',
