@@ -3,7 +3,7 @@
 // import jwt from "jsonwebtoken";
 import StatusCodes from "http-status-codes";
 import User from '../../db/models/user';
-const List_POST = async (req, res) => {
+const List_User = async (req, res) => {
     try {
         if (req.user.role_id == 'admin') {
             let { page, limit, sort, cond } = req.body;
@@ -164,4 +164,4 @@ const List_POST = async (req, res) => {
         });
     }
 }
-export default List_POST
+export default List_User

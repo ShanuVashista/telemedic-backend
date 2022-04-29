@@ -36,7 +36,7 @@ app.use('/rating', rating)
 app.use('/clinicalNote', clinicalNote)
 app.use('/referral', referral)
 app.use('/template', template)
-app.use('/country-state-city', CountryStateCity)
+app.use('/get', CountryStateCity)
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
