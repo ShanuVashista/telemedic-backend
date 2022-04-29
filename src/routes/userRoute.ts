@@ -17,6 +17,7 @@ import { deletePaymentMethod, getPaymentMethod, savePaymentMethod } from '../con
 import { paymentMethod } from '../validator/paymentMethods.validation';
 import { paginationQuerySchema } from '../validator/util';
 import List_User from '../controllers/user/list';
+import corporateRoute from './corporate.route';
 
 const router = express.Router()
 router.use('/patient', patientRouter);
@@ -31,6 +32,7 @@ router.post('/list', auth, List_User);
 router.post('/prescription/list', auth, Prescription_List_POST);
 router.use('/notifications', auth, notificationRouter)
 router.use('/transactions', auth, transactionRouter)
+router.use('/corporate',auth,userRole(Roles.CORPORATE),corporateRoute)
 
 router.post(
     '/paymentMethods',
