@@ -13,13 +13,27 @@ const login = async (req, res) => {
         })
             .exec((err, user) => {
                 if (err) {
-                    res.status(500).send({ message: err });
+                    res.status(500).send({
+                        type: "error",
+                        status: false,
+                        message: err
+                    });
                     return;
                 }
                 if (!user) {
-                    return res.status(404).send({ message: "User Not Found" })
+                    return res.status(404).send({
+                        type: "error",
+                        status: false,
+                        message: "User Not Found"
+                    })
                 }
-
+                if (user.role_id == 'doctor' && (!user.isApproved && user.isProfessionalInfo)) {
+                    return res.status(400).send({
+                        type: "error",
+                        status: false,
+                        message: "Pending verification, Approval & activation. Someone from our management team will contact you shortly"
+                    })
+                }
                 const passwordIsValid = bcrypt.compareSync(
                     password,
                     user.password
@@ -27,6 +41,8 @@ const login = async (req, res) => {
 
                 if (!passwordIsValid) {
                     return res.status(404).send({
+                        type: "error",
+                        status: false,
                         message: "Invalid Password!"
                     });
                 }

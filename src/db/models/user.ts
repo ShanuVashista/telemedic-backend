@@ -10,7 +10,10 @@ enum GenderEnum {
     FEMALE = 'female',
     OTHER = 'other',
 }
-
+enum DoctorStatus {
+    ENABLE = 'enable',
+    DISABLE = 'disable'
+}
 export interface IUser {
     email: string;
     profile_photo: string;
@@ -38,6 +41,12 @@ export interface IUser {
     smoking?: boolean;
     alcohol?: boolean;
     marijuana?: boolean;
+    status?: string;
+    isApproved?: boolean;
+    isProfessionalInfo?: boolean;
+    isBankDetails?: boolean;
+    isAvailability?: boolean;
+
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -115,6 +124,11 @@ const userSchema = new mongoose.Schema<IUser>(
         smoking: { type: Boolean },
         alcohol: { type: Boolean },
         marijuana: { type: Boolean },
+        status: { type: String, enum:DoctorStatus, default:"disable" },
+        isApproved: { type: Boolean, default: false },
+        isProfessionalInfo: { type: Boolean, default: false },
+        isBankDetails: { type: Boolean, default: false },
+        isAvailability: { type: Boolean, default: false },
     },
     {
         timestamps: true,

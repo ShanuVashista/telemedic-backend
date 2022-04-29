@@ -30,6 +30,12 @@ export const updateAvailability = async (req, res) => {
                     }
             )
         );
+
+        if (!req.user.isAvailability) {
+            req.user.isAvailability = true;
+            await req.user.save({ validateBeforeSave: false });
+        }
+
         res.status(StatusCodes.OK).json({
             type: 'success',
             status: true,
@@ -48,21 +54,27 @@ export const updateAvailability = async (req, res) => {
 
 export const listAvailability = async (req, res) => {
     try {
-        const { f = {} } = req.query;
+        const { f = {}, upcoming = 1 } = req.query;
 
         const filter = {
             doctorId: req.user._id,
             ...f,
         };
 
-        const availabilities = await filterPaginate(Availability, filter, req.query);
+        if (upcoming > 0) {
+            filter.end = {
+                $gte: new Date(),
+            };
+        }
 
-        if (availabilities.total === 0) {
+        const data = await filterPaginate(Availability, filter, req.query);
+
+        if (data.total === 0) {
             return res.status(StatusCodes.OK).json({
                 type: 'success',
                 status: true,
                 message: 'No availability found',
-                data: { availabilities },
+                data: { availabilities: data },
             });
         }
 
@@ -70,7 +82,7 @@ export const listAvailability = async (req, res) => {
             type: 'success',
             status: true,
             message: 'Availability found',
-            data: { availabilities },
+            data,
         });
     } catch (error) {
         console.log('Error in listing availability', error);
