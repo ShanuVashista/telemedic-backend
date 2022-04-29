@@ -12,7 +12,7 @@ enum GenderEnum {
 }
 enum DoctorStatus {
     ENABLE = 'enable',
-    DISABLE = 'disable'
+    DISABLE = 'disable',
 }
 export interface IUser {
     email: string;
@@ -46,7 +46,6 @@ export interface IUser {
     isProfessionalInfo?: boolean;
     isBankDetails?: boolean;
     isAvailability?: boolean;
-
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -111,9 +110,19 @@ const userSchema = new mongoose.Schema<IUser>(
 
         total_exp: { type: String },
 
-        current_practise_address: { type: Array },
+        current_practise_address: {
+            type: Array,
+            default: defaultByRole({
+                [Roles.DOCTOR]: [],
+            }),
+        },
 
-        license: { type: Array },
+        license: {
+            type: Array,
+            default: defaultByRole({
+                [Roles.DOCTOR]: [],
+            }),
+        },
         weight: { type: Number },
         height: { type: Number },
         bmi: { type: Number },
@@ -124,11 +133,37 @@ const userSchema = new mongoose.Schema<IUser>(
         smoking: { type: Boolean },
         alcohol: { type: Boolean },
         marijuana: { type: Boolean },
-        status: { type: String, enum:DoctorStatus, default:"disable" },
-        isApproved: { type: Boolean, default: false },
-        isProfessionalInfo: { type: Boolean, default: false },
-        isBankDetails: { type: Boolean, default: false },
-        isAvailability: { type: Boolean, default: false },
+        status: {
+            type: String,
+            enum: DoctorStatus,
+            default: defaultByRole({
+                [Roles.DOCTOR]: 'disable',
+            }),
+        },
+        isApproved: {
+            type: mongoose.Schema.Types.Boolean,
+            default: defaultByRole({
+                [Roles.DOCTOR]: false,
+            }),
+        },
+        isProfessionalInfo: {
+            type: mongoose.Schema.Types.Boolean,
+            default: defaultByRole({
+                [Roles.DOCTOR]: false,
+            }),
+        },
+        isBankDetails: {
+            type: mongoose.Schema.Types.Boolean,
+            default: defaultByRole({
+                [Roles.DOCTOR]: false,
+            }),
+        },
+        isAvailability: {
+            type: mongoose.Schema.Types.Boolean,
+            default: defaultByRole({
+                [Roles.DOCTOR]: false,
+            }),
+        },
     },
     {
         timestamps: true,
@@ -142,16 +177,18 @@ userSchema.virtual('paymentMethods', {
     foreignField: 'userId',
 });
 
-userSchema.virtual('name').get(function (this: mongoose.HydratedDocument<IUser>) {
-    return `${this.firstname} ${this.lastname}`;
-});
+userSchema
+    .virtual('name')
+    .get(function (this: mongoose.HydratedDocument<IUser>) {
+        return `${this.firstname} ${this.lastname}`;
+    });
 
 userSchema.set('toObject', { virtuals: true });
 userSchema.set('toJSON', { virtuals: true });
 
 userSchema.pre('save', function (this: mongoose.HydratedDocument<IUser>, next) {
     const user = this;
-    console.log(user)
+    console.log(user);
     if (!user.isModified('password')) return next();
 
     bcrypt.hash(user.password, 10, function (err, hash) {
@@ -181,3 +218,9 @@ userSchema.methods.comparePassword = function (
 };
 const User = mongoose.model('user', userSchema);
 export default User;
+
+function defaultByRole<T>(roleDefault: { [key in Roles]?: T } = {}) {
+    return function (this: IUser): T | undefined {
+        return roleDefault[this.role_id];
+    };
+}
