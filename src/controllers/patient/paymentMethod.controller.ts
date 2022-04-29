@@ -32,6 +32,12 @@ export const savePaymentMethod = async (req, res) => {
             req,
             tempArray
         );
+
+        if (!req.user.isBankDetails) {
+            req.user.isBankDetails = true;
+            await req.user.save({ validateBeforeSave: false });
+        }
+
         return res.status(StatusCodes.OK).json({
             type: "success",
             status: true,
