@@ -61,14 +61,14 @@ export const listAvailability = async (req, res) => {
             };
         }
 
-        const availabilities = await filterPaginate(Availability, filter, req.query);
+        const data = await filterPaginate(Availability, filter, req.query);
 
-        if (availabilities.total === 0) {
+        if (data.total === 0) {
             return res.status(StatusCodes.OK).json({
                 type: 'success',
                 status: true,
                 message: 'No availability found',
-                data: { availabilities },
+                data: { availabilities: data },
             });
         }
 
@@ -76,7 +76,7 @@ export const listAvailability = async (req, res) => {
             type: 'success',
             status: true,
             message: 'Availability found',
-            data: { availabilities },
+            data,
         });
     } catch (error) {
         console.log('Error in listing availability', error);
