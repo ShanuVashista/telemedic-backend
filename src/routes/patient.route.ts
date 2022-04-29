@@ -7,7 +7,6 @@ import {
     healthProfileUpdateSchema,
 } from '../validator/patient';
 import { validateBody, validateParams, validateQuery } from '../middlewares/joi.middleware';
-// import uploadFile from '../middlewares/fileUpload.middleware';
 import auth from '../middlewares/auth.middleware';
 import {
     addHealthProfile,
@@ -20,15 +19,14 @@ import { Roles } from '../lib/roles';
 import userRole from '../middlewares/userRole.middleware';
 import Prescription_Renewal_PUT from '../controllers/patient/prescription';
 import { healthProfileQuerySchema } from '../validator/healthProfile';
-import { paginationQuerySchema, pathParamIdSchema } from '../validator/util';
-import { paymentMethod } from '../validator/paymentMethods.validation';
+import { pathParamIdSchema } from '../validator/util';
 import multer from 'multer';
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
-import { deletePaymentMethod, getPaymentMethod, savePaymentMethod } from '../controllers/patient/paymentMethod.controller';
 import { findMd } from '../controllers/doctor/findMd.controller';
-
 import profileUpdate from '../controllers/patient/profileUpdate';
+import { findMdSchema } from '../validator/findMd.validation';
+
 const patientRouter = express.Router();
 
 patientRouter.post('/register', upload.any(), register);
@@ -93,7 +91,7 @@ patientRouter.get(
     '/findMd',
     auth,
     userRole(Roles.PATIENT),
-    validateQuery(paginationQuerySchema),
+    validateQuery(findMdSchema),
     findMd
 );
 patientRouter.put(

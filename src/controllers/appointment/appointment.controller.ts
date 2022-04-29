@@ -1,17 +1,19 @@
 /* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { differenceInMinutes, isBefore } from 'date-fns';
+import { isBefore } from 'date-fns';
 import { Request, Response, NextFunction } from 'express';
-import { MIN_MEETING_DURATION } from '../../../constant';
 import Appointment from '../../db/models/appointment.model';
-import Availability from '../../db/models/availability.model';
+import {
+  ListAvailability,
+  checkAppointmentTimeConflict,
+} from './availabilityUtil';
 
-interface Appointment {
+export interface Appointment {
   patientId: number;
   appointmentId: number;
   symptoms: Array<string>;
   createdAt: Date;
-  doctorId: number;
+  doctorId: string;
   doctor: number;
   dateOfAppointment: Date;
   appointmentType: string;
@@ -182,7 +184,6 @@ const addAppointment = async (req, res: Response, next: NextFunction) => {
   }
 
   try {
-
     if (isBefore(new Date(dateOfAppointment), new Date())) {
       return res.status(404).json({
         status: false,
@@ -191,47 +192,29 @@ const addAppointment = async (req, res: Response, next: NextFunction) => {
       });
     }
 
-    const doctorAvailability = await Availability.findOne({
-      doctorId: doctorId,
-      start: {
-        $lte: dateOfAppointment,
-      },
-      end: {
-        $gte: dateOfAppointment,
-      },
-      $or: [
-        {
-          break_start: undefined
-        },
-        {
-          break_start: {
-            $gt: dateOfAppointment,
-          },
-        },
-        {
-          break_end: {
-            $lt: dateOfAppointment,
-          },
-        },
-      ],
+    const doctorAvailability = await ListAvailability({
+      dateOfAppointment: new Date(dateOfAppointment),
+      doctorId,
     });
 
-    if (!doctorAvailability) {
+    if (doctorAvailability.length === 0) {
       return res.status(404).json({
         status: false,
         type: 'success',
-        message: 'Doctor is not available on this date/time',
+        message: 'Doctor is not available on this date',
       });
     }
 
-    if (
-      differenceInMinutes(doctorAvailability.end, new Date(dateOfAppointment)) <
-      MIN_MEETING_DURATION
-    ) {
+    const appointmentTimeConflict = await checkAppointmentTimeConflict(
+      dateOfAppointment,
+      { doctorId }
+    );
+
+    if (appointmentTimeConflict) {
       return res.status(404).json({
         status: false,
         type: 'success',
-        message: 'Doctor is not available on this date/time',
+        message: 'This time slot is already booked',
       });
     }
 

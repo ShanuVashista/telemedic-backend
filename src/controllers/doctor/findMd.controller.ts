@@ -2,20 +2,48 @@ import { StatusCodes } from 'http-status-codes';
 import User from '../../db/models/user';
 import { filterPaginate } from '../../lib/filterPaginate';
 import { Roles } from '../../lib/roles';
+import {
+    checkAppointmentTimeConflict,
+    ListAvailability,
+} from '../appointment/availabilityUtil';
 
 export const findMd = async (req, res) => {
     try {
-        const { f = {} } = req.query;
+        const { f = {}, appointmentTime = '' } = req.query;
+
+        if (appointmentTime) {
+            const appointmentConflict = await checkAppointmentTimeConflict(
+                new Date(appointmentTime),
+                { patientId: req.user._id }
+            );
+            console.log({ appointmentConflict });
+            if (appointmentConflict) {
+                return res.status(StatusCodes.BAD_REQUEST).json({
+                    type: 'error',
+                    status: false,
+                    message: 'Appointment time conflict',
+                });
+            }
+        }
+
         const filterLocation = f.location ?? req.user.location;
 
         delete f.location;
         const filter = {
-            userId: req.user._id,
             role_id: Roles.DOCTOR,
             ...f,
-            ["license.location"]: {
-                $regex: new RegExp(filterLocation, "i")
+            ['license.location']: {
+                $regex: new RegExp(filterLocation, 'i'),
             },
+        };
+
+        filter['_id'] = {
+            $in: (
+                await ListAvailability({
+                    dateOfAppointment: appointmentTime ? new Date(appointmentTime) : null,
+                    ...filter,
+                })
+            ).map((a) => a.doctorId),
         };
 
         const {
@@ -23,11 +51,11 @@ export const findMd = async (req, res) => {
             total,
             totalPages,
             page,
-            limit
+            limit,
         } = await filterPaginate(User, filter, req.query);
 
         return res.status(StatusCodes.OK).json({
-            type: "success",
+            type: 'success',
             status: true,
             message: 'MD list',
             doctors,
@@ -39,9 +67,9 @@ export const findMd = async (req, res) => {
     } catch (error) {
         console.log({ error });
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            type: "error",
+            type: 'error',
             status: false,
             message: error.message,
         });
     }
-}
+};
