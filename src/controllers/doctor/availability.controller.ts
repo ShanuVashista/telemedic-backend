@@ -30,6 +30,12 @@ export const updateAvailability = async (req, res) => {
                     }
             )
         );
+
+        if (!req.user.isAvailability) {
+            req.user.isAvailability = true;
+            await req.user.save({ validateBeforeSave: false });
+        }
+
         res.status(StatusCodes.OK).json({
             type: 'success',
             status: true,
