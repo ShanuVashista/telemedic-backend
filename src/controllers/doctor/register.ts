@@ -62,7 +62,7 @@ const Register_POST = async (req, res) => {
         const tempArray = {}
         tempArray['oldData'] = null
         tempArray['newData'] = data
-        const activityData = await activityLog.create(req.user._id, req.user.role_id, ACTIVITY_LOG_TYPES.CREATED, req, tempArray)
+        const activityData = await activityLog.create(data._id, data.role_id, ACTIVITY_LOG_TYPES.CREATED, req, tempArray)
 
 
         data = JSON.parse(JSON.stringify(data));
