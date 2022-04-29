@@ -10,7 +10,8 @@ const List_GET = async (req, res) => {
         const response_data = [];
         for (const key in obj) {
             response_data.push({
-                name: obj[key].name,
+                countryCode:key,
+                countryName: obj[key].name,
                 dialCode: obj[key].phone,
                 countryFlag: obj[key].countryFlag
             })
