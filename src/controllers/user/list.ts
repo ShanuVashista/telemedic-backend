@@ -134,7 +134,9 @@ const List_POST = async (req, res) => {
 
             // user.forEach(oneUser => oneUser.populate('paymentMethods'))
             let totalPages = 0;
-            totalPages = Math.ceil(user[0].total.length != 0 ? user[0].total[0].count : 0 / limit);
+            if(user[0].total.length != 0){
+                totalPages = Math.ceil(user[0].total[0].count / limit);
+            }
             res.status(StatusCodes.OK).send({
                 status: true,
                 type: 'success',
