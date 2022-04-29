@@ -16,12 +16,14 @@ import { adminUpdateSchema } from '../validator/admin.validation';
 import { deletePaymentMethod, getPaymentMethod, savePaymentMethod } from '../controllers/patient/paymentMethod.controller';
 import { paymentMethod } from '../validator/paymentMethods.validation';
 import { paginationQuerySchema } from '../validator/util';
+import admin from '../routes/admin'
 
 const router = express.Router()
 router.use('/patient', patientRouter);
 router.use('/doctor', doctorRouter);
 router.post("/login", Login.login);
 router.post("/admin/login", Login.admin);
+router.use("/admin",admin);
 router.put("/admin", auth, userRole(Roles.ADMIN), validateBody(adminUpdateSchema), updateAdmin);
 router.post("/forgotPass", Passwordcontroller.forgotPassword)
 router.post("/password-reset/:userId/:token", Passwordcontroller.resetPassword)

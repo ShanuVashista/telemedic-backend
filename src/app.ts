@@ -29,8 +29,8 @@ import template from './routes/template'
 import CountryStateCity from './routes/country_state_city';
 
 app.use('/user', userRoutes);
-app.use('/admin/super', superAdminRoutes)
-app.use('/admin/site', siteAdminRoutes)
+// app.use('/admin/super', superAdminRoutes)
+// app.use('/admin/site', siteAdminRoutes)
 app.use('/appointments', appointment)
 app.use('/rating', rating)
 app.use('/clinicalNote', clinicalNote)
