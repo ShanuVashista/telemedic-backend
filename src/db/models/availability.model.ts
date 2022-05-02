@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { IUser } from './user';
+import User, { IUser } from './user';
 
 export interface IAvailability {
     doctorId: mongoose.PopulatedDoc<IUser>;
@@ -12,7 +12,7 @@ export interface IAvailability {
 const availabilitySchema = new mongoose.Schema<IAvailability>({
     doctorId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: User,
         required: true,
     },
     start: {

@@ -6,6 +6,7 @@ import {
     checkAppointmentTimeConflict,
     ListAvailability,
 } from '../appointment/availabilityUtil';
+import { IUser } from '../../db/models/user';
 
 export const findMd = async (req, res) => {
     try {
@@ -43,7 +44,12 @@ export const findMd = async (req, res) => {
                     dateOfAppointment: appointmentTime ? new Date(appointmentTime) : null,
                     ...filter,
                 })
-            ).map((a) => a.doctorId),
+            )
+                .filter(availability => {
+                    if (!req.user.isCorporate) return true;
+                    return (availability.doctorId as IUser).isCorporate;
+                })
+                .map((a) => a.doctorId),
         };
 
         const {

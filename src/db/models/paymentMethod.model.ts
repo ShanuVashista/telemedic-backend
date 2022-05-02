@@ -1,11 +1,7 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import mongoose from 'mongoose';
+import { PaymentMethodEnum } from '../../lib/PaymentMethodEnum';
 import { IUser } from './user';
-
-enum PaymentMethodEnum {
-    CARD = 'card',
-    BANK = 'bank',
-}
 
 // create an interface with meta data for the payment method
 interface MetaPaymentMethod {
@@ -28,7 +24,11 @@ interface bank extends MetaPaymentMethod {
     ifsc_code: string;
 }
 
-export type IPaymentMethod = NonNullable<bank | card>;
+interface health_card extends MetaPaymentMethod {
+    health_card_number: string;
+}
+
+export type IPaymentMethod = NonNullable<bank | card | health_card>;
 
 const isType = function (type: PaymentMethodEnum) {
     return function (this: IPaymentMethod) {
@@ -83,6 +83,11 @@ const paymentMethodSchema = new mongoose.Schema<IPaymentMethod>(
         card_cvv: {
             type: String,
             required: isType(PaymentMethodEnum.CARD),
+        },
+        health_card_number: {
+            type: String,
+            required: isType(PaymentMethodEnum.HEALTH_CARD),
+            get: obfuscate,
         },
         type: {
             type: String,
