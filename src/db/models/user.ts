@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import validator from 'validator';
 import { Roles } from '../../lib/roles';
 import PaymentMethod from './paymentMethod.model';
+import { boolean } from 'joi';
 
 enum GenderEnum {
     MALE = 'male',
@@ -46,16 +47,21 @@ export interface IUser {
     isProfessionalInfo?: boolean;
     isBankDetails?: boolean;
     isAvailability?: boolean;
+    defaultPaymentMethod?:string;
+    isCorporate:boolean;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
     {
+        isCorporate:{
+            type:Boolean,
+        },
         email: {
             type: String,
             unique: true,
             validate: {
                 validator: validator.isEmail,
-                message: '{VALUE} is not a valid email',
+                message: 'Email is not a valid Email',
             },
             required: true,
         },
