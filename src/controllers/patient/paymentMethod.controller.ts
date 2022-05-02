@@ -3,16 +3,27 @@ import { ACTIVITY_LOG_TYPES } from '../../../constant';
 import PaymentMethod from '../../db/models/paymentMethod.model';
 import { filterPaginate } from '../../lib/filterPaginate';
 import { Roles } from '../../lib/roles';
+import { PaymentMethodEnum } from '../../lib/PaymentMethodEnum';
 import activityLog from '../../services/activityLog';
 
 export const savePaymentMethod = async (req, res) => {
     try {
         if (req.user.role_id === Roles.DOCTOR) {
-            if (req.body.type !== 'bank') {
+            if (req.body.type !== PaymentMethodEnum.BANK) {
                 return res.status(StatusCodes.BAD_REQUEST).json({
                     type: 'error',
                     status: false,
                     message: 'Only bank payment method is allowed for doctor',
+                });
+            }
+        }
+
+        if (req.body.type === PaymentMethodEnum.HEALTH_CARD) {
+            if (!req.user.isCorporate) {
+                return res.status(StatusCodes.BAD_REQUEST).json({
+                    type: 'error',
+                    status: false,
+                    message: 'Only corporate user can use health card payment',
                 });
             }
         }

@@ -34,7 +34,7 @@ router.post('/list', auth, List_User);
 router.post('/prescription/list', auth, Prescription_List_POST);
 router.use('/notifications', auth, notificationRouter)
 router.use('/transactions', auth, transactionRouter)
-router.use('/corporate',auth,userRole(Roles.CORPORATE),corporateRoute)
+router.use('/corporate',corporateRoute)
 
 router.post(
     '/paymentMethods',
