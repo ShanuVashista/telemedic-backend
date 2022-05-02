@@ -1,4 +1,4 @@
-import { response } from "express";
+// import { response } from "express";
 import StatusCodes from "http-status-codes";
 import Country from '../../db/models/country-state-city';
 const getCountry = async (req, res) => {
@@ -13,7 +13,8 @@ for (const key in obj) {
     response_data.push({
         countryCode:key,
         countyName: obj[key].name,
-        countryFlag: obj[key].countryFlag
+        countryFlag: obj[key].countryFlag,
+        currencyCode: obj[key].currency
     })
 }
        res.status(StatusCodes.OK).json({

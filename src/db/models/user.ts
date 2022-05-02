@@ -4,7 +4,6 @@ import bcrypt from 'bcrypt';
 import validator from 'validator';
 import { Roles } from '../../lib/roles';
 import PaymentMethod from './paymentMethod.model';
-import { boolean } from 'joi';
 
 enum GenderEnum {
     MALE = 'male',
@@ -49,6 +48,9 @@ export interface IUser {
     isAvailability?: boolean;
     defaultPaymentMethod?:string;
     isCorporate:boolean;
+    dialCode?: string;
+    currencyCode?: string;
+    countryCode?: string;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -170,6 +172,9 @@ const userSchema = new mongoose.Schema<IUser>(
                 [Roles.DOCTOR]: false,
             }),
         },
+        dialCode: {type: String},
+        currencyCode: {type: String},
+        countryCode: {type: String},
     },
     {
         timestamps: true,

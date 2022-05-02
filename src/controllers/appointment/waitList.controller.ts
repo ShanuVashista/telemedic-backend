@@ -3,6 +3,8 @@ import { isAfter, differenceInMinutes } from 'date-fns';
 import Appointment from '../../db/models/appointment.model';
 import { AppointmentStatuses } from '../../lib/appointmentStatuses';
 import { getSlotIndex, getSlots } from '../../lib/utils/timeSlots';
+import Availability from '../../db/models/availability.model';
+import { generateAvailabilityByTimeFilter } from './availabilityUtil';
 
 export const waitList = async (req, res) => {
     try {
@@ -37,10 +39,17 @@ export const waitList = async (req, res) => {
 
         appointment.dateOfAppointment.setSeconds(0, 0);
 
-        const start = new Date(appointment.dateOfAppointment.getTime());
-        start.setUTCHours(0, 0, 0, 0);
-        const end = new Date(appointment.dateOfAppointment.getTime());
-        end.setUTCHours(23, 59, 59, 999);
+        const availability = await Availability.findOne({
+            doctorId: appointment.doctorId,
+            ...generateAvailabilityByTimeFilter(appointment.dateOfAppointment),
+        });
+
+        const start = availability.start ?? new Date(appointment.dateOfAppointment.getTime());
+        const end = availability.end ?? new Date(appointment.dateOfAppointment.getTime());
+        if (!availability) {
+            start.setUTCHours(0, 0, 0, 0);
+            end.setUTCHours(23, 59, 59, 999);
+        }
         const slots = getSlots(start, end, 30);
 
         const appointments = await Appointment.find({
@@ -83,9 +92,9 @@ export const waitList = async (req, res) => {
             data: { appointment },
             est: estimatedWaitTime,
             inProgressAppointment: inProgressAppointment
-                ? slotIndexOfInProgressAppointment
+                ? slotIndexOfInProgressAppointment + 1
                 : null,
-            appointment: slotIndexOfAppointment,
+            appointment: slotIndexOfAppointment + 1,
         });
     } catch (error) {
         console.log({ error });

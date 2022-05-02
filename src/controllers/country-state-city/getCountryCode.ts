@@ -13,14 +13,15 @@ const List_GET = async (req, res) => {
                 countryCode:key,
                 countryName: obj[key].name,
                 dialCode: obj[key].phone,
-                countryFlag: obj[key].countryFlag
+                countryFlag: obj[key].countryFlag,
+                currencyCode: obj[key].currency
             })
 
         }
         res.status(StatusCodes.OK).json({
             status: true,
             type: 'success',
-            message: "List Get Successfully",
+            message: "Dial Code Get Successfully",
             data: response_data
         });
     } catch (error) {

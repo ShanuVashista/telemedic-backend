@@ -6,4 +6,4 @@ export enum ACTIVITY_LOG_TYPES {
     DELETED = 'deleted',
 }
 
-export const MIN_MEETING_DURATION = 30;
+export const MIN_MEETING_DURATION = 29;
