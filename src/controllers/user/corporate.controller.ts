@@ -45,6 +45,7 @@ const addPatient = async (req, res: Response, next: NextFunction) => {
       });
     }
     req.body.isCorporate = true;
+    req.body.isApproved = false;
     const user = await User.create({ ...req.body, role_id: Roles.PATIENT });
 
     // unset current_practise_address license
