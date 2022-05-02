@@ -1,4 +1,4 @@
-import { differenceInMinutes, addMinutes } from 'date-fns';
+import { differenceInMinutes, addMinutes, subMinutes } from 'date-fns';
 import { MIN_MEETING_DURATION } from '../../../constant';
 import Appointment from '../../db/models/appointment.model';
 import Availability, {
@@ -10,10 +10,20 @@ export async function checkAppointmentTimeConflict(
     { doctorId = '', patientId = '' }: { doctorId?: string; patientId?: string }
 ) {
     const filter = {
-        dateOfAppointment: {
-            $gte: dateOfAppointment,
-            $lte: addMinutes(new Date(dateOfAppointment), MIN_MEETING_DURATION),
-        },
+        $or: [
+            {
+                dateOfAppointment: {
+                    $gte: dateOfAppointment,
+                    $lte: addMinutes(dateOfAppointment, MIN_MEETING_DURATION),
+                },
+            },
+            {
+                dateOfAppointment: {
+                    $lte: dateOfAppointment,
+                    $gte: subMinutes(dateOfAppointment, MIN_MEETING_DURATION),
+                },
+            },
+        ],
     };
     if (doctorId) {
         filter['doctorId'] = doctorId;
