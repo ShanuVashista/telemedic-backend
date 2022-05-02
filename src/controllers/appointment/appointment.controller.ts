@@ -15,7 +15,7 @@ export interface Appointment {
   createdAt: Date;
   doctorId: string;
   doctor: number;
-  dateOfAppointment: Date;
+  dateOfAppointment: string;
   appointmentType: string;
 }
 
@@ -111,9 +111,53 @@ const updateAppointment = async (
 ) => {
   try {
     const { Appointmentid } = req.params;
-    const { isEmergency, dateOfAppointment } = req.body;
+    const { isEmergency, dateOfAppointment }: { [key: string]: string } = req.body;
 
     const doc = await Appointment.findById(Appointmentid);
+
+    if (!doc) {
+      return res.status(404).json({
+        status: false,
+        type: 'error',
+        message: 'Appointment not found',
+      });
+    }
+
+    if (isBefore(new Date(dateOfAppointment), new Date())) {
+      return res.status(404).json({
+        status: false,
+        type: 'success',
+        message: 'You can not create an Appointment in the past',
+      });
+    }
+
+    const doctorAvailability = await ListAvailability({
+      dateOfAppointment: new Date(dateOfAppointment),
+      doctorId: doc.doctorId.toString(),
+    });
+
+    if (doctorAvailability.length === 0) {
+      return res.status(404).json({
+        status: false,
+        type: 'success',
+        message: 'Doctor is not available on this date',
+      });
+    }
+
+    console.log({ doctorAvailability });
+
+    const appointmentTimeConflict = await checkAppointmentTimeConflict(
+      new Date(dateOfAppointment),
+      { doctorId: doc.doctorId.toString() }
+    );
+
+    if (appointmentTimeConflict) {
+      return res.status(404).json({
+        status: false,
+        type: 'success',
+        message: 'This time slot is already booked',
+      });
+    }
 
     const update = {
       isEmergency: isEmergency,
@@ -130,7 +174,7 @@ const updateAppointment = async (
       data: updateDoc,
     });
   } catch (Err) {
-    // console.log(Err);
+    console.log(Err);
     res.status(404).json({
       type: 'error',
       status: false,
@@ -206,7 +250,7 @@ const addAppointment = async (req, res: Response, next: NextFunction) => {
     }
 
     const appointmentTimeConflict = await checkAppointmentTimeConflict(
-      dateOfAppointment,
+      new Date(dateOfAppointment),
       { doctorId }
     );
 
