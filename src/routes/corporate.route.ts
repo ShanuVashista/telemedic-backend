@@ -5,7 +5,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 const corporateRoute = express.Router();
 
-corporateRoute.post('/patient',controller.addPatient);
+corporateRoute.post('/patient',upload.any(),controller.addPatient);
 corporateRoute.post('/doctor',upload.any(),controller.addPhysician);
 
 
