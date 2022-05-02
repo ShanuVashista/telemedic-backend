@@ -1,34 +1,31 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // import yourhandle from 'countrycitystatejson';
 import StatusCodes from "http-status-codes";
-import Country from '../../db/models/country-state-city';
-const List_State_GET = async (req, res) => {
+import Currency from '../../db/models/country-state-city';
+const Currency_Code_GET = async (req, res) => {
     try {
         let response_data = [];
         if(typeof (req.query.countryCode) != 'undefined' && req.query.countryCode != null){
             const code =req.query.countryCode;
-            let response = await Country.aggregate([
+            let response = await Currency.aggregate([
                 {$project:{[`countryCode.${code}`]:1}}
             ]);
             response = JSON.parse(JSON.stringify(response));
             const obj = response[0].countryCode;
-            const state = [];
+            
             if(Object.keys(obj).length !== 0){
-            for (const key in obj[code].states) {
-                state.push(key)
+                response_data = [{
+                    countryCode: code,
+                    countryName: obj[code].name,
+                    countryFlag: obj[code].countryFlag,
+                    currencyCode: obj[code].currency
+                }]
             }
-            response_data = [{
-                countryCode: code,
-                countryName: obj[code].name,
-                countryFlag: obj[code].countryFlag,
-                states: state
-            }]
-        }
         }
         res.status(StatusCodes.OK).json({
             status: true,
             type: 'success',
-            message: "State Get Successfully",
+            message: "Currency Get Successfully",
             data: response_data
         });
     } catch (error) {
@@ -40,4 +37,4 @@ const List_State_GET = async (req, res) => {
         });
     }
 }
-export default List_State_GET
+export default Currency_Code_GET

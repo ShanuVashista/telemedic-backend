@@ -46,6 +46,9 @@ export interface IUser {
     isProfessionalInfo?: boolean;
     isBankDetails?: boolean;
     isAvailability?: boolean;
+    dialCode?: string;
+    currencyCode?: string;
+    countryCode?: string;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -164,6 +167,9 @@ const userSchema = new mongoose.Schema<IUser>(
                 [Roles.DOCTOR]: false,
             }),
         },
+        dialCode: {type: String},
+        currencyCode: {type: String},
+        countryCode: {type: String},
     },
     {
         timestamps: true,
