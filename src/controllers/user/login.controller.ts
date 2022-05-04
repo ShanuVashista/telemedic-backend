@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt'
 import { Roles } from "../../lib/roles";
 
 const login = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
 
     try {
         User.findOne({
@@ -26,6 +26,42 @@ const login = async (req, res) => {
                         status: false,
                         message: "User Not Found"
                     })
+                }
+
+                if(user.role_id !== role){
+                    switch (role) {
+                        case "doctor":
+                            return res.status(400).send({
+                                type: "error",
+                                status: false,
+                                message: "This email is not registered in doctor"
+                            })
+                            break;
+
+                            case "patient":
+                                return res.status(400).send({
+                                    type: "error",
+                                    status: false,
+                                    message: "This email is not registered in patient"
+                                })
+                            break;
+
+                            case "admin":
+                                return res.status(400).send({
+                                    type: "error",
+                                    status: false,
+                                    message: "This email is not registered as admin"
+                                })
+                            break;
+                    
+                        default:
+                            return res.status(400).send({
+                                type: "error",
+                                status: false,
+                                message: "This role is not allowed in this app"
+                            })
+                            break;
+                    }
                 }
                 if (user.role_id == 'doctor' && (!user.isApproved && user.isProfessionalInfo)) {
                     return res.status(400).send({
