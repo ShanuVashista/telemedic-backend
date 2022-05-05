@@ -9,7 +9,7 @@ import { ACTIVITY_LOG_TYPES } from "../../../constant";
 const Professional_PUT = async (req, res) => {
     try {
         const registerData = req.body;
-        registerData.isProfessionalInfo = true;
+        // registerData.isProfessionalInfo = true;
         req.user = JSON.parse(JSON.stringify(req.user));
         if(req.user.role_id != 'doctor'){
             throw new Error('Doctor does not exist');
@@ -71,6 +71,7 @@ const Professional_PUT = async (req, res) => {
             req,
             tempArray
         );
+        registerData.isProfessionalInfo = true;
         res.status(200).json({
             status:true,
             type: 'success',

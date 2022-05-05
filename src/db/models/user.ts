@@ -44,6 +44,7 @@ export interface IUser {
     status?: string;
     isApproved?: boolean;
     isProfessionalInfo?: boolean;
+    isHealthCardInfo?: boolean,
     isBankDetails?: boolean;
     isAvailability?: boolean;
     defaultPaymentMethod?:string;
@@ -158,6 +159,12 @@ const userSchema = new mongoose.Schema<IUser>(
             type: mongoose.Schema.Types.Boolean,
             default: defaultByRole({
                 [Roles.DOCTOR]: false,
+            }),
+        },
+        isHealthCardInfo: {
+            type: mongoose.Schema.Types.Boolean,
+            default: defaultByRole({
+                [Roles.PATIENT]: false,
             }),
         },
         isBankDetails: {

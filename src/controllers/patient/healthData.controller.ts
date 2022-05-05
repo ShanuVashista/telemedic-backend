@@ -33,6 +33,7 @@ const healthData = async (req, res) => {
             req,
             tempArray
         );
+        req.body.isHealthCardInfo = true;
         return res.status(StatusCodes.OK).json({
             type: 'success',
             status: true,
