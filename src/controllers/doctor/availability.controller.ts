@@ -3,6 +3,8 @@ import Availability from "../../db/models/availability.model";
 import { filterPaginate } from "../../lib/filterPaginate";
 
 export const updateAvailability = async (req, res) => {
+  console.log("req", req.body);
+
   try {
     await checkForConflict(req.body, req.user._id);
     const availabilities = await Availability.bulkWrite(
@@ -36,23 +38,11 @@ export const updateAvailability = async (req, res) => {
       await req.user.save({ validateBeforeSave: false });
     }
 
-    // console.log("availabilities", availabilities);
-
-    const resData = availabilities.result.insertedIds;
-
-    // console.log("resData", resData);
-
-    // res.status(StatusCodes.OK).json({
-    //   type: "success",
-    //   status: true,
-    //   message: "Availability added",
-    //   data: { availabilities },
-    // });
     res.status(StatusCodes.OK).json({
       type: "success",
       status: true,
       message: "Availability added",
-      data: resData,
+      data: { availabilities },
     });
   } catch (error) {
     console.log("Error in adding availability", error);
