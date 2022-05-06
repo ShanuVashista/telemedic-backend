@@ -19,12 +19,11 @@ export const doctorApprove = async (req, res) => {
         let userData = await User.findOne({_id:req.body.id});
         let response = await User.findByIdAndUpdate(req.body.id, {  $set:{
             status : "enable",
-            isAvailability : true
+            isApprove : true
         } });
         let tempArray = {}
         tempArray['oldData'] = userData
-        tempArray['newData'] = {status : "enable",
-        isAvailability : true}
+        tempArray['newData'] = {status : "enable",isApprove: true}
         let activityData = await activityLog.create(req.user._id, req.user.role_id, ACTIVITY_LOG_TYPES.UPDATED, req, tempArray)
        
         return res.status(StatusCodes.OK).json({
