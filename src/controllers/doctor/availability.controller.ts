@@ -3,8 +3,6 @@ import Availability from "../../db/models/availability.model";
 import { filterPaginate } from "../../lib/filterPaginate";
 
 export const updateAvailability = async (req, res) => {
-  console.log("req", req.body);
-
   try {
     await checkForConflict(req.body, req.user._id);
     const availabilities = await Availability.bulkWrite(
@@ -38,12 +36,48 @@ export const updateAvailability = async (req, res) => {
       await req.user.save({ validateBeforeSave: false });
     }
 
+    // const resData = availabilities.result.insertedIds;
+
+    // req.body.forEach((item, i) => {
+    //   console.log("_id", item._id);
+    // });
+
+    // req.body.map((item) => {
+
+    //   const req_id = item._id;
+    //   if (req_id) {
+
+    //     var records = await Availability.findById(req_id);
+    //   } else {
+
+    //     records = await Availability.find().where("_id").in(resData).exec();
+    //   }
+    // });
+
+    // console.log("records", records);
+
+    // if (_id) {
+    //   const records = await Availability.find()
+    //     .where("_id")
+    //     .in(req.body)
+    //     .exec();
+    // }
+
+    // console.log("resData", resData);
+
     res.status(StatusCodes.OK).json({
       type: "success",
       status: true,
       message: "Availability added",
       data: { availabilities },
     });
+
+    // res.status(StatusCodes.OK).json({
+    //   type: "success",
+    //   status: true,
+    //   message: "Availability added",
+    //   data: resData,
+    // });
   } catch (error) {
     console.log("Error in adding availability", error);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
