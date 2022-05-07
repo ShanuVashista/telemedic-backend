@@ -3,15 +3,13 @@ import nodemailer from 'nodemailer';
 const sendEmail = async (email,subject, text) => {
 
     try{
-        let testAccount = await nodemailer.createTestAccount();
-
         const transporter = nodemailer.createTransport({
-            host: "smtp.ethereal.email",
-            port:587,
-            secure:false,
+            host: "smtp.zoho.com",
+            port: 465,
+            secure: true,
             auth:{
-                user:testAccount.user,
-                pass:testAccount.pass,
+                user: "noreply@mytelemd.ca",
+                pass: "Sahilsharma@123"
             }
         });
     
