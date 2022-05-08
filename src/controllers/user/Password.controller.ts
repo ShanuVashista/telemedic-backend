@@ -43,12 +43,16 @@ const forgotPassword = async (
         await sendEmail(user.email, "Password Reset", link);
 
         res.status(StatusCodes.OK).json({
+            type:"success",
+            status:true,
             message: "Password Reset Link Send to your email",
             // Password_Reset_Link: link
         });
 
     }catch(err){
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            type:"error",
+            status:false,
             message: "An Error Occured Please Try After Some Time!"
         });
     }
@@ -96,6 +100,8 @@ const resetPassword = async (
         await token.delete();
         
         return res.status(StatusCodes.OK).json({
+            type:"success",
+            status:true,
             message: "Password Changed!",
         });
     }catch(err){

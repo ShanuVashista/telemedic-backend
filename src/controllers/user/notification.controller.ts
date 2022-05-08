@@ -20,6 +20,7 @@ export const listNotifications = async (req, res) => {
 
         res.status(200).json({
             type: 'success',
+            status:true,
             message: 'Notifications list',
             notifications,
             total,
@@ -28,10 +29,38 @@ export const listNotifications = async (req, res) => {
             totalPages,
         });
     } catch (error) {
-        console.log({ error });
+        // console.log({ error });
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             type: 'error',
+            status:false,
             message: error.message,
         });
     }
 };
+
+export const clearNotification =async (req,res) => {
+    const {Id} =req.query
+    try{
+        await Notification.deleteMany({userId:Id},function(err, _) {
+            if(err){
+                return  res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                    type: 'error',
+                    status:false,
+                    message: err.message,
+                });
+            }
+            res.status(200).json({
+                type: 'success',
+                status: true,
+                message: 'Notifications Cleared',
+            });
+        })
+    }catch(err){
+        // console.log(err)
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            type: 'error',
+            status:false,
+            message: err.message,
+        });
+    }
+}
