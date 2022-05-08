@@ -9,10 +9,13 @@ const Lab_Test = async (req, res) => {
 
         result = JSON.parse(JSON.stringify(result));
 
-        console.log(result, '-****************-');
+        // console.log(result, '-****************-');
         const test_data = { name: result['doctor_details'].name, address: result['doctor_details'].current_practise_address[0].address, city: result['doctor_details'].current_practise_address[0].city };
 
-        res.render('general-test', test_data, (err, data) => {
+        console.log(test_data)
+
+        res.render('generalTest', test_data, (err, data) => {
+            
             if (!err) {
                 console.log(data, '----------===========');
                 const options = {
@@ -32,10 +35,12 @@ const Lab_Test = async (req, res) => {
                     } else {
                         res.setHeader("Content-type", "application/pdf");
                         data.pipe(res);
-                        // res.status(201).send("File created successfully");
+                        res.status(201).send("File created successfully");
                     }
                 });
             }
+            // console.log("error occurd")
+            res.status(400).send(err);
         })
 
 
