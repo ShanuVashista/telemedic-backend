@@ -34,12 +34,6 @@ const sendEmail = async (email,subject, text) => {
             }
             console.log("sent" + info.response)
         })
-        // await transporter.sendEmail({
-        //     from: 'telemdbackend@outlook.com',
-        //     to: email,
-        //     subject: subject,
-        //     text: text
-        // });
 
         console.log("Eamil sent Successful")
     }catch(error){

@@ -44,7 +44,7 @@ const forgotPassword = async (
 
         res.status(StatusCodes.OK).json({
             message: "Password Reset Link Send to your email",
-            Password_Reset_Link: link
+            // Password_Reset_Link: link
         });
 
     }catch(err){
