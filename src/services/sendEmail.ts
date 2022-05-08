@@ -3,25 +3,25 @@ import nodemailer from 'nodemailer';
 const sendEmail = async (email,subject, text) => {
 
     try{
-        const transporter = nodemailer.createTransport({
-            host: "smtp.zoho.com",
-            port: 465,
-            secure: true,
-            auth:{
-                user: process.env.ZOHO_MAIL,
-                pass: process.env.ZOHO_PASS
-            }
-        });
         // const transporter = nodemailer.createTransport({
-        //     service:"hotmail",
+        //     host: "smtp.zoho.com",
+        //     port: 465,
+        //     secure: true,
         //     auth:{
-        //         user: "telemdbackend@outlook.com",
-        //         pass: "Developer@123"
+        //         user: process.env.ZOHO_MAIL,
+        //         pass: process.env.ZOHO_PASS
         //     }
         // });
+        const transporter = nodemailer.createTransport({
+            service:"hotmail",
+            auth:{
+                user: "telemdbackend@outlook.com",
+                pass: "Developer@123"
+            }
+        });
 
         const options = {
-            from: process.env.ZOHO_MAIl,
+            from: "telemdbackend@outlook.com",
             to: email,
             subject: subject,
             text: text
