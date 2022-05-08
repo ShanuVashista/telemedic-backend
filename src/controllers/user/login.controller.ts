@@ -77,13 +77,13 @@ const login = async (req, res) => {
           message: "Professional Information is not available",
         });
       }
-      if (user.role_id == "doctor" && !user.isBankDetails) {
-        return res.status(400).send({
-          type: "error",
-          status: false,
-          message: "Bank Details Information is not available",
-        });
-      }
+      // if (user.role_id == "doctor" && !user.isBankDetails) {
+      //   return res.status(400).send({
+      //     type: "error",
+      //     status: false,
+      //     message: "Bank Details Information is not available",
+      //   });
+      // }
 
       console.log("password", password);
 

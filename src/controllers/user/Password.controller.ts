@@ -40,7 +40,7 @@ const forgotPassword = async (
 
         const link = `${process.env.BASE_URL}/user/password-reset/${user._id}/${token.token}`;
 
-        // await sendEmail(user.email, "Password Reset", link);
+        await sendEmail(user.email, "Password Reset", link);
 
         res.status(StatusCodes.OK).json({
             message: "Password Reset Link Send to your email",
