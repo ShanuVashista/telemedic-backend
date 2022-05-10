@@ -91,15 +91,14 @@ function filterTimeIsAvailable(
 ) {
   return availabilities.filter((availability) => {
     if (
-      differenceInMinutes(availability.end, dateOfAppointment) <
+      Math.abs(differenceInMinutes(availability.end, dateOfAppointment)) <
       MIN_MEETING_DURATION
     ) {
       return false;
     }
     if (!availability.break_start) return true;
-
     if (
-      differenceInMinutes(availability.break_start, dateOfAppointment) <
+      Math.abs(differenceInMinutes(availability.break_start, dateOfAppointment)) <
       MIN_MEETING_DURATION
     ) {
       return false;
