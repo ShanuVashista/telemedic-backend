@@ -8,6 +8,7 @@ const healthData = async (req, res) => {
     try {
         const tempArray = {};
         tempArray['oldData'] = await User.findById(req.user._id);
+        req.body.isHealthCardInfo = true;
         const user = await User.findOneAndUpdate(
             {
                 _id: req.user._id,
@@ -33,7 +34,7 @@ const healthData = async (req, res) => {
             req,
             tempArray
         );
-        req.body.isHealthCardInfo = true;
+        // req.body.isHealthCardInfo = true;
         return res.status(StatusCodes.OK).json({
             type: 'success',
             status: true,
