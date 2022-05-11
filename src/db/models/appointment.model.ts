@@ -10,6 +10,7 @@ export interface IAppointment {
   status: string;
   isEmergency: boolean;
   symptoms: Array<string>;
+  reason:string,
   Meta: string;
 }
 
@@ -24,6 +25,7 @@ const AppointmentSchema = new Schema<IAppointment>(
     isEmergency: { default: false, type: Boolean, required: true },
     symptoms:[{type: String, required: true, default:null}],
     Meta: { type: String },
+    reason:{type:String}
   },
   { timestamps: true, toJSON: { virtuals: true } }
 );
