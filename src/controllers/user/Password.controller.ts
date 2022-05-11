@@ -38,15 +38,28 @@ const forgotPassword = async (
             }).save();
         }
 
-        const link = `${process.env.BASE_URL}/user/password-reset/${user._id}/${token.token}`;
-
-        await sendEmail(user.email, "Password Reset", link);
+        // const link = `${process.env.BASE_URL}/user/password-reset/${user._id}/${token.token}`;
+        function generatePassword() {
+            var length = 8,
+                charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+                retVal = "";
+            for (var i = 0, n = charset.length; i < length; ++i) {
+                retVal += charset.charAt(Math.floor(Math.random() * n));
+            }
+            return retVal+ '@';
+        }
+        const tempPass = generatePassword()
+        
+        user.password = tempPass;
+        await user.save();
+        // await token.delete();
+        await sendEmail(user.email, "Here is your temprory created Password", tempPass);
 
         res.status(StatusCodes.OK).json({
             type:"success",
             status:true,
             message: "Password Reset Link Send to your email",
-            // Password_Reset_Link: link
+            Password_Reset_Link: tempPass
         });
 
     }catch(err){
@@ -162,5 +175,57 @@ const changePassword = async (
     }
 }
 
-export default {forgotPassword,resetPassword,changePassword};
+const changeTempPassword = async(
+    req,
+    res
+) => {
+    const pass_rgex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    try{
+        const {email,tmp_password,new_password,confirm_password} = req.body;
+
+        const schema = Joi.object({email: Joi.string().email().required()})
+        // const {error} = schema.validate(req.body);
+
+        // if(error) return res.status(404).send(error.details[0].message);
+
+        const user = await User.findOne({email: email})
+
+        if(!user){
+            return res.status(400).send({message:"user with given email doesn't exist"});
+        }
+
+        const passwordIsValid = bcrypt.compareSync(
+            tmp_password,
+            user.password
+        )
+        if(!passwordIsValid){
+            return res.status(404).send({
+                message: "Invalid Current Password!"
+            });
+        }
+
+        if(!pass_rgex.test(new_password)){
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                message: "Password must have minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character"
+            });        }
+        if(new_password !== confirm_password){
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                message: "New Password and Confirm Password Is not same"
+            });
+        }
+
+        user.password = new_password;
+        await user.save()
+
+        return res.status(StatusCodes.OK).json({
+            message: "Password changed successful",
+            data: user,
+        });
+
+    }catch(err){
+
+    }
+}
+
+export default {forgotPassword,resetPassword,changePassword,changeTempPassword};
 

@@ -29,6 +29,7 @@ router.use("/admin",admin);
 router.put("/admin", auth, userRole(Roles.ADMIN), validateBody(adminUpdateSchema), updateAdmin);
 router.post("/forgotPass", Passwordcontroller.forgotPassword)
 router.post("/password-reset/:userId/:token", Passwordcontroller.resetPassword)
+router.post("/forgot-reset-password",Passwordcontroller.changeTempPassword)
 router.post("/password-change", auth, Passwordcontroller.changePassword)
 router.post('/list', auth, List_User);
 router.post('/prescription/list', auth, Prescription_List_POST);
