@@ -70,13 +70,13 @@ const login = async (req, res) => {
             "Pending verification, Approval & activation. Someone from our management team will contact you shortly",
         });
       }
-      if (user.role_id == "doctor" && !user.isProfessionalInfo) {
-        return res.status(400).send({
-          type: "error",
-          status: false,
-          message: "Professional Information is not available",
-        });
-      }
+      // if (user.role_id == "doctor" && !user.isProfessionalInfo) {
+      //   return res.status(400).send({
+      //     type: "error",
+      //     status: false,
+      //     message: "Professional Information is not available",
+      //   });
+      // }
       // if (user.role_id == "doctor" && !user.isBankDetails) {
       //   return res.status(400).send({
       //     type: "error",
