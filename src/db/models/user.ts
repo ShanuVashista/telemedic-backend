@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import validator from "validator";
 import { Roles } from "../../lib/roles";
 import PaymentMethod from "./paymentMethod.model";
+import { IHealthProfile } from "./healthProfile.model";
 
 enum GenderEnum {
   MALE = "male",
@@ -31,20 +32,21 @@ export interface IUser {
   total_exp?: string;
   current_practise_address?: Array<unknown>;
   license?: Array<unknown>;
-  weight?: number;
-  height?: number;
-  bmi?: number;
-  medicalCondition?: string;
-  pastMedicalCondition?: string;
-  alergies?: string;
-  medication?: string;
-  smoking?: boolean;
-  alcohol?: boolean;
-  marijuana?: boolean;
+  healthProfileId?:mongoose.PopulatedDoc<IHealthProfile>
+  // weight?: number;
+  // height?: number;
+  // bmi?: number;
+  // medicalCondition?: string;
+  // pastMedicalCondition?: string;
+  // alergies?: string;
+  // medication?: string;
+  // smoking?: boolean;
+  // alcohol?: boolean;
+  // marijuana?: boolean;
   status?: string;
   isApproved?: boolean;
   isProfessionalInfo?: boolean;
-  isHealthCardInfo?: boolean;
+  isHealthDataInfo?: boolean;
   isBankDetails?: boolean;
   isAvailability?: boolean;
   defaultPaymentMethod?: string;
@@ -67,6 +69,12 @@ const userSchema = new mongoose.Schema<IUser>(
         message: "Email is not a valid Email",
       },
       required: true,
+    },
+    
+    healthProfileId:{
+      type:mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'healthprofiles'
     },
 
     profile_photo: { type: String },
@@ -132,16 +140,16 @@ const userSchema = new mongoose.Schema<IUser>(
         [Roles.DOCTOR]: [],
       }),
     },
-    weight: { type: Number },
-    height: { type: Number },
-    bmi: { type: Number },
-    medicalCondition: { type: String },
-    pastMedicalCondition: { type: String },
-    alergies: { type: String },
-    medication: { type: String },
-    smoking: { type: Boolean },
-    alcohol: { type: Boolean },
-    marijuana: { type: Boolean },
+    // weight: { type: Number },
+    // height: { type: Number },
+    // bmi: { type: Number },
+    // medicalCondition: { type: String },
+    // pastMedicalCondition: { type: String },
+    // alergies: { type: String },
+    // medication: { type: String },
+    // smoking: { type: Boolean },
+    // alcohol: { type: Boolean },
+    // marijuana: { type: Boolean },
     status: {
       type: String,
       enum: DoctorStatus,
@@ -161,7 +169,7 @@ const userSchema = new mongoose.Schema<IUser>(
         [Roles.DOCTOR]: false,
       }),
     },
-    isHealthCardInfo: {
+    isHealthDataInfo: {
       type: mongoose.Schema.Types.Boolean,
       default: defaultByRole({
         [Roles.PATIENT]: false,

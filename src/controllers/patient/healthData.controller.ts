@@ -1,5 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import { ACTIVITY_LOG_TYPES } from '../../../constant';
+import HealthProfile from '../../db/models/healthProfile.model';
 import User from '../../db/models/user';
 import { Roles } from '../../lib/roles';
 import activityLog from '../../services/activityLog';
@@ -8,13 +9,26 @@ const healthData = async (req, res) => {
     try {
         const tempArray = {};
         tempArray['oldData'] = await User.findById(req.user._id);
-        req.body.isHealthCardInfo = true;
+
+        req.body.self = true;
+        req.body.relation = "self";
+        req.body.profile_image= req.user.profile_photo;
+        req.body.name = req.user.firstname +" "+req.user.lastname
+        // req.userId= req.user._id;
+
+        const healthData = await HealthProfile.create({
+            ...req.body,
+            userId: req.user._id
+        })
+
+        req.body.isHealthDataInfo = true;
+        req.body.healthProfileId = healthData._id
         const user = await User.findOneAndUpdate(
             {
                 _id: req.user._id,
                 role_id: Roles.PATIENT,
             },
-            { ...req.body },
+            { ...req.body},
             { new: true }
         );
 
@@ -26,7 +40,7 @@ const healthData = async (req, res) => {
             });
         }
 
-        tempArray['newData'] = user;
+        tempArray['newData'] = healthData;
         await activityLog.create(
             user?._id,
             user?.role_id,
