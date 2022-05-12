@@ -16,11 +16,11 @@ const profileUpdate = async (req, res) => {
       });
     }
     const registerData = req.body;
-    const admin = await User.findOne({
+    const oldData = await User.findOne({
       _id: req.user._id,
     });
     const tempArray = {};
-    tempArray["oldData"] = admin;
+    tempArray["oldData"] = oldData;
 
     let user = await User.findByIdAndUpdate(
       {
@@ -52,7 +52,7 @@ const profileUpdate = async (req, res) => {
       type: "success",
       message: "Patient Profile Updated Successfully",
       data: {
-        user,
+        registerData
       },
     });
   } catch (error) {

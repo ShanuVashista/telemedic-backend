@@ -9,6 +9,7 @@ import {
 } from "./availabilityUtil";
 
 export interface Appointment {
+  userId:number,
   patientId: number;
   appointmentId: number;
   symptoms: Array<string>;
@@ -22,7 +23,7 @@ export interface Appointment {
 //getting all Appointments
 const getAppointments = async (req, res: Response, next: NextFunction) => {
   try {
-    console.log("req", req.user);
+    // console.log("req", req.user);
 
     const user = JSON.parse(JSON.stringify(req.user));
     let { page, limit, sort, cond } = req.body;
@@ -32,7 +33,7 @@ const getAppointments = async (req, res: Response, next: NextFunction) => {
     }
 
     if (user.role_id === "patient") {
-      cond = { patientId: user._id, ...cond };
+      cond = { userId: user._id, ...cond };
     }
 
     if (!page || page < 1) {
@@ -52,6 +53,7 @@ const getAppointments = async (req, res: Response, next: NextFunction) => {
     // console.log(cond);
     const result = await Appointment.find(cond)
       .populate("doctor_details")
+      .populate("user_details")
       .populate("patient_details")
       .sort(sort)
       .skip((page - 1) * limit)
@@ -87,6 +89,7 @@ const getAppointment = async (
 
     const result = await Appointment.findById(Appointmentid)
       .populate("patient_details")
+      .populate("user_details")
       .populate("doctor_details");
 
     return res.status(200).json({
@@ -216,6 +219,7 @@ const addAppointment = async (req, res: Response, next: NextFunction) => {
   // Get the data from query body
   const {
     doctorId,
+    patientId,
     appointmentType,
     dateOfAppointment,
     symptoms,
@@ -266,7 +270,8 @@ const addAppointment = async (req, res: Response, next: NextFunction) => {
     }
 
     const newAppointment = new Appointment({
-      patientId: user._id,
+      userId: user._id,
+      patientId,
       symptoms,
       doctorId,
       appointmentType,

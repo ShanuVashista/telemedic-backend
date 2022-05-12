@@ -1,9 +1,11 @@
 import { Schema, model, PopulatedDoc } from "mongoose";
+import { IHealthProfile } from "./healthProfile.model";
 import { IUser } from "./user";
 
 export interface IAppointment {
   appointmentId: Schema.Types.ObjectId;
-  patientId: PopulatedDoc<IUser>;
+  userId:PopulatedDoc<IUser>;
+  patientId: PopulatedDoc<IHealthProfile>;
   doctorId: PopulatedDoc<IUser>;
   appointmentType: string;
   dateOfAppointment: Date;
@@ -17,7 +19,8 @@ export interface IAppointment {
 const AppointmentSchema = new Schema<IAppointment>(
   {
     appointmentId: { type: Schema.Types.ObjectId },
-    patientId: { type: Schema.Types.ObjectId, ref: 'user', required: true },
+    userId:{type: Schema.Types.ObjectId,ref:'user',required:true},
+    patientId: { type: Schema.Types.ObjectId, ref: 'healthProfile', required: true },
     doctorId: { type: Schema.Types.ObjectId, ref: 'user' },
     appointmentType: { type: String, required: true },
     dateOfAppointment: { type: Date, required: true },
@@ -31,8 +34,15 @@ const AppointmentSchema = new Schema<IAppointment>(
 );
 
 AppointmentSchema.virtual("patient_details", {
-  ref: 'user',
+  ref: 'healthProfile',
   localField: "patientId",
+  foreignField: "_id",
+  justOne: true,
+})
+
+AppointmentSchema.virtual("user_details", {
+  ref: 'user',
+  localField: "userId",
   foreignField: "_id",
   justOne: true,
 })
