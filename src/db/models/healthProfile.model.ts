@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
-import { boolean } from 'joi';
 import mongoose from 'mongoose';
 import { IUser } from './user';
 
 export interface IHealthProfile {
     name: string;
-    self: Boolean;
+    self: boolean;
     profile_image?: string;
     relation: string;
     userId?: mongoose.PopulatedDoc<IUser>;
@@ -25,7 +24,7 @@ const healthProfileSchema = new mongoose.Schema(
     {
         name: { type: String, required: true, minlength: 2, maxlength: 50 },
         profile_image: { type: String },
-        self:{type:Boolean},
+        self: { type: Boolean },
         relation: { type: String, required: true, minlength: 2, maxlength: 50 },
         userId: {
             type: mongoose.Schema.Types.ObjectId,

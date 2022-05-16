@@ -1,15 +1,15 @@
 /* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { isBefore } from "date-fns";
-import { Request, Response, NextFunction } from "express";
-import Appointment from "../../db/models/appointment.model";
+import { isBefore } from 'date-fns';
+import { Request, Response, NextFunction } from 'express';
+import Appointment from '../../db/models/appointment.model';
 import {
   ListAvailability,
   checkAppointmentTimeConflict,
-} from "./availabilityUtil";
+} from './availabilityUtil';
 
 export interface Appointment {
-  userId:number,
+  userId: number;
   patientId: number;
   appointmentId: number;
   symptoms: Array<string>;
@@ -28,11 +28,11 @@ const getAppointments = async (req, res: Response, next: NextFunction) => {
     const user = JSON.parse(JSON.stringify(req.user));
     let { page, limit, sort, cond } = req.body;
 
-    if (user.role_id === "doctor") {
+    if (user.role_id === 'doctor') {
       cond = { doctorId: user._id, ...cond };
     }
 
-    if (user.role_id === "patient") {
+    if (user.role_id === 'patient') {
       cond = { userId: user._id, ...cond };
     }
 
@@ -52,9 +52,9 @@ const getAppointments = async (req, res: Response, next: NextFunction) => {
     limit = parseInt(limit);
     // console.log(cond);
     const result = await Appointment.find(cond)
-      .populate("doctor_details")
-      .populate("user_details")
-      .populate("patient_details")
+      .populate('doctor_details')
+      .populate('user_details')
+      .populate('patient_details')
       .sort(sort)
       .skip((page - 1) * limit)
       .limit(limit);
@@ -62,8 +62,8 @@ const getAppointments = async (req, res: Response, next: NextFunction) => {
     const totalPages = Math.ceil(result_count / limit);
     return res.status(200).json({
       status: true,
-      type: "success",
-      message: "Appointment Fetch Successfully",
+      type: 'success',
+      message: 'Appointment Fetch Successfully',
       page: page,
       limit: limit,
       totalPages: totalPages,
@@ -88,22 +88,22 @@ const getAppointment = async (
     const { Appointmentid } = req.params;
 
     const result = await Appointment.findById(Appointmentid)
-      .populate("patient_details")
-      .populate("user_details")
-      .populate("doctor_details");
+      .populate('patient_details')
+      .populate('user_details')
+      .populate('doctor_details');
 
     return res.status(200).json({
       status: true,
-      type: "success",
-      message: "Appointment List Fetched",
+      type: 'success',
+      message: 'Appointment List Fetched',
       data: result,
     });
   } catch (Err) {
     // console.log(Err);
     res.status(404).json({
       statue: false,
-      type: "error",
-      message: "Appointment not found",
+      type: 'error',
+      message: 'Appointment not found',
     });
   }
 };
@@ -116,24 +116,27 @@ const updateAppointment = async (
 ) => {
   try {
     const { Appointmentid } = req.params;
-    const { isEmergency, dateOfAppointment }: { [key: string]: string } =
-      req.body;
 
     const doc = await Appointment.findById(Appointmentid);
 
     if (!doc) {
       return res.status(404).json({
         status: false,
-        type: "error",
-        message: "Appointment not found",
+        type: 'error',
+        message: 'Appointment not found',
       });
     }
+
+    const {
+      isEmergency,
+      dateOfAppointment = doc.dateOfAppointment.toISOString(),
+    }: { [key: string]: string } = req.body;
 
     if (isBefore(new Date(dateOfAppointment), new Date())) {
       return res.status(404).json({
         status: false,
-        type: "success",
-        message: "You can not create an Appointment in the past",
+        type: 'success',
+        message: 'You can not create an Appointment in the past',
       });
     }
 
@@ -145,8 +148,8 @@ const updateAppointment = async (
     if (doctorAvailability.length === 0) {
       return res.status(404).json({
         status: false,
-        type: "success",
-        message: "Doctor is not available on this date",
+        type: 'success',
+        message: 'Doctor is not available on this date',
       });
     }
 
@@ -154,14 +157,14 @@ const updateAppointment = async (
 
     const appointmentTimeConflict = await checkAppointmentTimeConflict(
       new Date(dateOfAppointment),
-      { doctorId: doc.doctorId.toString() }
+      { doctorId: doc.doctorId.toString(), ignoreAppointment: doc._id }
     );
 
     if (appointmentTimeConflict) {
       return res.status(404).json({
         status: false,
-        type: "success",
-        message: "This time slot is already booked",
+        type: 'success',
+        message: 'This time slot is already booked',
       });
     }
 
@@ -175,16 +178,16 @@ const updateAppointment = async (
 
     return res.status(200).json({
       status: true,
-      type: "success",
-      message: "Appointment Updated Sucessfully",
+      type: 'success',
+      message: 'Appointment Updated Sucessfully',
       data: updateDoc,
     });
   } catch (Err) {
     console.log(Err);
     res.status(404).json({
-      type: "error",
+      type: 'error',
       status: false,
-      message: "Appointment not found",
+      message: 'Appointment not found',
     });
   }
 };
@@ -202,14 +205,14 @@ const deleteAppointment = async (
 
     return res.status(200).json({
       status: true,
-      type: "success",
-      message: "Appointment Delete Successful",
+      type: 'success',
+      message: 'Appointment Delete Successful',
     });
   } catch (Err) {
     // console.log(Err);
     res.status(404).json({
       success: false,
-      message: "Appointment not found",
+      message: 'Appointment not found',
     });
   }
 };
@@ -226,11 +229,11 @@ const addAppointment = async (req, res: Response, next: NextFunction) => {
   }: Appointment = req.body;
 
   const user = JSON.parse(JSON.stringify(req.user));
-  if (user.role_id != "patient") {
+  if (user.role_id != 'patient') {
     return res.status(404).json({
       status: false,
-      type: "success",
-      message: "You are not authorise to create an Appointment",
+      type: 'success',
+      message: 'You are not authorise to create an Appointment',
     });
   }
 
@@ -238,8 +241,8 @@ const addAppointment = async (req, res: Response, next: NextFunction) => {
     if (isBefore(new Date(dateOfAppointment), new Date())) {
       return res.status(404).json({
         status: false,
-        type: "success",
-        message: "You can not create an Appointment in the past",
+        type: 'success',
+        message: 'You can not create an Appointment in the past',
       });
     }
 
@@ -251,8 +254,8 @@ const addAppointment = async (req, res: Response, next: NextFunction) => {
     if (doctorAvailability.length === 0) {
       return res.status(404).json({
         status: false,
-        type: "success",
-        message: "Doctor is not available on this date",
+        type: 'success',
+        message: 'Doctor is not available on this date',
       });
     }
 
@@ -264,8 +267,8 @@ const addAppointment = async (req, res: Response, next: NextFunction) => {
     if (appointmentTimeConflict) {
       return res.status(404).json({
         status: false,
-        type: "success",
-        message: "This time slot is already booked",
+        type: 'success',
+        message: 'This time slot is already booked',
       });
     }
 
@@ -281,14 +284,14 @@ const addAppointment = async (req, res: Response, next: NextFunction) => {
 
     res.status(201).json({
       status: true,
-      type: "success",
+      type: 'success',
       data: newAppointment,
     });
   } catch (Err) {
     // console.log(Err);
     res.status(404).json({
       status: false,
-      message: "One Or More Required Field is empty",
+      message: 'One Or More Required Field is empty',
     });
   }
 };

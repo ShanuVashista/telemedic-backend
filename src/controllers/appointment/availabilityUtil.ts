@@ -1,13 +1,22 @@
-import { differenceInMinutes, addMinutes, subMinutes } from "date-fns";
-import { MIN_MEETING_DURATION } from "../../../constant";
-import Appointment from "../../db/models/appointment.model";
+import { differenceInMinutes, addMinutes, subMinutes } from 'date-fns';
+import { ObjectId } from 'mongodb';
+import { MIN_MEETING_DURATION } from '../../../constant';
+import Appointment from '../../db/models/appointment.model';
 import Availability, {
   IAvailability,
-} from "../../db/models/availability.model";
+} from '../../db/models/availability.model';
 
 export async function checkAppointmentTimeConflict(
   dateOfAppointment: Date,
-  { doctorId = "", patientId = "" }: { doctorId?: string; patientId?: string }
+  {
+    doctorId = '',
+    patientId = '',
+    ignoreAppointment = '',
+  }: {
+    doctorId?: string;
+    patientId?: string;
+    ignoreAppointment?: string | ObjectId;
+  }
 ) {
   const filter = {
     $or: [
@@ -26,18 +35,21 @@ export async function checkAppointmentTimeConflict(
     ],
   };
   if (doctorId) {
-    filter["doctorId"] = doctorId;
+    filter['doctorId'] = doctorId;
   }
   if (patientId) {
-    filter["patientId"] = patientId;
+    filter['patientId'] = patientId;
+  }
+  if (ignoreAppointment) {
+    filter['_id'] = { $ne: ignoreAppointment };
   }
   return await Appointment.findOne(filter);
 }
 
 export async function ListAvailability({
   dateOfAppointment = null,
-  doctorId = "",
-  patientId = "",
+  doctorId = '',
+  patientId = '',
 }: {
   dateOfAppointment?: Date;
   doctorId?: string;
@@ -54,7 +66,7 @@ export async function ListAvailability({
     ...patientIdFilter,
     ...dateOfAppointmentFilter,
   };
-  const availabilities = await Availability.find(filter).populate("doctorId");
+  const availabilities = await Availability.find(filter).populate('doctorId');
   if (dateOfAppointment) {
     return filterTimeIsAvailable(availabilities, dateOfAppointment);
   }
@@ -98,8 +110,9 @@ function filterTimeIsAvailable(
     }
     if (!availability.break_start) return true;
     if (
-      Math.abs(differenceInMinutes(availability.break_start, dateOfAppointment)) <
-      MIN_MEETING_DURATION
+      Math.abs(
+        differenceInMinutes(availability.break_start, dateOfAppointment)
+      ) < MIN_MEETING_DURATION
     ) {
       return false;
     }
