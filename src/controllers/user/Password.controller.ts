@@ -104,6 +104,8 @@ const resetPassword = async (
             });        }
         if(password !== confirmPassword){
             return res.status(StatusCodes.BAD_REQUEST).json({
+                type: "error",
+                status:false,
                 message: "Password didn't Match"
             });
         }
@@ -119,6 +121,8 @@ const resetPassword = async (
         });
     }catch(err){
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            type: "error",
+            status:false,
             message: "An Error Occured!"
         });
     }
@@ -165,11 +169,15 @@ const changePassword = async (
         await user.save({ validateBeforeSave: false })
 
         return res.status(StatusCodes.OK).json({
+            type:"success",
+            status: true,
             message: "Password changed successful",
             data: user,
         });
     }catch(error){
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            type:"error",
+            status:false,
             message: error.message
         });
     }
@@ -218,12 +226,16 @@ const changeTempPassword = async(
         await user.save({ validateBeforeSave: false })
 
         return res.status(StatusCodes.OK).json({
+            type:"success",
+            status: true,
             message: "Password changed successful",
             data: user,
         });
 
     }catch(err){
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            type:"error",
+            status: false,
             message: err.message,
         });
     }
