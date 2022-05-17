@@ -125,8 +125,8 @@
                                 <span
                                     style="font-size: 14px;color: #444444;font-family: poppins; min-width: 58px;">Postal
                                     Code:</span>
-                                <input placeholder="" class="input100" type="text" name="phone"
-                                    style="background: #a3bdf545;width: 100%;border:0;">
+                                <p class="input100" 
+                                style="background: #a3bdf545;width: 100%;border:0;"><%= doctor_postalcode %></p>
                             </div>
                         </td>
                         <td width="50%" style="float: left;">
@@ -134,8 +134,8 @@
                                 <span
                                     style="font-size: 14px;color: #444444;font-family: poppins; min-width: 58px;padding-right: 5px;">Courier
                                     Code:</span>
-                                <input placeholder="" class="input100" type="text" name="phone"
-                                    style="background: #a3bdf545;width: 100%;border:0;">
+                                <p placeholder="" class="input100" type="text" name="phone"
+                                    style="background: #a3bdf545;width: 100%;border:0;"><%= doctor_courier %></p>
                             </div>
                         </td>
                     </tr>
@@ -500,14 +500,24 @@
                                     <label for="male" style="margin: 0;">Gender:</label>
                                 </div>
                                 <div class="gender" style="padding: 0px 5px;display: flex;align-items: center;">
-                                    <input type="radio" id="male" name="gender" value="male"
-                                        style="width: 20px;height: 20px;">
+                                    <%if (gender == 'male' || gender == 'Male' || gender == 'MALE') { %>
+                                        <input type="radio" id="male" name="gender" value="male"
+                                            style="width: 20px;height: 20px;" checked>
+                                        <% }else{ %>
+                                            <input type="radio" id="male" name="gender" value="male"
+                                            style="width: 20px;height: 20px;">
+                                            <% } %>
                                     <label for="male"
                                         style="margin: 0;padding-left: 4px;font-family:poppins;">Male</label>
                                 </div>
                                 <div class="gender" style="padding: 0px 5px;display: flex;align-items: center;">
-                                    <input type="radio" id="female" name="gender" value="female"
-                                        style="padding-left: 10px; width: 20px;height: 20px;">
+                                    <%if (gender == 'female' || gender == 'Feale' || gender == 'FEMALE') { %>
+                                        <input type="radio" id="female" name="gender" value="female"
+                                            style="width: 20px;height: 20px;" checked>
+                                        <% }else{ %>
+                                            <input type="radio" id="female" name="gender" value="female"
+                                            style="width: 20px;height: 20px;">
+                                            <% } %>
                                     <label for="female"
                                         style="margin: 0;padding-left: 4px;font-family:poppins;">Female</label>
                                 </div>
@@ -520,8 +530,8 @@
                                 <span
                                     style="font-size: 14px;color: #444444;font-family: poppins; min-width: 100px;">Date
                                     of Birth:</span>
-                                <input placeholder="" class="input100" type="text" name="phone"
-                                    style="background: #a3bdf545;width: 100%;border:0;">
+                                    <span class="input100"
+                                    style="background: #a3bdf545;border:0;"><%= dob %></span>
                             </div>
                         </td>
                         <td width="50%" style="float: left;padding: 13px 0 0 0;">
@@ -537,8 +547,8 @@
                                 <span
                                     style="font-size: 14px;color: #444444;font-family: poppins; min-width: 100px;">First
                                     Name:</span>
-                                <input placeholder="" class="input100" type="text" name="phone"
-                                    style="background: #a3bdf545;width: 100%;border:0;">
+                                <span class="input100"
+                                    style="background: #a3bdf545;width: 100%;border:0;"><%= patient_firstname %></span>
                             </div>
                         </td>
                         <td width="50%" style="float: left;padding: 13px 0 0 0;">
@@ -546,16 +556,16 @@
                                 <span
                                     style="font-size: 14px;color: #444444;font-family: poppins; min-width: 100px;">Last
                                     Name:</span>
-                                <input placeholder="" class="input100" type="text" name="phone"
-                                    style="background: #a3bdf545;border:0;">
+                                <span class="input100" 
+                                    style="background: #a3bdf545;border:0;"><%= patient_lastname %></span>
                             </div>
                         </td>
                         <td width="100%" style="float: left;padding: 13px 0 0 0;">
                             <div style="display: flex; padding: 5px 0;">
                                 <span
                                     style="font-size: 14px;color: #444444;font-family: poppins; min-width: 100px;">Address:</span>
-                                <input placeholder="" class="input100" type="text" name="phone"
-                                    style="background: #a3bdf545;width: 100%;border:0;">
+                                <span class="input100" 
+                                    style="background: #a3bdf545;width: 100%;border:0;"><%= patient_address %></span>
                             </div>
                         </td>
                         <td width="50%" style="float: left;padding: 13px 0 0 0;">
@@ -572,8 +582,8 @@
                                 <span
                                     style="font-size: 14px;color: #444444;font-family: poppins; min-width: 100px;">Phone
                                     No.:</span>
-                                <input placeholder="" class="input100" type="text" name="phone"
-                                    style="background: #a3bdf545;border:0;">
+                                <span class="input100" 
+                                    style="background: #a3bdf545;border:0;"><%= patient_phone %></span>
                             </div>
                         </td>
                         <td width="100%" style="float: left;padding: 13px 0 0 0;">
@@ -918,7 +928,7 @@
                         <h5 style="color: #0c0c0c;font-family: poppins;font-size: 16px;">Dr. ABCD</h5>
                         <h5 style="color: #0c0c0c;font-family: poppins;font-size: 16px;">Adresss: 1234 Back street
                         </h5>
-                        <h5 style="color: #0c0c0c;font-family: poppins;font-size: 16px;">Signature:</h5>
+                        <h5 style="color: #0c0c0c;font-family: poppins;font-size: 16px;">Signature: <%= name %></h5>
 
                     </td>
                 </tr>
@@ -935,32 +945,32 @@
                                     <div style="margin-bottom: 10px;display: flex;">
                                         <span
                                             style="font-size: 13px;color: #444444;font-family: poppins; min-width: 53px;">Name</span>
-                                        <input placeholder="" class="input100" type="text" name="name"
-                                            style="background: transparent;width: 100%;border-width: 0 0 1px;border-color: lightgrey;">
+                                        <p class="input100" 
+                                            style="background: transparent;width: 100%;border-width: 0 0 1px;border-color: lightgrey;"><%= name %></p>
                                     </div>
                                     <div style="margin-bottom: 10px;display: flex;">
                                         <span
                                             style="font-size: 13px;color: #444444;font-family: poppins; min-width: 52px;">Email</span>
-                                        <input placeholder="" class="input100" type="text" name="name"
-                                            style="background: transparent;width: 100%;border-width: 0 0 1px;border-color: lightgrey;">
+                                        <p placeholder="" class="input100" type="text" name="name"
+                                            style="background: transparent;width: 100%;border-width: 0 0 1px;border-color: lightgrey;"><%= doctor_email %></p>
                                     </div>
                                     <div style="margin-bottom: 10px;display: flex;">
                                         <span
                                             style="font-size: 13px;color: #444444;font-family: poppins; min-width: 34px;">Fax</span>
-                                        <input placeholder="" class="input100" type="text" name="name"
-                                            style="background: transparent;width: 100%;border-width: 0 0 1px;border-color: lightgrey;">
+                                        <p class="input100" 
+                                            style="background: transparent;width: 100%;border-width: 0 0 1px;border-color: lightgrey;"><%= fax %></p>
                                     </div>
                                     <div style="margin-bottom: 10px;display: flex;">
                                         <span
                                             style="font-size: 13px;color: #444444;font-family: poppins; min-width: 92px;">License
                                             No.</span>
-                                        <input placeholder="" class="input100" type="text" name="name"
-                                            style="background: transparent;width: 100%;border-width: 0 0 1px;border-color: lightgrey;">
+                                        <p class="input100" 
+                                            style="background: transparent;width: 100%;border-width: 0 0 1px;border-color: lightgrey;"><%= licence_no %></p>
                                     </div>
                                 </td>
                                 <td align="right" style="vertical-align: top;" width="50">
-                                       <input placeholder="" class="input100" type="text" name="name"
-                                                style="background: transparent;width: 200px;border-width: 0 0 1px;border-color: lightgrey;">
+                                       <p placeholder="" class="input100" type="text" name="name"
+                                                style="background: transparent;width: 200px;border-width: 0 0 1px;border-color: lightgrey;"><%= date %></p>
                                     <h5 style="font-weight: 700;">Date</h5>
                                 </td>
                             </tr>
