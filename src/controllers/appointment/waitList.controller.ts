@@ -10,7 +10,7 @@ import { MIN_MEETING_DURATION } from '../../../constant';
 export const waitList = async (req, res) => {
   try {
     const appointmentData = await Appointment.find({
-      patientId: req.user._id,
+      userId: req.user._id,
       status: AppointmentStatuses.APPROVED,
       dateOfAppointment: {
         $gte: subMinutes(new Date(), MIN_MEETING_DURATION),
@@ -28,7 +28,7 @@ export const waitList = async (req, res) => {
     }
 
     const appointment = await Appointment.findOne({
-      patientId: req.user._id,
+      userId: req.user._id,
       _id: appointmentData[0]._id,
     });
 
