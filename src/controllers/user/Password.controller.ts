@@ -40,10 +40,10 @@ const forgotPassword = async (
 
         // const link = `${process.env.BASE_URL}/user/password-reset/${user._id}/${token.token}`;
         function generatePassword() {
-            var length = 8,
+            let length = 8,
                 charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
                 retVal = "";
-            for (var i = 0, n = charset.length; i < length; ++i) {
+            for (let i = 0, n = charset.length; i < length; ++i) {
                 retVal += charset.charAt(Math.floor(Math.random() * n));
             }
             return retVal+ '@';
@@ -51,7 +51,7 @@ const forgotPassword = async (
         const tempPass = generatePassword()
         
         user.password = tempPass;
-        await user.save();
+        await user.save({ validateBeforeSave: false });
         // await token.delete();
         await sendEmail(user.email, "Here is your temprory created Password", tempPass);
 
