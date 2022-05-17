@@ -58,7 +58,7 @@ const forgotPassword = async (
         res.status(StatusCodes.OK).json({
             type:"success",
             status:true,
-            message: "Password Reset Link Send to your email",
+            message: "Temp Password",
             Password_Reset_Link: tempPass
         });
 
@@ -109,7 +109,7 @@ const resetPassword = async (
         }
 
         user.password = password;
-        await user.save();
+        await user.save({ validateBeforeSave: false });
         await token.delete();
         
         return res.status(StatusCodes.OK).json({
@@ -162,7 +162,7 @@ const changePassword = async (
         }
 
         user.password = newPassword;
-        await user.save()
+        await user.save({ validateBeforeSave: false })
 
         return res.status(StatusCodes.OK).json({
             message: "Password changed successful",
@@ -215,7 +215,7 @@ const changeTempPassword = async(
         }
 
         user.password = new_password;
-        await user.save()
+        await user.save({ validateBeforeSave: false })
 
         return res.status(StatusCodes.OK).json({
             message: "Password changed successful",
@@ -223,7 +223,9 @@ const changeTempPassword = async(
         });
 
     }catch(err){
-
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: err.message,
+        });
     }
 }
 
