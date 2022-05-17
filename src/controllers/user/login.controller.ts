@@ -62,7 +62,7 @@ const login = async (req, res) => {
             break;
         }
       }
-      if (user.role_id == "doctor" && !user.isApproved) {
+      if (user.role_id == "doctor" && !user.isApproved && user.isProfessionalInfo) {
         return res.status(400).send({
           type: "error",
           status: false,
