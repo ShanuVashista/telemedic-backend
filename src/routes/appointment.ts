@@ -3,12 +3,13 @@ import controller from "../controllers/appointment/appointment.controller";
 import { waitList } from "../controllers/appointment/waitList.controller";
 import { Roles } from "../lib/roles";
 import auth from "../middlewares/auth.middleware";
-import { validateQuery } from "../middlewares/joi.middleware";
+import { validateQuery, validateBody } from "../middlewares/joi.middleware";
 import userRole from "../middlewares/userRole.middleware";
+import { createAppointmentSchema } from "../validator/appointment.validation";
 import { waitListQuerySchema } from "../validator/waitList.validation";
 const router = express.Router();
 
-router.post("/", auth, controller.addAppointment);
+router.post("/", auth, validateBody(createAppointmentSchema), controller.addAppointment);
 router.post("/list", auth, controller.getAppointments);
 router.get(
   "/waitlist",
