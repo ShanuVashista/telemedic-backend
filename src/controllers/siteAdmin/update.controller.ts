@@ -7,11 +7,14 @@ import activityLog from "../../services/activityLog";
 
 export const updateAdmin = async (req, res) => {
     try {
-        const admin = await User.findOne({
+        // console.log(req.user,'user details--------');
+        
+        let admin = await User.findOne({
             _id: req.user.id,
             role_id: Roles.ADMIN
         })
-
+        // console.log(admin,'admin=-=-=--');
+        admin = JSON.parse(JSON.stringify(admin));
         if (!admin) {
             return res.status(StatusCodes.NOT_FOUND).json({
                 type: "error",
@@ -21,13 +24,15 @@ export const updateAdmin = async (req, res) => {
         }
 
         const tempArray = {};
-        tempArray['oldData'] = { ...admin.toObject() };
+        tempArray['oldData'] = admin;
 
-        Object.entries(req.body).forEach(([key, value]) => {
-            admin[key] = value;
-        });
-
-        await admin.save();
+        // Object.entries(req.body).forEach(([key, value]) => {
+        //     admin[key] = value;
+        // });
+        // console.log(admin,'--------------');
+        
+        // await admin.save();
+        admin = await User.findByIdAndUpdate({_id:admin._id},req.body,{new:true})
         let response = {};
         if(typeof (req.files) != 'undefined' && req.files != null){
             const upload_data = {

@@ -25,7 +25,6 @@ const register = async (req, res) => {
     });
   }
   try {
-    // await User.deleteMany()
     const user = await User.create({ ...req.body, role_id: Roles.PATIENT });
 
     // unset current_practise_address license
