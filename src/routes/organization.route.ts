@@ -7,7 +7,7 @@ import userRole from '../middlewares/userRole.middleware';
 import { createOrganizationSchema } from '../validator/organization.validation';
 const router = express.Router();
 
-router.get('/get', auth, controller.getOrganization);
+router.post('/get', auth, controller.getOrganization);
 router.post(
     '/',
     auth,
