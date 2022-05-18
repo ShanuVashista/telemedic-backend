@@ -40,10 +40,10 @@ const forgotPassword = async (
 
         // const link = `${process.env.BASE_URL}/user/password-reset/${user._id}/${token.token}`;
         function generatePassword() {
-            var length = 8,
+            let length = 8,
                 charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
                 retVal = "";
-            for (var i = 0, n = charset.length; i < length; ++i) {
+            for (let i = 0, n = charset.length; i < length; ++i) {
                 retVal += charset.charAt(Math.floor(Math.random() * n));
             }
             return retVal+ '@';
@@ -51,14 +51,14 @@ const forgotPassword = async (
         const tempPass = generatePassword()
         
         user.password = tempPass;
-        await user.save();
+        await user.save({ validateBeforeSave: false });
         // await token.delete();
         await sendEmail(user.email, "Here is your temprory created Password", tempPass);
 
         res.status(StatusCodes.OK).json({
             type:"success",
             status:true,
-            message: "Password Reset Link Send to your email",
+            message: "Temp Password",
             Password_Reset_Link: tempPass
         });
 
@@ -104,12 +104,14 @@ const resetPassword = async (
             });        }
         if(password !== confirmPassword){
             return res.status(StatusCodes.BAD_REQUEST).json({
+                type: "error",
+                status:false,
                 message: "Password didn't Match"
             });
         }
 
         user.password = password;
-        await user.save();
+        await user.save({ validateBeforeSave: false });
         await token.delete();
         
         return res.status(StatusCodes.OK).json({
@@ -119,6 +121,8 @@ const resetPassword = async (
         });
     }catch(err){
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            type: "error",
+            status:false,
             message: "An Error Occured!"
         });
     }
@@ -162,14 +166,18 @@ const changePassword = async (
         }
 
         user.password = newPassword;
-        await user.save()
+        await user.save({ validateBeforeSave: false })
 
         return res.status(StatusCodes.OK).json({
+            type:"success",
+            status: true,
             message: "Password changed successful",
             data: user,
         });
     }catch(error){
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            type:"error",
+            status:false,
             message: error.message
         });
     }
@@ -215,15 +223,21 @@ const changeTempPassword = async(
         }
 
         user.password = new_password;
-        await user.save()
+        await user.save({ validateBeforeSave: false })
 
         return res.status(StatusCodes.OK).json({
+            type:"success",
+            status: true,
             message: "Password changed successful",
             data: user,
         });
 
     }catch(err){
-
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            type:"error",
+            status: false,
+            message: err.message,
+        });
     }
 }
 
