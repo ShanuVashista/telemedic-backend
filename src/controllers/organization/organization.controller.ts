@@ -3,7 +3,7 @@ import Org from "../../db/models/organization.model";
 
 const getOrganization = async (req, res) => {
     try {
-        if(req.user.role_id == 'admin'){
+        if (req.user.role_id == 'admin') {
             let { page, limit, sort, cond } = req.body;
             if (!page || page < 1) {
                 page = 1;
@@ -31,7 +31,7 @@ const getOrganization = async (req, res) => {
                 total: organization_count,
                 data: organization,
             });
-        }else{
+        } else {
             res.status(400).send({
                 status: false,
                 type: 'error',
@@ -48,7 +48,7 @@ const getOrganization = async (req, res) => {
 };
 const createOrganization = async (req, res) => {
     try {
-        const organization = Org.create(req.body);
+        const organization = await Org.create(req.body);
 
         res.status(StatusCodes.OK).json({
             type: "success",
