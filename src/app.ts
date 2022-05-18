@@ -27,7 +27,7 @@ import clinicalNote from "./routes/clinicalNote";
 import referral from "./routes/referral";
 import template from "./routes/template";
 import CountryStateCity from "./routes/country_state_city";
-import Organization from "./routes/organization";
+import Organization from "./routes/organization.route";
 
 app.use("/user", userRoutes);
 // app.use('/admin/super', superAdminRoutes)

@@ -17,9 +17,13 @@ const getOrganization = async (req, res) => {
 };
 const createOrganization = async (req, res) => {
     try {
+        const organization = Org.create(req.body);
+
         res.status(StatusCodes.OK).json({
             type: "success",
-            status: true
+            status: true,
+            message: "Organization created successfully",
+            data: organization
         });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -57,4 +61,4 @@ const deleteOrganization = async (req, res) => {
         });
     }
 };
-export default {getOrganization,createOrganization,updateOrganization,deleteOrganization}
+export default { getOrganization, createOrganization, updateOrganization, deleteOrganization }
