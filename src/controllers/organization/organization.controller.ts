@@ -66,9 +66,27 @@ const createOrganization = async (req, res) => {
 };
 const updateOrganization = async (req, res) => {
     try {
+        const organization = await Org.findById(req.params.id)
+
+        if (!organization) {
+            res.status(StatusCodes.NOT_FOUND).json({
+                type: "error",
+                status: false,
+                message: "Organization not found",
+            });
+        }
+
+        Object.entries(req.body).forEach(([key, value]) => {
+            organization[key] = value;
+        });
+
+        await organization.save();
+
         res.status(StatusCodes.OK).json({
             type: "success",
-            status: true
+            status: true,
+            message: "Organization updated successfully",
+            data: organization
         });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
