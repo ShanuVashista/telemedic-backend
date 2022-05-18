@@ -1,4 +1,6 @@
 import Appointment from "../../db/models/appointment.model";
+import User from "../../db/models/user";
+import sendEmail from "../../services/sendEmail";
 const Doctor_Appointment_PUT = async (req, res) => {
   try {
     const user = JSON.parse(JSON.stringify(req.user));
@@ -39,6 +41,12 @@ const Doctor_Appointment_PUT = async (req, res) => {
       body.appointment_id,
       { $set: { status: body.status } },
       { new: true }
+    );
+
+    await sendEmail(
+      (await User.findById(appointment_update.userId))?.email,
+      "Appointment Status",
+      `Your appointment status is ${body.status}`
     );
 
     res.status(200).json({
