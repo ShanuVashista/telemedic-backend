@@ -3,6 +3,8 @@
 import { isBefore } from 'date-fns';
 import { Request, Response, NextFunction } from 'express';
 import Appointment from '../../db/models/appointment.model';
+import User from '../../db/models/user';
+import sendEmail from '../../services/sendEmail';
 import {
   ListAvailability,
   checkAppointmentTimeConflict,
@@ -110,7 +112,7 @@ const getAppointment = async (
 
 // Update an Appointment By ID
 const updateAppointment = async (
-  req: Request,
+  req,
   res: Response,
   next: NextFunction
 ) => {
@@ -176,6 +178,12 @@ const updateAppointment = async (
 
     const updateDoc = await Appointment.findById(Appointmentid);
 
+    await sendEmail(
+      (await User.findById(updateDoc.userId)).email,
+      'Appointment Updated',
+      '',
+      `Your appointment has been updated. Please check your appointment details.`,
+    )
     return res.status(200).json({
       status: true,
       type: 'success',
@@ -194,15 +202,31 @@ const updateAppointment = async (
 
 // Delete Appointment ById
 const deleteAppointment = async (
-  req: Request,
+  req,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const { Appointmentid } = req.params;
 
+    const doc = await Appointment.findById(Appointmentid);
+
+    if (!doc) {
+      return res.status(404).json({
+        status: false,
+        type: 'error',
+        message: 'Appointment not found',
+      });
+    }
+
     const result = await Appointment.deleteOne({ _id: Appointmentid });
 
+    await sendEmail(
+      (await User.findById(doc.userId)).email,
+      'Appointment Cancelled',
+      '',
+      `Your appointment has been cancelled. Please check your appointment details.`,
+    )
     return res.status(200).json({
       status: true,
       type: 'success',
@@ -282,6 +306,11 @@ const addAppointment = async (req, res: Response, next: NextFunction) => {
     });
     await newAppointment.save();
 
+    await sendEmail(req.user.email, 'Appointment Created', '', `
+    <h1>Appointment Created</h1>
+    <p>Your Appointment has been created successfully</p>
+    <p>Please visit your dashboard to view the appointment details</p>`
+    );
     res.status(201).json({
       status: true,
       type: 'success',
