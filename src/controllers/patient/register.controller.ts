@@ -7,6 +7,7 @@ import { deleteFileByPath } from "../../lib/deleteFileByPath";
 import S3 from "../../services/upload";
 import activityLog from "../../services/activityLog";
 import { ACTIVITY_LOG_TYPES } from "../../../constant";
+import sendEmail from "../../services/sendEmail";
 
 const register = async (req, res) => {
   if (!req.files) {
@@ -54,6 +55,8 @@ const register = async (req, res) => {
       req,
       tempArray
     );
+
+    await sendEmail(user.email, "Welcome to TeleMD", `Welcome to TeleMD ${user.firstname} ${user.lastname}`);
 
     res.status(StatusCodes.CREATED).json({
       type: "success",

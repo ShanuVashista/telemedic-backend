@@ -1,13 +1,13 @@
 import nodemailer from 'nodemailer';
 
-const sendEmail = async (email,subject, text) => {
+const sendEmail = async (email, subject, text = '', html = '') => {
 
-    try{
+    try {
         const transporter = nodemailer.createTransport({
             host: "smtp.zoho.com",
             port: 465,
             secure: true,
-            auth:{
+            auth: {
                 user: process.env.ZOHO_MAIL,
                 pass: process.env.ZOHO_PASS
             }
@@ -24,11 +24,12 @@ const sendEmail = async (email,subject, text) => {
             from: process.env.ZOHO_MAIL,
             to: email,
             subject: subject,
-            text: text
+            text: text,
+            html
         }
-    
-        transporter.sendMail(options, function(err,info){
-            if(err){
+
+        transporter.sendMail(options, function (err, info) {
+            if (err) {
                 console.log(err);
                 return;
             }
@@ -36,10 +37,10 @@ const sendEmail = async (email,subject, text) => {
         })
 
         console.log("Eamil sent Successful")
-    }catch(error){
+    } catch (error) {
         console.log(error, "email not sent");
     }
-    
+
 }
 
 export default sendEmail;
