@@ -5,7 +5,7 @@ import User from '../../db/models/user';
 import S3 from '../../services/upload';
 import activityLog from "../../services/activityLog"
 import { ACTIVITY_LOG_TYPES } from "../../../constant";
-
+import sendEmail from "../../services/sendEmail";
 const profileUpdate = async (req, res) => {
     try {
         const registerData = req.body;
@@ -22,7 +22,7 @@ const profileUpdate = async (req, res) => {
         const tempArray = {};
         tempArray['oldData'] = admin
         
-        let user = await User.findByIdAndUpdate({
+        const user = await User.findByIdAndUpdate({
             _id: req.user._id
         }, registerData);      
         
@@ -34,7 +34,7 @@ const profileUpdate = async (req, res) => {
             req,
             tempArray
         );
-
+        await sendEmail(user.email, "Account Update Successfully", "Your account is successfully updated.");
         // user = JSON.parse(JSON.stringify(user));
         // const upload_user = {
         //     db_response: user,
@@ -44,7 +44,7 @@ const profileUpdate = async (req, res) => {
 
         // const response = await User.findByIdAndUpdate(user._id, { $set: { "profile_photo": image_uri.Location } }, { new: true });
 
-        res.status(201).json({
+        res.status(StatusCodes.OK).json({
             status: true,
             type: 'success',
             message: 'Doctor Profile Updated Successfully',
@@ -53,7 +53,7 @@ const profileUpdate = async (req, res) => {
             }
         });
     } catch (error) {
-            res.status(400).json({
+            res.status(StatusCodes.BAD_REQUEST).json({
                 status: false,
                 type: 'error',
                 message: error.message

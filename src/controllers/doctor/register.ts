@@ -10,7 +10,7 @@ import { deleteFileByPath } from "../../lib/deleteFileByPath";
 import S3 from "../../services/upload";
 import activityLog from "../../services/activityLog";
 import { ACTIVITY_LOG_TYPES } from "../../../constant";
-
+import sendEmail from "../../services/sendEmail";
 const Register_POST = async (req, res) => {
   try {
     const registerData = req.body;
@@ -85,6 +85,9 @@ const Register_POST = async (req, res) => {
     );
 
     data = JSON.parse(JSON.stringify(data));
+
+    await sendEmail(data.email, "Congratulations Account Created Successfully", "Congratulations your account is created. Please add your professional info and wait for the admin approval.");
+
     const upload_data = {
       db_response: data,
       file: req.files[0],

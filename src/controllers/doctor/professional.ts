@@ -3,7 +3,7 @@
 import User from "../../db/models/user";
 import activityLog from "../../services/activityLog";
 import { ACTIVITY_LOG_TYPES } from "../../../constant";
-
+import sendEmail from "../../services/sendEmail";
 // import multer from 'multer';
 // const upload = multer({ dest: 'public/' });
 const Professional_PUT = async (req, res) => {
@@ -76,7 +76,8 @@ const Professional_PUT = async (req, res) => {
       req,
       tempArray
     );
-
+    await sendEmail(user.email, "Successfully Added The Professional Info", "Congratulations!! your professional info is added successfully. Please wait for the admin approval.");
+    
     res.status(200).json({
       status: true,
       type: "success",
