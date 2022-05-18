@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { OrganizationTypes } from "../lib/organizationEnum";
+import { OrganizationStatuses, OrganizationTypes } from "../lib/organizationEnum";
 
 const nameSchema = Joi.string();
 const typeSchema = Joi.string().valid(
@@ -15,6 +15,9 @@ const contactPersonSchema = Joi.object({
     email: Joi.string().email(),
     phone: Joi.string(),
 }).or('email', 'phone');
+const statusSchema = Joi.string().valid(
+    ...Object.values(OrganizationStatuses)
+);
 
 export const createOrganizationSchema = Joi.object({
     name: nameSchema.required(),
@@ -27,5 +30,6 @@ export const updateOrganizationSchema = Joi.object({
     name: nameSchema,
     type: typeSchema,
     location: locationSchema,
-    contact_person: contactPersonSchema
+    contact_person: contactPersonSchema,
+    status: statusSchema,
 }).required();

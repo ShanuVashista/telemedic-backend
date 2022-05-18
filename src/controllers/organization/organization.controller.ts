@@ -1,5 +1,5 @@
-import { StatusCodes } from "http-status-codes";
-import Org from "../../db/models/organization.model";
+import { StatusCodes } from 'http-status-codes';
+import Org from '../../db/models/organization.model';
 
 const getOrganization = async (req, res) => {
     try {
@@ -12,19 +12,22 @@ const getOrganization = async (req, res) => {
                 limit = 10;
             }
             if (!cond) {
-                cond = {}
+                cond = {};
             }
             if (!sort) {
-                sort = { "createdAt": -1 }
+                sort = { createdAt: -1 };
             }
             limit = parseInt(limit);
-            const organization = await Org.find(cond).sort(sort).skip((page - 1) * limit).limit(limit)
-            const organization_count = await Org.find(cond).count()
+            const organization = await Org.find(cond)
+                .sort(sort)
+                .skip((page - 1) * limit)
+                .limit(limit);
+            const organization_count = await Org.find(cond).count();
             const totalPages = Math.ceil(organization_count / limit);
             res.status(StatusCodes.OK).send({
                 status: true,
                 type: 'success',
-                message: "Organization List Fetch Successfully",
+                message: 'Organization List Fetch Successfully',
                 page: page,
                 limit: limit,
                 totalPages: totalPages,
@@ -35,13 +38,13 @@ const getOrganization = async (req, res) => {
             res.status(400).send({
                 status: false,
                 type: 'error',
-                message: "You Are Not Authorized User"
+                message: 'You Are Not Authorized User',
             });
         }
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             status: false,
-            type: "error",
+            type: 'error',
             message: error.message,
         });
     }
@@ -51,14 +54,14 @@ const createOrganization = async (req, res) => {
         const organization = await Org.create(req.body);
 
         res.status(StatusCodes.OK).json({
-            type: "success",
+            type: 'success',
             status: true,
-            message: "Organization created successfully",
-            data: organization
+            message: 'Organization created successfully',
+            data: organization,
         });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            type: "error",
+            type: 'error',
             status: false,
             message: error.message,
         });
@@ -66,13 +69,13 @@ const createOrganization = async (req, res) => {
 };
 const updateOrganization = async (req, res) => {
     try {
-        const organization = await Org.findById(req.params.id)
+        const organization = await Org.findById(req.params.id);
 
         if (!organization) {
             res.status(StatusCodes.NOT_FOUND).json({
-                type: "error",
+                type: 'error',
                 status: false,
-                message: "Organization not found",
+                message: 'Organization not found',
             });
         }
 
@@ -83,14 +86,14 @@ const updateOrganization = async (req, res) => {
         await organization.save();
 
         res.status(StatusCodes.OK).json({
-            type: "success",
+            type: 'success',
             status: true,
-            message: "Organization updated successfully",
-            data: organization
+            message: 'Organization updated successfully',
+            data: organization,
         });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            type: "error",
+            type: 'error',
             status: false,
             message: error.message,
         });
@@ -99,15 +102,20 @@ const updateOrganization = async (req, res) => {
 const deleteOrganization = async (req, res) => {
     try {
         res.status(StatusCodes.OK).json({
-            type: "success",
-            status: true
+            type: 'success',
+            status: true,
         });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            type: "error",
+            type: 'error',
             status: false,
             message: error.message,
         });
     }
 };
-export default { getOrganization, createOrganization, updateOrganization, deleteOrganization }
+export default {
+    getOrganization,
+    createOrganization,
+    updateOrganization,
+    deleteOrganization,
+};
