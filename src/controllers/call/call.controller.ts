@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import twilio from 'twilio';
 // import AccessToken, { VideoGrant } from "twilio/lib/jwt/AccessToken";
+import Appointment from '../../db/models/appointment.model';
 const AccessToken = twilio.jwt.AccessToken;
 const { VideoGrant } = AccessToken;
 const generateToken = () => {
@@ -11,8 +12,13 @@ const generateToken = () => {
     );    
     return token;
 }
-const videoToken = (req, res) => {
+const videoToken = async (req, res) => {
     try {
+        let result = await Appointment.find({_id:req.body.room});
+        result = JSON.parse(JSON.stringify(result));        
+        if(result[0].doctorId != req.body.identity && result[0].patientId != req.body.identity){
+            throw new Error("Mismatch Information")
+        }
         let videoGrant;
         const room = req.body.room;
         if (typeof req.body.room !== 'undefined') {
