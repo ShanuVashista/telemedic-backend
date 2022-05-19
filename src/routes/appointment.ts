@@ -1,5 +1,6 @@
 import express from "express";
 import controller from "../controllers/appointment/appointment.controller";
+import there_controller from "../controllers/appointment/thera-appointment";
 import { waitList } from "../controllers/appointment/waitList.controller";
 import { Roles } from "../lib/roles";
 import auth from "../middlewares/auth.middleware";
@@ -10,6 +11,7 @@ import { waitListQuerySchema } from "../validator/waitList.validation";
 const router = express.Router();
 
 router.post("/", auth, validateBody(createAppointmentSchema), controller.addAppointment);
+router.post("/create/thera-appointment", auth, validateBody(createAppointmentSchema), there_controller.addAppointment);
 router.post("/list", auth, controller.getAppointments);
 router.get(
   "/waitlist",
