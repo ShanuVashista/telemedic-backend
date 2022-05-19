@@ -58,6 +58,7 @@
     "nodemailer": "^6.7.5",
     "nodemon": "^2.0.15",
     "ts-node": "^10.7.0",
+    "twilio": "^3.77.1",
     "validator": "^13.7.0"
   }
 }

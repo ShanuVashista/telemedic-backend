@@ -28,6 +28,7 @@ import referral from "./routes/referral";
 import template from "./routes/template";
 import CountryStateCity from "./routes/country_state_city";
 import Organization from "./routes/organization.route";
+import Call from "./routes/call.route";
 
 app.use("/user", userRoutes);
 // app.use('/admin/super', superAdminRoutes)
@@ -39,6 +40,7 @@ app.use("/referral", referral);
 app.use("/template", template);
 app.use("/get", CountryStateCity);
 app.use("/organization", Organization);
+app.use("/call", Call);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
