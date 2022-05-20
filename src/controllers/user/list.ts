@@ -7,6 +7,7 @@ const List_User = async (req, res) => {
     try {
         if (req.user.role_id == 'admin') {
             let { page, limit, sort, cond } = req.body;
+            let search = "";
             if (!page || page < 1) {
                 page = 1;
             }
@@ -19,10 +20,10 @@ const List_User = async (req, res) => {
             if (!sort) {
                 sort = { "createdAt": -1 }
             }
-            if (typeof (cond.search) == 'undefined' || cond.search == null) {
-                cond.search = "";
-            } else {
-                cond.search = String(cond.search)
+            if (typeof (cond.search) != 'undefined' && cond.search != null) {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                search = String(cond.search);
+                delete cond.search;
             }
             // if (typeof (cond.role_id) != 'undefined' && cond.role_id != null) {
             //     cond = [
@@ -79,55 +80,79 @@ const List_User = async (req, res) => {
             //         }
             //     ]
             // }
-            if (typeof (cond.role_id) != 'undefined' && cond.role_id != null) {
-                cond = [
-                    {
-                        $match: {
-                            $and: [{ "role_id": cond.role_id }, {
-                                $or: [
-                                    { "email": { $regex: cond.search, '$options' : 'i' } },
-                                    { "firstname": { $regex: cond.search, '$options' : 'i' } },
-                                    { "lastname": { $regex: cond.search, '$options' : 'i' } },
-                                ]
-                            }]
-                        }
-                    },
-                    { $sort: sort },
-                    {
-                        $facet: {
-                            data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
-                            total: [
-                                {
-                                    $count: 'count'
-                                }
-                            ]
-                        }
-                    }
-                ]
-            } else {
-                cond = [
-                    {
-                        $match: {
+            // if (typeof (cond.role_id) != 'undefined' && cond.role_id != null) {
+            //     cond = [
+            //         {
+            //             $match: {
+            //                 $and: [{ "role_id": cond.role_id }, {
+            //                     $or: [
+            //                         { "email": { $regex: cond.search, '$options' : 'i' } },
+            //                         { "firstname": { $regex: cond.search, '$options' : 'i' } },
+            //                         { "lastname": { $regex: cond.search, '$options' : 'i' } },
+            //                     ]
+            //                 }]
+            //             }
+            //         },
+            //         { $sort: sort },
+            //         {
+            //             $facet: {
+            //                 data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+            //                 total: [
+            //                     {
+            //                         $count: 'count'
+            //                     }
+            //                 ]
+            //             }
+            //         }
+            //     ]
+            // } else {
+            //     cond = [
+            //         {
+            //             $match: {
+            //                 $or: [
+            //                     { "email": { $regex: cond.search, '$options' : 'i' } },
+            //                     { "firstname": { $regex: cond.search, '$options' : 'i' } },
+            //                     { "lastname": { $regex: cond.search, '$options' : 'i' } },
+            //                 ]
+            //             }
+            //         },
+            //         { $sort: sort },
+            //         {
+            //             $facet: {
+            //                 data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+            //                 total: [
+            //                     {
+            //                         $count: 'count'
+            //                     }
+            //                 ]
+            //             }
+            //         }
+            //     ]
+            // }
+            cond = [
+                {
+                    $match: {
+                        $and: [cond, {
                             $or: [
-                                { "email": { $regex: cond.search, '$options' : 'i' } },
-                                { "firstname": { $regex: cond.search, '$options' : 'i' } },
-                                { "lastname": { $regex: cond.search, '$options' : 'i' } },
+                                { "email": { $regex: search, '$options' : 'i' } },
+                                { "firstname": { $regex: search, '$options' : 'i' } },
+                                { "lastname": { $regex: search, '$options' : 'i' } },
                             ]
-                        }
-                    },
-                    { $sort: sort },
-                    {
-                        $facet: {
-                            data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
-                            total: [
-                                {
-                                    $count: 'count'
-                                }
-                            ]
-                        }
+                        }]
                     }
-                ]
-            }
+                },
+                { $sort: sort },
+                {
+                    $facet: {
+                        data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+                        total: [
+                            {
+                                $count: 'count'
+                            }
+                        ]
+                    }
+                }
+            ]
             limit = parseInt(limit);
             let user = await User.aggregate(cond)
             user = JSON.parse(JSON.stringify(user));
