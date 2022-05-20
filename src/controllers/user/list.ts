@@ -85,9 +85,9 @@ const List_User = async (req, res) => {
                         $match: {
                             $and: [{ "role_id": cond.role_id }, {
                                 $or: [
-                                    { "email": { $regex: cond.search } },
-                                    { "firstname": { $regex: cond.search } },
-                                    { "lastname": { $regex: cond.search } },
+                                    { "email": { $regex: cond.search, '$options' : 'i' } },
+                                    { "firstname": { $regex: cond.search, '$options' : 'i' } },
+                                    { "lastname": { $regex: cond.search, '$options' : 'i' } },
                                 ]
                             }]
                         }
@@ -109,9 +109,9 @@ const List_User = async (req, res) => {
                     {
                         $match: {
                             $or: [
-                                { "email": { $regex: cond.search } },
-                                { "firstname": { $regex: cond.search } },
-                                { "lastname": { $regex: cond.search } },
+                                { "email": { $regex: cond.search, '$options' : 'i' } },
+                                { "firstname": { $regex: cond.search, '$options' : 'i' } },
+                                { "lastname": { $regex: cond.search, '$options' : 'i' } },
                             ]
                         }
                     },
