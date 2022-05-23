@@ -9,7 +9,7 @@ import {
   ListAvailability,
   checkAppointmentTimeConflict,
 } from './availabilityUtil';
-
+import StatusCodes from "http-status-codes";
 export interface Appointment {
   userId: number;
   patientId: number;
@@ -325,10 +325,60 @@ const addAppointment = async (req, res: Response, next: NextFunction) => {
   }
 };
 
+// Get Appointment Count
+const Count_Appointment = async (req, res) => {
+  try {
+    if (req.user.role_id == 'admin') {
+      const cond = [
+        {
+          $facet: {
+            pending_appointment: [{
+              $match: { "dateOfAppointment":{ $gt: new Date()} }
+            }, {
+              $count: 'count'
+            }],
+            reject_appointment: [{
+              $match: { "status":"Rejected" }
+            }, {
+              $count: 'count'
+            }],
+            complete_appointment: [{
+              $match: { "status":"Completed" }
+            }, {
+              $count: 'count'
+            }]
+          }
+        }
+      ]
+      let appointment = await Appointment.aggregate(cond);
+      res.status(StatusCodes.OK).send({
+        status: true,
+        type: 'success',
+        message: "Appointment Count Fetch Successfully",
+        data: appointment,
+      });
+    } else {
+      res.status(400).send({
+        status: false,
+        type: 'error',
+        message: "You Are Not Authorized User"
+      });
+    }
+
+
+  } catch (error) {
+    res.status(StatusCodes.BAD_REQUEST).json({
+      status: false,
+      type: 'error',
+      message: error.message
+    });
+  }
+}
 export default {
   getAppointments,
   addAppointment,
   getAppointment,
   updateAppointment,
   deleteAppointment,
+  Count_Appointment
 };

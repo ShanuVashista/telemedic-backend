@@ -13,6 +13,7 @@ const router = express.Router();
 router.post("/", auth, validateBody(createAppointmentSchema), controller.addAppointment);
 router.post("/create/thera-appointment", auth, validateBody(createAppointmentSchema), there_controller.addAppointment);
 router.post("/list", auth, controller.getAppointments);
+router.get("/count", auth, controller.Count_Appointment);
 router.get(
   "/waitlist",
   auth,
