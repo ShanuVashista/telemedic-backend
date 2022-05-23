@@ -18,6 +18,7 @@ import { paymentMethod } from '../validator/paymentMethods.validation';
 import { paginationQuerySchema } from '../validator/util';
 import admin from '../routes/admin'
 import List_User from '../controllers/user/list';
+import Count_User from '../controllers/user/count';
 import corporateRoute from './corporate.route';
 
 const router = express.Router()
@@ -32,6 +33,7 @@ router.post("/password-reset/:userId/:token", Passwordcontroller.resetPassword)
 router.post("/forgot-reset-password",Passwordcontroller.changeTempPassword)
 router.post("/password-change", auth, Passwordcontroller.changePassword)
 router.post('/list', auth, List_User);
+router.get('/count', auth, Count_User);
 router.post('/prescription/list', auth, Prescription_List_POST);
 router.use('/notifications', auth, notificationRouter)
 router.use('/transactions', auth, transactionRouter)
