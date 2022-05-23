@@ -332,18 +332,18 @@ const Count_Appointment = async (req, res) => {
       const cond = [
         {
           $facet: {
-            pending_appointment: [{
-              $match: { "dateOfAppointment":{ $gt: new Date()} }
+            upcoming_appointment: [{
+              $match: { "dateOfAppointment": { $gte: new Date() }, status: "Approved" }
             }, {
               $count: 'count'
             }],
             reject_appointment: [{
-              $match: { "status":"Rejected" }
+              $match: { "status": "Rejected" }
             }, {
               $count: 'count'
             }],
             complete_appointment: [{
-              $match: { "status":"Completed" }
+              $match: { "status": "Completed" }
             }, {
               $count: 'count'
             }]
