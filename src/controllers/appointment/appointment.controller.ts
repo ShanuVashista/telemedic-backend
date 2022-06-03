@@ -10,6 +10,7 @@ import {
   checkAppointmentTimeConflict,
 } from './availabilityUtil';
 import StatusCodes from "http-status-codes";
+import mongoose from 'mongoose';
 export interface Appointment {
   userId: number;
   patientId: number;
@@ -374,11 +375,64 @@ const Count_Appointment = async (req, res) => {
     });
   }
 }
+
+// Get Appointment Count For Thera
+const Count_Appointment_Thera = async (req, res) => {
+  try {
+    let condition = {};
+    if (req.user.role_id == 'doctor') {
+      condition = { "doctorId": new mongoose.Types.ObjectId(req.user._id) }
+    }
+    if (req.user.role_id == 'patient') {
+      condition = { "userId": new mongoose.Types.ObjectId(req.user._id) }
+    }
+
+    const cond = [
+      {
+        $match: condition
+      },
+      {
+        $facet: {
+          upcoming_appointment: [{
+            $match: { "dateOfAppointment": { $gte: new Date() }, status: "Approved" }
+          }, {
+            $count: 'count'
+          }],
+          reject_appointment: [{
+            $match: { "status": "Rejected" }
+          }, {
+            $count: 'count'
+          }],
+          complete_appointment: [{
+            $match: { "status": "Completed" }
+          }, {
+            $count: 'count'
+          }]
+        }
+      }
+    ]
+    let appointment = await Appointment.aggregate(cond);
+    res.status(StatusCodes.OK).send({
+      status: true,
+      type: 'success',
+      message: "Appointment Count Fetch Successfully",
+      data: appointment,
+    });
+
+  } catch (error) {
+    res.status(StatusCodes.BAD_REQUEST).json({
+      status: false,
+      type: 'error',
+      message: error.message
+    });
+  }
+}
 export default {
   getAppointments,
   addAppointment,
   getAppointment,
   updateAppointment,
   deleteAppointment,
-  Count_Appointment
+  Count_Appointment,
+  Count_Appointment_Thera
 };

@@ -14,6 +14,7 @@ router.post("/", auth, validateBody(createAppointmentSchema), controller.addAppo
 router.post("/create/thera-appointment", auth, validateBody(createAppointmentSchema), there_controller.addAppointment);
 router.post("/list", auth, controller.getAppointments);
 router.get("/count", auth, controller.Count_Appointment);
+router.get("/count/thera", auth, controller.Count_Appointment_Thera);
 router.get(
   "/waitlist",
   auth,
