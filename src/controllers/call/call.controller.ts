@@ -16,7 +16,7 @@ const videoToken = async (req, res) => {
     try {
         let result = await Appointment.find({_id:req.body.room});
         result = JSON.parse(JSON.stringify(result));        
-        if(result[0].doctorId != req.body.identity && result[0].patientId != req.body.identity){
+        if(result[0].doctorId != req.body.identity && result[0].userId != req.body.identity){
             throw new Error("Mismatch Information")
         }
         let videoGrant;
